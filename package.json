@@ -1,0 +1,30 @@
+{
+  "name": "eve-goons-waitlist",
+  "version": "2.0.0",
+  "description": "The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet of Eve Online.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "eve",
+    "oauth",
+    "esi"
+  ],
+  "author": "Makeshift Storque",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "eve-swagger": "^0.3.3",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "passport": "^0.4.0",
+    "passport-oauth2": "^1.4.0",
+    "passport-oauth2-refresh": "^1.0.0",
+    "request": "^2.83.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Makeshift/eve-goons-waitlist.git"
+  }
+}
