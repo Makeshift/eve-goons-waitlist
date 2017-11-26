@@ -1,9 +1,13 @@
-module.exports = function(app) {
+module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
+		var s = "/";
+		if (setup.data.isWin) {
+			s = "\\";
+		}
 		if (req.isAuthenticated()) {
 			res.redirect('/waitlist');
 		} else {
-			res.send(`Log in with <a href="/auth/provider">Eve Online</a>.`)
+			res.sendFile(`${__dirname}${s}public${s}index.html`)
 		}
 	});
 

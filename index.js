@@ -56,10 +56,11 @@ app.use(session({secret: "4ATmaVuEn8BA5HXMyf6yMKu3BcstonoQrbxkzVe0A6aP3FjTggvDdM
 app.use(passport.initialize());
 app.use(passport.session());
 app.use( bodyParser.urlencoded({ extended: true }) );
+app.use('/static', express.static('public'));
 
 //Routes
 require('./oAuthRoutes.js')(app, passport, setup);
-require('./routes.js')(app);
+require('./routes.js')(app, setup);
 
 //Configure Express webserver
 app.listen(80, function listening() {
