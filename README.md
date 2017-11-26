@@ -18,8 +18,19 @@ exports.oauth = {
 };
 
 exports.data = {
-	directory: "data",
-	isWin: /^win/.test(process.platform)
+	directory: "data", //Where data will be stored
+	isWin: /^win/.test(process.platform) //Checks if we're running on Windows or Linux for directory structures
+}
+
+exports.settings = {
+	port: 80
+}
+
+exports.permissions = {
+	"alliances": ["Alliance 1", "Alliance 2"], //Whitelisted Alliances
+	"admins": ["Player 1", "Player 2"], //FC's
+	"leadership": ["Player 3", "Player 1"], //Can manage FC's
+	"blacklist": ["Player 5"] //Banned
 }
 ```
 Many of the variables can be populated from here: https://developers.eveonline.com/
