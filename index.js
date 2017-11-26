@@ -63,6 +63,6 @@ require('./oAuthRoutes.js')(app, passport, setup);
 require('./routes.js')(app, setup);
 
 //Configure Express webserver
-app.listen(80, function listening() {
+app.listen(setup.settings.port, function listening() {
     console.log('Express online and accepting connections');
 });
