@@ -16,8 +16,6 @@ module.exports = function (setup) {
 	};
 
 	const fs = require('fs');
-	//So I can easily access 'global' functions from inside function scopes
-	var _this = this;
 
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function(users, refreshToken, characterDetails, cb) {
