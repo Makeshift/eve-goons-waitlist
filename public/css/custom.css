@@ -1,1 +1,117 @@
 /* your styles go here */
+body{
+	overflow-x: hidden!important;
+}
+
+/* White text on info buttons */
+.btn-info{
+	color: white;
+}
+
+.btn-info:hover{
+	color: white;
+}
+
+/* Alarm Button Highlight */
+.btn-alert{
+	background-color: black;
+	color: white;
+}
+
+/* Inline radio button spacing */
+.form-check-label{
+	margin-right: 10px;
+}
+
+/* More spacing on dropdown menu buttons */
+.dropdown-toggle{
+	padding-right: 15px;
+}
+
+/* Dropdown menus space correctly and hover color fix */
+.dropdown-menu.active.show{
+	margin-top: -0px;
+}
+
+.dropdown-item:hover{
+	background-color: #282b2f!important;
+	color: white;
+}
+
+/* global-banner */
+.global-banner{
+	width: 94%;
+	margin-left: 1.5%;
+	margin-right: 1.5%;
+	margin-top: -20px;
+	border-radius: 0px;
+}
+
+
+/* Fit selection buttons */
+.fit-selected, .fit:hover, .fit:focus{
+	color: white;
+	background-color: #8064A2;
+}
+
+.fit{
+	color:white;
+	background-color: rgba(0,0,0,0.0);
+	color: white;
+	border-color: #8064A2;
+}
+
+/* Stick footer to the bottom of the screen */
+.footer{
+	position: absolute;
+	width: 99vw;
+	left: 0;
+	bottom: 0;
+}
+
+/* Table Widths */
+.tw15per{
+	width: 15%;
+}
+
+.tw20{
+	width: 20px;
+}
+.tw20per{
+	width: 20%;
+}
+
+.tw30{
+	width: 30px;
+}
+
+.tw35{
+	width: 35px;
+}
+
+.tw40per{
+	width: 40%;
+}
+
+.tw45per{
+	width: 45%;
+}
+
+.tw60per{
+	width: 60%;
+}
+
+.tw80{
+	width: 80px;
+}
+
+/* No Select */
+.noselect, .global-banner, .title, .number, form, img, nav, footer, table{
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}

@@ -177,7 +177,6 @@ input {
   font-size: 1rem;
   min-width: 200px;
   margin-top: 10px;
-  background: #2d3035;
   left: auto;
   right: 0;
 }
@@ -372,6 +371,7 @@ nav.navbar a.nav-link .badge {
   width: 20px;
   height: 20px;
   line-height: 20px;
+  background-color: #D03235;
   color: #fff;
   text-align: center;
   border-radius: 50%;
@@ -783,10 +783,11 @@ nav#sidebar li.active i {
 }
 
 nav#sidebar.shrinked {
-  width: 80px;
+  width: 95px;
 }
 
 nav#sidebar.shrinked .sidebar-header {
+  padding-left: 20px !important;
   padding: 10px;
 }
 
@@ -1540,7 +1541,7 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
 }
 
 .login-page .form-holder .info {
-  background: rgba(255, 63, 63, 0.90);
+  background: rgba(183, 4, 4, 0.9);
   color: #fff;
 }
 
@@ -1650,6 +1651,11 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
 
 .form-control-label {
   color: #777;
+}
+
+.form-control.dropdown{
+	margin-top: -1px;
+	height: 42px!important;
 }
 
 button, input[type='submit'] {
@@ -1844,6 +1850,7 @@ select {
 .modal-open .modal .modal-content {
   border-radius: 0;
   background: #2d3035;
+  color: white;
 }
 
 .modal-open .modal .modal-header, .modal-open .modal .modal-footer {

@@ -1,0 +1,29 @@
+/* Styles for Waitlist Page */
+
+/* Default row on waitlist */
+.invite-normal{
+	color: white;
+}
+
+/* Invite send PENDING */
+.invite-pending{
+	background-color: #37cfdc!important; 
+	color:black;
+}
+
+/* Invite send OKAY */
+.invite-sent{
+	background-color: #055a05!important;
+	color:white;
+}
+
+/* Invite send FAILED */
+.invite-failed{
+	background-color: #B70404!important;
+	color: white;
+}
+
+.invite-alert{
+	background-color: #18ba85!important;
+	color: black;
+}
