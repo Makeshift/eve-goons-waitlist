@@ -112,60 +112,61 @@
         </div>
 		
 		<!-- Top Content Section -->
-        <section class="no-padding-top no-padding-bottom">
-          <div class="container-fluid">
+    <section class="no-padding-top no-padding-bottom">
+      <div class="container-fluid">
 			<div class="row">
 			  <!-- Add Ban -->
-              <div class="col-md-6 col-sm-12">
-                <div class="statistic-block block">
-				  <div class="progress-details d-flex align-items-end justify-content-between">
-					<div class="input-group inline">
-						<input type="text" placeholder="Target Name" class="form-control" />
-						<input type="text" placeholder="Reason" class="form-control" />
-						<input type="number" placeholder="duration (days)" class="form-control" />
-						<div class="input-group-btn">
-							<select class="form-control dropdown">
-								<option value="Pilots" selected>Global</option>
-								<option value="Corporation">Logistics</option>
-								<option value="Alliance">Multibox</option>
-							</select>
-							<button class="btn btn-danger" type="submit">Add Ban</button>
-						</div>
-					</div>
-				  </div>
-				</div>
+         <div class="col-md-6 col-sm-12">
+          <div class="statistic-block block">
+            <div class="vertical-input-group">
+              <div class="input-group">
+                <span class="input-group-addon" data-toggle="tooltip" title="."><i class="fas fa-info-circle"></i> </span>
+                <input type="text" placeholder="Target Name" class="form-control" />
+                <input type="text" placeholder="Reason" class="form-control" />
               </div>
+              <div class="input-group">
+                <input type="number" placeholder="duration (days)" class="form-control" />
+                <select class="form-control dropdown">
+                  <option value="Pilots" selected>Global</option>
+                  <option value="Corporation">Logistics</option>
+                  <option value="Alliance">Multibox</option>
+                </select>
+                <button class="btn btn-danger" type="submit">Add Ban</button>
+              </div>
+            </div>            
+				</div>     
+      </div>
 			  
 			  <!-- Ban Stats -->
 			  <div class="col-md-3 col-sm-6">
-                <div class="statistic-block block">
-                  <div class="progress-details d-flex align-items-end justify-content-between">
-                    <div class="title">
-                      <div class="icon"><i class="fa fa-legal"></i></div><strong>Total Bans</strong>
-                    </div>
-                    <div class="number dashtext-1">12</div>
-                  </div>
-                  <div class="progress">
-                    <div role="progressbar" style="width: 3%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" class="progress-bar dashbg-1"></div>
-                  </div>
-                </div>
+          <div class="statistic-block block">
+            <div class="progress-details d-flex align-items-end justify-content-between">
+              <div class="title">
+                <div class="icon"><i class="fa fa-legal"></i></div><strong>Total Bans</strong>
               </div>
-              <div class="col-md-3 col-sm-6">
-                <div class="statistic-block block">
-                  <div class="progress-details d-flex align-items-end justify-content-between">
-                    <div class="title">
-                      <div class="icon"><i class="fa fa-ban"></i></div><strong>Permanent</strong>
-                    </div>
-                    <div class="number dashtext-2">4</div>
-                  </div>
-                  <div class="progress">
-                    <div role="progressbar" style="width: 66%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" class="progress-bar dashbg-2"></div>
-                  </div>
-                </div>
-              </div>	  
+              <div class="number dashtext-1">12</div>
+            </div>
+            <div class="progress">
+              <div role="progressbar" style="width: 3%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" class="progress-bar dashbg-1"></div>
             </div>
           </div>
-        </section>
+        </div>
+        <div class="col-md-3 col-sm-6">
+          <div class="statistic-block block">
+            <div class="progress-details d-flex align-items-end justify-content-between">
+              <div class="title">
+                <div class="icon"><i class="fa fa-ban"></i></div><strong>Permanent</strong>
+              </div>
+              <div class="number dashtext-2">4</div>
+            </div>
+            <div class="progress">
+              <div role="progressbar" style="width: 66%" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" class="progress-bar dashbg-2"></div>
+            </div>
+            </div>
+          </div>	  
+        </div>
+      </div>
+    </section>
         
 		<!-- Banlist Section -->
 		<section class="no-padding-bottom">
@@ -205,12 +206,12 @@
         </section>
 		
 		<!-- Footer Section -->
-        <footer class="footer">
-          <div class="footer__block block no-margin-bottom">
-            <div class="container-fluid text-center">
-              <p class="no-margin-bottom">2017 &copy; ${SiteName} | <a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
-            </div>
-          </div>
+    <footer class="footer">
+      <div class="footer__block block no-margin-bottom">
+        <div class="container-fluid text-center">
+          <p class="no-margin-bottom">2017 &copy; ${SiteName} | <a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
+        </div>
+      </div>
 		  <!-- Legal Notices  Modal -->
 		  <div role="dialog" tabindex="-1" class="modal fade" id="legal">
 			<div class="modal-dialog" role="document">

@@ -63,10 +63,15 @@ body{
 
 /* Stick footer to the bottom of the screen */
 .footer{
-	position: absolute;
-	width: 99vw;
+	position: relative;
+	max-width: 99vw;
 	left: 0;
+	right: 0;
 	bottom: 0;
+}
+
+.padding-bottom{
+	margin-bottom: 50px;
 }
 
 /* Table Widths */
@@ -103,6 +108,29 @@ body{
 
 .tw80{
 	width: 80px;
+}
+
+/* Vertical Forum Groups */
+.vertical-input-group .input-group:first-child {
+    padding-bottom: 0;
+}
+.vertical-input-group .input-group:first-child * {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.vertical-input-group .input-group:last-child {
+    padding-top: 0;
+}
+.vertical-input-group .input-group:last-child * {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.vertical-input-group .input-group:not(:last-child):not(:first-child) {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.vertical-input-group .input-group:not(:last-child):not(:first-child) * {
+    border-radius: 0;
 }
 
 /* No Select */

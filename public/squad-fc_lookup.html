@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="css/style.default.css" id="theme-stylesheet">
     <!-- Custom stylesheet - for your changes-->
     <link rel="stylesheet" href="css/custom.css">
-	<link rel="stylesheet" href="css/waitlist-colors.css">
     <!-- Favicon-->
     <link rel="shortcut icon" href="img/favicon.ico">
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
@@ -44,8 +43,7 @@
             <!-- User Notifications Feed -->
 			<li class="list-inline-item dropdown"><a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i><span class="badge dashbg-3">!</span></a>
               <ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
-                <li>
-				   <a href="#" class="dropdown-item">
+                <li><a href="#" class="dropdown-item">
                     <div class="text d-flex justify-content-between"><strong>Invited to fleet</strong><br>${10 minutes ago}</div>
                    </a>
 				</li>
@@ -61,10 +59,11 @@
         </div>
       </nav>
     </header>
+	<!-- End Header Navbar -->
 	
+	<!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
-      <!-- Nav - Sidebar -->
-	  <nav id="sidebar">
+      <nav id="sidebar">
         <div class="sidebar-header d-flex align-items-center">
           <div class="avatar"><img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="..." class="img-fluid rounded-circle"></div>
           <div class="title">
@@ -76,7 +75,8 @@
           <li class="active"><a href="#"><i class="fa fa-list"></i>Waitlist</a></li>
           <li><a href="#myaccount" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-user"></i>My Account</a>
             <ul id="myaccount" class="collapse list-unstyled">
-			  <li><a href="#">My Alts & Fits</a></li>
+              <li><a href="#">My Alts</a></li>
+              <li><a href="#">My Fits</a></li>
               <li><a href="#">My Stats</a></li>
               <li><a href="#">My SRP</a></li>
             </ul>
@@ -103,120 +103,192 @@
           </li>
         </ul>
       </nav>
+	  <!-- End Master Nav Sidebar -->
 	  
 	  <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
           <div class="container-fluid">
-            <h2 class="h5 no-margin-bottom">FC Management</h2>
+            <form>
+			  <input class="form-control" type="search" name="search" placeholder="Who are you searching for..." autofocus style="max-width: 350px; display:inline;"> 
+			  <button class="btn btn-link btn-lg" type="submit"><i class="icon-magnifying-glass-browser"></i></button>
+			</form>
           </div>
         </div>
         <section class="no-padding-top no-padding-bottom">
           <div class="container-fluid">
-			<div class="row">
-			  <!-- Add/View FCs -->
-        <div class="col-md-6 col-sm-12">
-          <div class="statistic-block block">
-            <div class="vertical-input-group">
-              <div class="input-group">
-                <span class="input-group-addon" data-toggle="tooltip" title=""><i class="fas fa-info-circle"></i> </span>
-                <input type="text" placeholder="Pilot Name" class="form-control" />
-                <select class="form-control dropdown">
-                  <option value="Trainee" selected>Trainee</option>
-                  <option value="Full FC">Full FC</option>
-                  <option value="Leadership">Leadership</option>
-                </select>
-              </div>
-              <div class="input-group">
-                <button class="btn btn-success btn-block" type="submit">Promote to FC</button>
-              </div>
-            </div>          
-				</div>
+
+            <div class="row">
+			  <!-- User Profile -->
+			  <div class="col-md-6 col-sm-12">
 				<div class="statistic-block block">
-				  <div class="progress-details d-flex align-items-end justify-content-between">
-					<table class="table table-striped table-hover table-sm">
-					  <thead>
-						<tr>
-						  <th class="tr35"></th>
-						  <th class="tr45per">Name</th>
-						  <th class="tr45per">Rank</th>
-						  <th></th>
-						</tr>
-					  </thead>
-					  <tbody>
-						<tr>
-						  <td><img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
-						  <td><a href="#">Caitlin Viliana</a></td>
-						  <td>Full FC</td>
-						  <td><button class="btn btn-danger"><i class="fa fa-info-circle"></i> Manage</button></td>
-						</tr>
-					  </tbody>
-					</table>
+				  <div class="row">
+					  <div class="col-md-4 col-sm-12 text-center">
+						<img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="${PilotName}s avatar">
+						<ul class="list-unstyled">
+						  <li><a href="#">${Pilots Name}</a></li>
+						  <li><p>${Pilots Rank}</p></li>
+						</ul>
+						<button class="btn btn-danger"><i class="fa fa-warning"></i> Reset Name</button>
+					  </div>
+					  <div class="col-md-8 col-sm-12">
+						<p>Known Alts:</p>
+						  <table class="table table-striped table-hover table-sm noselect">
+							<thead>
+							  <tr>
+								<td class="tw35"></td>
+								<td></td>
+								<td>Linked On:</td>
+							  </tr>
+							</thead>
+							<tbody>
+							  <tr>
+								<td><img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
+								<td><a href="#">Caitlin Viliana</a></td>
+								<td>DD-MM-YYYY</td>
+							  </tr>
+							</tbody>
+						  </table>		
+					  </div>
 				  </div>
 				</div>
-              </div>
-			  
-			  <!-- FC Management Section -->
-              <div class="col-md-6 col-sm-12">
-                <div class="statistic-block block">
-				  <div class="row">
-                    <!-- FC Options -->
-					<div class="col-md-6 col-sm-12">
-                      <ul class="list-unstyled">
-						<li><strong>Viewing:</strong> <a href="#">${FC Name}</a></li>
-						<li> ${FC Rank} </li>
-						<li> FCed for: ${x hours} </li>
-					  </ul>
-					  <div class="input-group inline">
-						<div class="form-group">
-						  <div class="input-group-btn">
-							<select class="form-control dropdown">
-							  <option value="Trainee" selected>Trainee</option>
-							  <option value="Full FC">Full FC</option>
-							  <option value="Leadership">Leadership</option>
-							</select>
-							<button class="btn btn-info" type="submit" style="width:100px; border-radius: 0px">Update</button>
-						  </div>
-						</div>
+				
+				<!-- FC Comments -->
+				<div class="statistic-block block">
+				  <p>FC Comments:</p>
+				    <form>
+					  <div class="form-group">
+					    <textarea class="form-control" style="resize:none;" placeholder="Notes about this pilot FCs may need to know about!" required></textarea>
 					  </div>
-					  
-					  <!-- Remove from FC Team -->
-					  <form>
-						<div class="form-group">
-							<button class="btn btn-danger"><i class="fa fa-warning"></i> Remove from the FC team</button>
-						</div>
-					  </form>
-                    </div>
-					
-					<!-- Known Alts -->
-					<div class="col-md-6 col-sm-12">
-					  <strong>Known ALts</strong>
-					  <table class="table table-striped table-hover table-sm">
-					    <thead>
-						  <tr>
-						    <th class="tr40"></th>
-						    <th></th>
-						  </tr>
-					    </thead>
-					    <tbody>
-						  <tr>
-						    <td><img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
-						    <td><a href="#">Caitlin Viliana</a></td>
-						  </tr>
-					    </tbody>
-					  </table>
+					  <button class="btn btn-success btn-sm position-right"><i class="fa fa-check-circle"></i> Save Comment</button>
+				    </form>
+				  <hr>
+				  <div class="row">
+					<div class="col-md-12">
+					  <p><a href="#"> ${FC Name}</a>:<br/>${contentMessage}</p>
+					  <hr/ >
 					</div>
-		          </div>		  
-		        </div>  
-              </div>
-            </div>
-          </div>
-        </section>
+				  </div>
+				</div>
+			  </div>
+			  
+			  <!-- Fits and Stats -->
+			  <div class="col-md-6 col-sm-12">
+				<!-- Active Fits -->
+				<div class="statistic-block block">
+				  <div class="row">
+					<div class="col-md-12 col-sm-12">
+					  <p>Active Fits:</p>
+						<table class="table table-striped table-hover table-sm noselect">
+						  <thead>
+							<tr>
+							  <td class="tw35"></td>
+							  <td></td>
+							  <td>Fit added on:</td>
+							  <td>Last used:</td>
+							  <td></td>
+							</tr>
+						  </thead>
+						  <tbody>
+							<tr>
+							  <td><img src="https://image.eveonline.com/Render/17738_32.png" alt="Ship Icon"></td>
+							  <td><a href="#">Machariel</a></td>
+							  <td>DD-MM-YYYY</td>
+							  <td>10 Days Ago</td>
+							  <td><a href="#">View Fit</a></td>
+							</tr>
+						  </tbody>
+						</table>		
+					</div>
+				  </div>
+			    </div>
 
-		<!-- Footer -->
+				<!-- Fits & Player Stats -->
+				<div class="statistic-block block">
+				  <div class="row">
+					<div class="col-md-12 col-sm-12">
+					  <p>Player Stats:</p>
+						<div class="bar-chart block chart">
+						  <div class="bar-chart chart">
+							<canvas id="barChartCustom1"></canvas>
+						  </div>
+						</div>					  
+						<!-- Metric Tabs -->
+						<div>
+						  <ul class="nav nav-tabs">
+							<li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-1" class="nav-link">Pilot Overview</a></li>
+							<li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-2" class="nav-link">Site Numbers</a></li>
+						  </ul>
+						  <div class="tab-content">
+							<!-- Pilot Overview -->
+							<div role="tabpanel" class="tab-pane active" id="tab-1">
+							  <table class="table table-striped table-hover table-sm noselect">
+							    <tbody>
+								  <tr>
+								    <td class="tw40per">Hours in Fleet:</td>
+								    <td>${####}</td>
+								  </tr>
+								  <tr>
+								    <td>Isk made (Est):</td>
+								    <td>${####} times.</td>
+								  </tr>
+								  <tr>
+								    <td>Number of Deaths:</td>
+								    <td>${####}</td>
+								  </tr>
+								  <tr>
+								    <td>SRP Requests</td>
+								    <td><a href="#">View All</a></td>
+								  </tr>
+								  <tr>
+								    <td>Kicked from fleet:</td>
+								    <td>${####} times.</td>
+								  </tr>
+							    </tbody>
+							  </table>			
+							</div>
+								
+							<!-- Site Metrics --> 
+							<div role="tabpanel" class="tab-pane" id="tab-2">
+							  <table class="table table-striped table-hover table-sm noselect">
+							    <tbody>
+								  <tr>
+								    <td class="tw40per">Number of HQs:</td>
+								    <td>${####}</td>
+								  </tr>
+								  <tr>
+								    <td>Number of Assaults:</td>
+								    <td>${####} times.</td>
+								  </tr>
+								  <tr>
+								    <td>Number of Vanguards:</td>
+								    <td>${####}</td>
+								  </tr>
+								  <tr>
+								    <td>Sites as Fleet Commander:</td>
+								    <td>N/A</td>
+								  </tr>
+								  <tr>
+								    <td>Sites as Backseat:</td>
+								    <td>N/A</td>
+								  </tr>
+							    </tbody>
+							  </table>
+							</div>
+						  </div>
+					    </div><!-- End Tabs -->
+					</div>
+				  </div>
+			    </div><!-- Right Col -->
+				
+              </div>
+			</div>
+        </section>
+       
         <footer class="footer">
           <div class="footer__block block no-margin-bottom">
             <div class="container-fluid text-center">
+              <!-- Please do not remove the backlink to us unless you support us at https://bootstrapious.com/donate. It is part of the license conditions. Thank you for understanding :)-->
               <p class="no-margin-bottom">2017 &copy; ${SiteName} | <a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
             </div>
           </div>
@@ -231,19 +303,18 @@
 					<div class="modal-body">
 						<p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to ${SiteName} to use EVE Online and all associated logos and designs for promotional and information purposes on its website but does not endorse, and is not in any way affiliated with, ${SiteName}. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
 						<ul class="list-unstyled text-center">
-						  <li><small>Design by <a href="#">Caitlin  Viliana</a>, theme by: <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
+						  <li><small>Design by <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
 						  <li><small>Website developed and maintained by: <a href="#">Makeshift Storque</a></small></li>
 						</ul>
 					</div>
 				</div>
 			</div>
-		  </div>
+		</div>
 		<!-- End Legal Notices Modal -->
-		</footer>
-	  </div>
-      <!-- End Page Content -->  
+		</div>
+        </footer>
+      </div>
     </div>
-    
     <!-- Javascript files-->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"> </script>
