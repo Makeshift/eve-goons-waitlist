@@ -1,3 +1,5 @@
+var template = require('./template.js');
+
 module.exports = function(app, passport, setup) {
 	// Redirect the user to the OAuth 2.0 provider for authentication.  When
 	// complete, the provider will redirect the user back to the application at
@@ -21,5 +23,11 @@ module.exports = function(app, passport, setup) {
 	});
 	app.get('/failedLoginAuth', function(req, res) {
 		res.send("You failed to authorize at the login stage. This means your session has probably expired and you need to log in again.")
+	});
+
+	//For testing
+	app.get('/html', function(req, res) {
+		//Still not entirely convinced I like this.
+		res.send(template.pageContent.fcLookup);
 	});
 }
