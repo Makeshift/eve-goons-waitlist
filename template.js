@@ -46,7 +46,7 @@ function header(headerPayload) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
     <!-- Tether -->
-    <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js"></script>
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="includes/vendor/bootstrap/css/bootstrap.min.css">
     <!-- Custom Font Icons CSS-->
