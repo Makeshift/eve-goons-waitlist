@@ -83,7 +83,7 @@ module.exports = function(app, setup) {
 		var page = {
 			template: "fcLookup",
 			sidebar: {
-				selected: 2,
+				selected: 6,
 				user: exampleUser
 			},
 			header: {

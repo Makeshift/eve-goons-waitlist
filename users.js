@@ -50,11 +50,16 @@ module.exports = function (setup) {
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		var newUserTemplate = {
 			characterID: characterDetails.CharacterID,
-			characterName: characterDetails.CharacterName,
+			name: characterDetails.CharacterName,
 			scopes: characterDetails.Scopes,
 			refreshToken: refreshToken,
-			masterAccount: masterAccount,
-			associatedMasterAccount: associatedMasterAccount
+			avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
+			role: "Member",
+			registrationDate: new Date(),
+			notes: "",
+			ships: [],
+			relatedChars: [],
+			statistics: {}
 		}
 		module.list.push(newUserTemplate);
 		cb(newUserTemplate);
