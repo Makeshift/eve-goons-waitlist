@@ -52,7 +52,7 @@ passport.deserializeUser(function(user, done) {
 //Extend some stuff
 passport.use('provider', oauthStrategy);
 refresh.use('provider', oauthStrategy);
-app.use(session({secret: "4ATmaVuEn8BA5HXMyf6yMKu3BcstonoQrbxkzVe0A6aP3FjTggvDdMhYme40"}));
+app.use(session({secret: setup.data.sessionSecret})); //This will need changing in every install, especially prod
 app.use(passport.initialize());
 app.use(passport.session());
 app.use( bodyParser.urlencoded({ extended: true }) );
