@@ -45,10 +45,10 @@ function header(headerPayload) {
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="all,follow">
+    <!-- Tether -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/tether/1.4.3/js/tether.min.js"></script>
     <!-- Bootstrap CSS-->
     <link rel="stylesheet" href="includes/vendor/bootstrap/css/bootstrap.min.css">
-    <!-- Font Awesome CSS-->
-    <link rel="stylesheet" href="includes/vendor/font-awesome/css/font-awesome.min.css">
     <!-- Custom Font Icons CSS-->
     <link rel="stylesheet" href="includes/css/font.css">
     <!-- Google fonts - Muli-->
@@ -63,6 +63,8 @@ function header(headerPayload) {
     <!-- Tweaks for older IEs--><!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
+    <!-- Font Awesome 5 -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
   </head>
   <body>
     <!-- Header Navbar -->
@@ -193,6 +195,11 @@ function footer(footerPayload) {
     <script src="includes/vendor/chart.js/Chart.min.js"></script>
     <script src="includes/js/charts-home.js"></script>
     <script src="includes/js/front.js"></script>
+    <script>
+    $(function () {
+      $('[data-toggle="tooltip"]').tooltip()
+    })
+</script>
     </body>
   </html>
 `;
