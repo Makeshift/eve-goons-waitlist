@@ -1,4 +1,5 @@
 const setup = require('./setup.js');
+const path = require('path');
 module.exports = {
     header: header,
     footer: footer,
@@ -9,7 +10,7 @@ module.exports = {
 
 function pageContent() {
   return { 
-    fcLookup: generateTemplate(require('./pageContent/fclookup.js'))
+    fcLookup: generateTemplate(require(path.normalize(__dirname + "/pageContent/fcLookup.js"))),
   }
 }
 

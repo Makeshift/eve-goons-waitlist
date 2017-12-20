@@ -2,12 +2,8 @@ module.exports = function (setup) {
 	var module = {};
 	module.list = [];
 	module.createUsersVariable = function() {
-		var s = "/";
-		if (setup.data.isWin) {
-			s = "\\";
-		}
 		try {
-			module.list = JSON.parse(fs.readFileSync(`${__dirname}${s}${setup.data.directory}${s}registeredUsers.json`));
+			module.list = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`)));
 			console.log("Existing users found: " + module.list.length);
 		} catch (e) {
 			console.log("No users found.");
@@ -44,11 +40,7 @@ module.exports = function (setup) {
 
 	module.saveUserData = function() {
 		try {
-			var s = "/";
-			if (setup.data.isWin) {
-				s = "\\";
-			}
-			fs.writeFileSync(`${__dirname}${s}${setup.data.directory}${s}registeredUsers.json`, JSON.stringify(module.list, null, 2));
+			fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), JSON.stringify(module.list, null, 2));
 		} catch (e) {
 			console.log(e)
 			console.log("Failed to save user data");

@@ -1,13 +1,12 @@
+var template = require('./template.js');
+var path = require('path');
+
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
-		var s = "/";
-		if (setup.data.isWin) {
-			s = "\\";
-		}
 		if (req.isAuthenticated()) {
 			res.redirect('/waitlist');
 		} else {
-			res.sendFile(`${__dirname}${s}public${s}index.html`)
+			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
 		}
 	});
 
@@ -22,6 +21,13 @@ module.exports = function(app, setup) {
 		} else {
 			res.redirect('/');
 		}
+	});
+
+
+	//For testing
+	app.get('/html', function(req, res) {
+		//Still not entirely convinced I like this.
+		res.send(template.pageContent.fcLookup);
 	});
 
 }
