@@ -8,11 +8,22 @@ const bodyParser = require('body-parser');
 const request = require('request');
 const url = require('url');
 const session = require('express-session');
+const fs = require('fs');
+const path = require('path');
 
 //Custom imports
+if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
+    throw "You need to create a setup.js file. Refer to the readme."
+}
 const setup = require('./setup.js');
 const users = require('./users.js')(setup);
 const customSSO = require('./customSSO.js')(refresh, setup, request, url);
+//Make the data folder
+if (!fs.existsSync(path.normalize(__dirname + "/" + setup.data.directory))) {
+    console.log("Creating data folder");
+    fs.mkdirSync(path.normalize(__dirname + "/" + setup.data.directory))
+}
+
 //Make some globals
 var userList = users.createUsersVariable();
 
