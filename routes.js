@@ -67,7 +67,17 @@ module.exports = function(app, setup) {
 			          vanguards: 5,
 			          fc: 30
 			        }
-			     }
+			     },
+			     notifications: [
+			     {
+			     	text: "Invited to Fleet",
+			      	time: "YYY-MM-DD HH:mm:ss"
+			     },
+			     {	
+			     	text: "Focus ended: 1DQ1-A",
+			      	time: "YYY-MM-DD HH:mm:ss"
+			      }
+			     ]
 			 };
 
 		var page = {
@@ -76,7 +86,9 @@ module.exports = function(app, setup) {
 				selected: 2,
 				user: exampleUser
 			},
-			header: {},
+			header: {
+				user: exampleUser
+			},
 			content: {
 			 user: exampleUser
 		  }

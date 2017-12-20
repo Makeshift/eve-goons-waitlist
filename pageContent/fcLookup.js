@@ -60,7 +60,7 @@ for (var i = 0; i < payloadContent.user.relatedChars.length; i++) {
   `;
 }
 
-var ships;
+var ships = "";
 for (var i = 0; i < payloadContent.user.ships.length; i++) {
   ships += `
   <tr>

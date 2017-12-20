@@ -22,6 +22,18 @@ function generateTemplate(payload, content) {
 }
 
 function header(headerPayload) {
+  var notifications = "";
+  for (var i = 0; i < headerPayload.user.notifications.length; i++) {
+    notifications += `<a href="#" class="dropdown-item">
+    <div class="text d-flex justify-content-between"><strong>${headerPayload.user.notifications[i].text}</strong><br>${headerPayload.user.notifications[i].time}</div></a>`
+  }
+
+  var notificationBadge = "";
+  var noOfNotifications = headerPayload.user.notifications.length
+  if (noOfNotifications > 0) {
+    notificationBadge = `<span class="badge dashbg-3">!</span>`;
+  }
+
     return `
   <!DOCTYPE html>
 <html>
@@ -69,18 +81,15 @@ function header(headerPayload) {
           <ul class="right-menu list-inline no-margin-bottom">
             <!-- User Notifications Feed -->
             <li class="list-inline-item dropdown">
-              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i><!--<span class="badge dashbg-3">!</span></a>-->
-              <!--<ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
+              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i>${notificationBadge}</a>
+              <ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
                 <li>
-                  <a href="#" class="dropdown-item">
-                    <div class="text d-flex justify-content-between"><strong>Invited to fleet</strong><br>DYNAMIC</div>
-                  </a>
+                  ${notifications}
                 </li>
                 <li>
                   <a href="#" class="dropdown-item text-center"> <strong>See All Notifications <i class="fa fa-angle-right"></i></strong></a>
                 </li>
               </ul>
-              -->
             </li>
             <!-- Logout -->
             <li class="list-inline-item logout"><a id="logout" href="#" class="nav-link">Logout <i class="icon-logout"></i></a></li>
