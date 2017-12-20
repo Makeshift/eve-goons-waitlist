@@ -27,7 +27,7 @@ module.exports = function(app, setup) {
 	//For testing
 	app.get('/html', function(req, res) {
 		//Still not entirely convinced I like this.
-		var exampleUser = {
+		/*var exampleUser = {
 			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
 			     name: "Caitlin Viliana",
 			     role: "Fleet Commander",
@@ -78,22 +78,24 @@ module.exports = function(app, setup) {
 			      	time: "YYY-MM-DD HH:mm:ss"
 			      }
 			     ]
-			 };
-
-		var page = {
-			template: "fcLookup",
-			sidebar: {
-				selected: 6,
-				user: exampleUser
-			},
-			header: {
-				user: exampleUser
-			},
-			content: {
-			 user: exampleUser
-		  }
+			 };*/
+		if (req.isAuthenticated()) {
+			var exampleUser = req.user;
+			var page = {
+				template: "fcLookup",
+				sidebar: {
+					selected: 6,
+					user: exampleUser
+				},
+				header: {
+					user: exampleUser
+				},
+				content: {
+				 user: exampleUser
+			  }
+			}
+			res.send(template.pageGenerate(page));
 		}
-		res.send(template.pageGenerate(page));
 	});
 
 }

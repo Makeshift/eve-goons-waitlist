@@ -22,8 +22,9 @@ function generateTemplate(payload, content) {
 }
 
 function header(headerPayload) {
+  console.log(headerPayload)
   var notifications = "";
-  for (var i = 0; i < headerPayload.user.notifications.length; i++) {
+  for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
     notifications += `<a href="#" class="dropdown-item">
     <div class="text d-flex justify-content-between"><strong>${headerPayload.user.notifications[i].text}</strong><br>${headerPayload.user.notifications[i].time}</div></a>`
   }

@@ -183,23 +183,23 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
                               <tbody>
                                 <tr>
                                   <td class="tw40per">Hours in Fleet:</td>
-                                  <td>${payloadContent.user.statistics.hoursInFleet}</td>
+                                  <td>${payloadContent.user.statistics.hoursInFleet || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Isk made (Est):</td>
-                                  <td>${payloadContent.user.statistics.iskMade}</td>
+                                  <td>${payloadContent.user.statistics.iskMade || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Number of Deaths:</td>
-                                  <td>${payloadContent.user.statistics.noOfDeaths}</td>
+                                  <td>${payloadContent.user.statistics.noOfDeaths || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>SRP Requests</td>
-                                  <td>${payloadContent.user.statistics.srpRequests} <a href="#">View All</a></td>
+                                  <td>${payloadContent.user.statistics.srpRequests || 0} <a href="#">View All</a></td>
                                 </tr>
                                 <tr>
                                   <td>Kicked from fleet:</td>
-                                  <td>${payloadContent.user.statistics.kickedFromFleet} times.</td>
+                                  <td>${payloadContent.user.statistics.kickedFromFleet || 0} times.</td>
                                 </tr>
                               </tbody>
                             </table>

@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function (setup) {
 	var module = {};
 	module.list = [];
@@ -27,7 +29,7 @@ module.exports = function (setup) {
 		}
 		//We found the user, return it back to the callback
 		if (foundUser) {
-			console.log(`Known user ${userProfile.characterName} has logged in.`);
+			console.log(`Known user ${userProfile.name} has logged in.`);
 			cb(userProfile);
 		} else {
 			//We didn't find the user, create them as a master account
@@ -59,7 +61,8 @@ module.exports = function (setup) {
 			notes: "",
 			ships: [],
 			relatedChars: [],
-			statistics: {}
+			statistics: { sites: {} },
+			notifications: []
 		}
 		module.list.push(newUserTemplate);
 		cb(newUserTemplate);
