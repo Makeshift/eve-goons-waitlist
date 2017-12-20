@@ -27,12 +27,7 @@ module.exports = function(app, setup) {
 	//For testing
 	app.get('/html', function(req, res) {
 		//Still not entirely convinced I like this.
-		var page = {
-			template: "fcLookup",
-			sidebar: {},
-			header: {},
-			content: {
-			 user: {
+		var exampleUser = {
 			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
 			     name: "Caitlin Viliana",
 			     role: "Fleet Commander",
@@ -73,7 +68,17 @@ module.exports = function(app, setup) {
 			          fc: 30
 			        }
 			     }
-			 }
+			 };
+
+		var page = {
+			template: "fcLookup",
+			sidebar: {
+				selected: 2,
+				user: exampleUser
+			},
+			header: {},
+			content: {
+			 user: exampleUser
 		  }
 		}
 		res.send(template.pageGenerate(page));

@@ -21,7 +21,7 @@ function generateTemplate(payload, content) {
     return header(payload.header) + sidebar(payload.sidebar) + content(payload.content) + footer();
 }
 
-function header(payload) {
+function header(headerPayload) {
     return `
   <!DOCTYPE html>
 <html>
@@ -92,34 +92,34 @@ function header(payload) {
 }
 
 //TODO: Dynamically select which page we're on for selection
-function sidebar(payload) {
+function sidebar(sidebarPayload) {
+
     return `
     <!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
       <nav id="sidebar">
         <div class="sidebar-header d-flex align-items-center">
-          <div class="avatar"><img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="..." class="img-fluid rounded-circle"></div>
+          <div class="avatar"><img src="${sidebarPayload.user.avatar}" alt="..." class="img-fluid rounded-circle"></div>
           <div class="title">
-            <h1 class="h5">Caitlin Viliana</h1>
-            <p>Fleet Commander</p>
+            <h1 class="h5">${sidebarPayload.user.name}</h1>
+            <p>${sidebarPayload.user.role}</p>
           </div>
         </div>
         <span class="heading">Pilot</span>
         <ul class="list-unstyled">
-          <li class="active"><a href="#"><i class="fa fa-list"></i>Waitlist</a></li>
-          <li>
-            <a href="#myaccount" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-user"></i>My Account</a>
-            <ul id="myaccount" class="collapse list-unstyled">
+          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="#"><i class="fa fa-list"></i>Waitlist</a></li>
+          <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
+            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i>My Account</a>
+            <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
               <li><a href="#">My Alts</a></li>
               <li><a href="#">My Fits</a></li>
               <li><a href="#">My Stats</a></li>
               <li><a href="#">My SRP</a></li>
             </ul>
           </li>
-          <li>
-            <a href="#squadtools" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>Squad Stuff</a>
-            <ul id="squadtools" class="collapse list-unstyled">
-            ${ "testing" }
+          <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="icon-windows"></i>Squad Stuff</a>
+            <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
               <li><a href="#">Squad Fittings</a></li>
               <li><a href="#">Squad Roles</a></li>
               <li><a href="#">Squad Stats</a></li>
@@ -130,11 +130,11 @@ function sidebar(payload) {
         </ul>
         <span class="heading">Fleet Commander</span>
         <ul class="list-unstyled">
-          <li> <a href="#"> <i class="fa fa-gears"></i>Fleet Management</a></li>
-          <li> <a href="#"> <i class="fa fa-users"></i>Pilot Lookup</a></li>
-          <li>
-            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse"> <i class="fa fa-wrench"></i>Squad L</a>
-            <ul id="squadmanagement" class="collapse list-unstyled">
+          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-gears"></i>Fleet Management</a></li>
+          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-users"></i>Pilot Lookup</a></li>
+          <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
+            <a href="#squadmanagement" aria-expanded="${sidebarPayload.selected === 7 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="fa fa-wrench"></i>Squad L</a>
+            <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
               <li><a href="#">Ban List</a></li>
               <li><a href="#">FC Management</a></li>
               <li><a href="#">White List</a></li>
@@ -145,7 +145,7 @@ function sidebar(payload) {
 `;
 }
 
-function footer(payload) {
+function footer(footerPayload) {
     return `
         <!-- Footer-->
         <footer class="footer">

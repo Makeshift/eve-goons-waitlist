@@ -19,7 +19,6 @@ exports.oauth = {
 
 exports.data = {
 	directory: "data", //Where data will be stored
-	isWin: /^win/.test(process.platform), //Checks if we're running on Windows or Linux for directory structures
 	sessionSecret: "RandomStringHere"
 }
 
