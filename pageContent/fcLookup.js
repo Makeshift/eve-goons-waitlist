@@ -214,11 +214,11 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
                                 </tr>
                                 <tr>
                                   <td>Number of Assaults:</td>
-                                  <td>${payloadContent.user.statistics.sites.assaults || 0} times.</td>
+                                  <td>${payloadContent.user.statistics.sites.assaults || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Number of Vanguards:</td>
-                                  <td>${payloadContent.user.statistics.sites.vangaurds || 0}</td>
+                                  <td>${payloadContent.user.statistics.sites.vanguards || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Sites as Fleet Commander:</td>
