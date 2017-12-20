@@ -5,25 +5,23 @@ module.exports = {
     footer: footer,
     sidebar: sidebar,
     generateTemplate: generateTemplate,
-    pageContent: pageContent()
+    pageGenerate: pageGenerate
 }
 
-function pageContent() {
-  return { 
-    fcLookup: generateTemplate(require(path.normalize(__dirname + "/pageContent/fcLookup.js"))),
+function pageGenerate(payload) {
+  switch(payload.template) {
+    case "fcLookup":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/fcLookup.js")))
+    break;
   }
 }
 
 //TODO: Undecided if I like this system.
-function generateTemplate(content) {
-  if (typeof content === 'function') {
-    return header() + sidebar() + content() + footer();
-  } else {
-    return header() + sidebar() + content + footer();
-  }
+function generateTemplate(payload, content) {
+    return header(payload.header) + sidebar(payload.sidebar) + content(payload.content) + footer();
 }
 
-function header() {
+function header(payload) {
     return `
   <!DOCTYPE html>
 <html>
@@ -71,8 +69,8 @@ function header() {
           <ul class="right-menu list-inline no-margin-bottom">
             <!-- User Notifications Feed -->
             <li class="list-inline-item dropdown">
-              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i><span class="badge dashbg-3">!</span></a>
-              <ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
+              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i><!--<span class="badge dashbg-3">!</span></a>-->
+              <!--<ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
                 <li>
                   <a href="#" class="dropdown-item">
                     <div class="text d-flex justify-content-between"><strong>Invited to fleet</strong><br>DYNAMIC</div>
@@ -82,6 +80,7 @@ function header() {
                   <a href="#" class="dropdown-item text-center"> <strong>See All Notifications <i class="fa fa-angle-right"></i></strong></a>
                 </li>
               </ul>
+              -->
             </li>
             <!-- Logout -->
             <li class="list-inline-item logout"><a id="logout" href="#" class="nav-link">Logout <i class="icon-logout"></i></a></li>
@@ -93,7 +92,7 @@ function header() {
 }
 
 //TODO: Dynamically select which page we're on for selection
-function sidebar() {
+function sidebar(payload) {
     return `
     <!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
@@ -120,6 +119,7 @@ function sidebar() {
           <li>
             <a href="#squadtools" aria-expanded="false" data-toggle="collapse"> <i class="icon-windows"></i>Squad Stuff</a>
             <ul id="squadtools" class="collapse list-unstyled">
+            ${ "testing" }
               <li><a href="#">Squad Fittings</a></li>
               <li><a href="#">Squad Roles</a></li>
               <li><a href="#">Squad Stats</a></li>
@@ -144,15 +144,14 @@ function sidebar() {
       </nav>
 `;
 }
-//TODO: Generate sitename?
-function footer() {
 
+function footer(payload) {
     return `
         <!-- Footer-->
         <footer class="footer">
             <div class="footer__block block no-margin-bottom">
               <div class="container-fluid text-center">
-                <p class="no-margin-bottom">2017 &copy; DYNAMIC | <a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
+                <p class="no-margin-bottom"><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
               </div>
             </div>
             <!-- Legal Notices  Modal -->

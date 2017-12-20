@@ -27,7 +27,56 @@ module.exports = function(app, setup) {
 	//For testing
 	app.get('/html', function(req, res) {
 		//Still not entirely convinced I like this.
-		res.send(template.pageContent.fcLookup);
+		var page = {
+			template: "fcLookup",
+			sidebar: {},
+			header: {},
+			content: {
+			 user: {
+			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+			     name: "Caitlin Viliana",
+			     role: "Fleet Commander",
+			     relatedChars: [{
+			       avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+			       name: "Makeshift Storque",
+			       registrationDate: "YYYY-MM-DD"
+			     },{
+			       avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+			       name: "Experianta",
+			       registrationDate: "YYYY-MM-DD"
+			     }],
+			     registrationDate: "YYYY-MM-DD",
+			     notes: "Is a bit of a wanker",
+			     ships: [{
+			        image: "https://image.eveonline.com/Render/17738_32.png",
+			        name: "Machariel",
+			        addedOn: "YYYY-MM-DD",
+			        lastUsed: "5 days ago",
+			        fit: "[]"
+			     }, {
+			        image: "https://image.eveonline.com/Render/17738_32.png",
+			        name: "Machariel",
+			        addedOn: "YYYY-MM-DD",
+			        lastUsed: "10 days ago",
+			        fit: "[]"
+			     }],
+			     statistics: {
+			        hoursInFleet: 10,
+			        iskMade: "One beelion dollars",
+			        noOfDeaths: 2,
+			        srpRequests: 2,
+			        kickedFromFleet: 5,
+			        sites: {
+			          headquarters: 100,
+			          assaults: 50,
+			          vanguards: 5,
+			          fc: 30
+			        }
+			     }
+			 }
+		  }
+		}
+		res.send(template.pageGenerate(page));
 	});
 
 }

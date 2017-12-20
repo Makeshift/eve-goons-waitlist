@@ -1,4 +1,78 @@
-module.exports = function(vars) {
+module.exports = function(payloadContent) {
+  console.log(payloadContent);
+
+/*
+Content payload template:
+payload.content = {
+  user: {
+     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+     name: "Caitlin Viliana",
+     role: "Fleet Commander",
+     relatedChars: [{
+       avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+       name: "Makeshift Storque",
+       registrationDate: "YYYY-MM-DD"
+     },{
+       avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
+       name: "Experianta",
+       registrationDate: "YYYY-MM-DD"
+     }],
+     registrationDate: "YYYY-MM-DD",
+     notes: "Is a bit of a wanker",
+     ships: [{
+        image: "https://image.eveonline.com/Render/17738_32.png",
+        name: "Machariel",
+        addedOn: "YYYY-MM-DD",
+        lastUsed: "5 days ago",
+        fit: "[]"
+     }, {
+        image: "https://image.eveonline.com/Render/17738_32.png",
+        name: "Machariel",
+        addedOn: "YYYY-MM-DD",
+        lastUsed: "10 days ago",
+        fit: "[]"
+     }],
+     statistics: {
+        hoursInFleet: 10,
+        iskMade: "One beelion dollars",
+        noOfDeaths: 2,
+        srpRequests: 2,
+        kickedFromFleet: 5,
+        sites: {
+          headquarters: 100,
+          assaults: 50,
+          vanguards: 5,
+          fc: 30
+        }
+     }
+  }
+  
+}
+*/
+var altChars = "";
+for (var i = 0; i < payloadContent.user.relatedChars.length; i++) {
+  altChars += `
+  <tr>
+    <td><img src="${payloadContent.user.relatedChars[i].avatar}" alt="${payloadContent.user.relatedChars[i].name}'s Avatar" height=30%></td>
+    <td><a href="#">${payloadContent.user.relatedChars[i].name}</a></td>
+    <td>${payloadContent.user.relatedChars[i].registrationDate}</td>
+  </tr>
+  `;
+}
+
+var ships;
+for (var i = 0; i < payloadContent.user.ships.length; i++) {
+  ships += `
+  <tr>
+    <td><img src="${payloadContent.user.ships[i].image}" alt="${payloadContent.user.ships[i].name} Icon"></td>
+    <td><a href="#">${payloadContent.user.ships[i].name}</a></td>
+    <td>${payloadContent.user.ships[i].addedOn}</td>
+    <td>${payloadContent.user.ships[i].lastUsed}</td>
+    <td><a href="#">View Fit</a></td>
+  </tr>
+  `
+}
+
 	return `
           <!-- Page Content -->
       <div class="page-content">
@@ -18,14 +92,14 @@ module.exports = function(vars) {
                 <div class="statistic-block block">
                   <div class="row">
                     <div class="col-md-4 col-sm-12 text-center">
-                      <img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="DYNAMICs avatar">
+                      <img src="${payloadContent.user.avatar}" alt="${payloadContent.user.name}'s avatar">
                       <ul class="list-unstyled">
-                        <li><a href="#">DYNAMIC</a></li>
+                        <li><a href="#">${payloadContent.user.name}</a></li>
                         <li>
-                          <p>DYNAMIC</p>
+                          <p>${payloadContent.user.role}</p>
                         </li>
                       </ul>
-                      <button class="btn btn-danger"><i class="fa fa-warning"></i> Reset Name</button>
+                      <!--<button class="btn btn-danger"><i class="fa fa-warning"></i> Reset Name</button>-->
                     </div>
                     <div class="col-md-8 col-sm-12">
                       <p>Known Alts:</p>
@@ -38,11 +112,7 @@ module.exports = function(vars) {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td><img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
-                            <td><a href="#">Caitlin Viliana</a></td>
-                            <td>DD-MM-YYYY</td>
-                          </tr>
+                          ${altChars}
                         </tbody>
                       </table>
                     </div>
@@ -53,17 +123,17 @@ module.exports = function(vars) {
                   <p>FC Comments:</p>
                   <form>
                     <div class="form-group">
-                      <textarea class="form-control" style="resize:none;" placeholder="Notes about this pilot FCs may need to know about!" required></textarea>
+                      <textarea class="form-control" style="resize:none;" placeholder="Notes about this pilot FCs may need to know about!">${payloadContent.user.notes}</textarea>
                     </div>
                     <button class="btn btn-success btn-sm position-right"><i class="fa fa-check-circle"></i> Save Comment</button>
                   </form>
-                  <hr>
+                  <!--<hr>
                   <div class="row">
                     <div class="col-md-12">
                       <p><a href="#"> DYNAMIC</p>
                       <hr/ >
                     </div>
-                  </div>
+                  </div>-->
                 </div>
               </div>
               <!-- Fits and Stats -->
@@ -84,13 +154,7 @@ module.exports = function(vars) {
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>
-                            <td><img src="https://image.eveonline.com/Render/17738_32.png" alt="Ship Icon"></td>
-                            <td><a href="#">Machariel</a></td>
-                            <td>DD-MM-YYYY</td>
-                            <td>10 Days Ago</td>
-                            <td><a href="#">View Fit</a></td>
-                          </tr>
+                          ${ships}
                         </tbody>
                       </table>
                     </div>
@@ -101,11 +165,11 @@ module.exports = function(vars) {
                   <div class="row">
                     <div class="col-md-12 col-sm-12">
                       <p>Player Stats:</p>
-                      <div class="bar-chart block chart">
+                      <!--<div class="bar-chart block chart">
                         <div class="bar-chart chart">
                           <canvas id="barChartCustom1"></canvas>
                         </div>
-                      </div>
+                      </div>-->
                       <!-- Metric Tabs -->
                       <div>
                         <ul class="nav nav-tabs">
@@ -119,23 +183,23 @@ module.exports = function(vars) {
                               <tbody>
                                 <tr>
                                   <td class="tw40per">Hours in Fleet:</td>
-                                  <td>DYNAMIC</td>
+                                  <td>${payloadContent.user.statistics.hoursInFleet}</td>
                                 </tr>
                                 <tr>
                                   <td>Isk made (Est):</td>
-                                  <td>DYNAMIC times.</td>
+                                  <td>${payloadContent.user.statistics.iskMade}</td>
                                 </tr>
                                 <tr>
                                   <td>Number of Deaths:</td>
-                                  <td>DYNAMIC</td>
+                                  <td>${payloadContent.user.statistics.noOfDeaths}</td>
                                 </tr>
                                 <tr>
                                   <td>SRP Requests</td>
-                                  <td><a href="#">View All</a></td>
+                                  <td>${payloadContent.user.statistics.srpRequests} <a href="#">View All</a></td>
                                 </tr>
                                 <tr>
                                   <td>Kicked from fleet:</td>
-                                  <td>DYNAMIC times.</td>
+                                  <td>${payloadContent.user.statistics.kickedFromFleet} times.</td>
                                 </tr>
                               </tbody>
                             </table>
@@ -146,23 +210,23 @@ module.exports = function(vars) {
                               <tbody>
                                 <tr>
                                   <td class="tw40per">Number of HQs:</td>
-                                  <td>DYNAMIC</td>
+                                  <td>${payloadContent.user.statistics.sites.headquarters || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Number of Assaults:</td>
-                                  <td>DYNAMIC times.</td>
+                                  <td>${payloadContent.user.statistics.sites.assaults || 0} times.</td>
                                 </tr>
                                 <tr>
                                   <td>Number of Vanguards:</td>
-                                  <td>DYNAMIC</td>
+                                  <td>${payloadContent.user.statistics.sites.vangaurds || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Sites as Fleet Commander:</td>
-                                  <td>N/A</td>
+                                  <td>${payloadContent.user.statistics.sites.fc || 0}</td>
                                 </tr>
                                 <tr>
                                   <td>Sites as Backseat:</td>
-                                  <td>N/A</td>
+                                  <td>${payloadContent.user.statistics.sites.backseat || 0}</td>
                                 </tr>
                               </tbody>
                             </table>
