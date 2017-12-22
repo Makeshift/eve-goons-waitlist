@@ -10,7 +10,6 @@ const url = require('url');
 const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
-const fileStore = require('session-file-store')(session);
 
 //Custom imports
 if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
@@ -64,14 +63,7 @@ passport.deserializeUser(function(user, done) {
 //Extend some stuff
 passport.use('provider', oauthStrategy);
 refresh.use('provider', oauthStrategy);
-app.use(session({
-    store: new fileStore({
-        path: path.normalize(__dirname + "/sessions/"),
-        saveUninitialized: false,
-        retries: 1 //This errors a whole bunch on Windows so we're limiting this to 1 for now before testing on Linux. Still works though.
-    }),
-    secret: setup.data.sessionSecret
-}))
+app.use(session({secret: setup.data.sessionSecret})); //This will need changing in every install, especially prod
 app.use(passport.initialize());
 app.use(passport.session());
 app.use( bodyParser.urlencoded({ extended: true }) );

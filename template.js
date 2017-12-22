@@ -9,7 +9,17 @@ module.exports = {
 }
 
 function pageGenerate(payload) {
-  return generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)));
+  switch(payload.template) {
+    case "fcLookup":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/fcLookup.js")))
+    break;
+    case "publicProfile":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicProfile.js")))
+    break;
+    case "publicWaitlist":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicWaitlist.js")))
+    break;
+  }
 }
 
 //TODO: Undecided if I like this system.
@@ -60,7 +70,7 @@ function header(headerPayload) {
     <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script><![endif]-->
     <!-- Font Awesome 5 -->
-    <script defer src="https://use.fontawesome.com/releases/v5.0.2/js/all.js"></script>
+    <script defer src="includes/vendor/fontawesome-pro-5.0.2/js/fontawesome-all.js"></script>
   </head>
   <body>
     <!-- Header Navbar -->
@@ -73,7 +83,7 @@ function header(headerPayload) {
               <div class="brand-text brand-big visible text-uppercase"><strong class="text-primary">Goon</strong><strong>Incursions</strong></div>
               <div class="brand-text brand-sm"><strong class="text-primary">G</strong><strong>I</strong></div>
             </a>
-            <button class="sidebar-toggle"><i class="fa fa-long-arrow-left"></i></button>
+            <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
           </div>
           <!-- End Nav Brand -->
           <!-- Right Nav Bar -->
@@ -115,37 +125,43 @@ function sidebar(sidebarPayload) {
         </div>
         <span class="heading">Pilot</span>
         <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="/"><i class="fa fa-list"></i>Waitlist</a></li>
+          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="#"><i class="far fa-hourglass-half"></i> Waitlist</a></li>
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
-            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"><strike></i>My Account</a></strike>
+            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"><i class="fa fa-user"></i> My Account</a>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
-              <strike><li><a href="#">My Alts</a></strike></li>
-              <strike><li><a href="#">My Fits</a></strike></li>
-              <strike><li><a href="#">My Stats</a></strike></li>
-              <strike><li><a href="#">My SRP</a></strike></li>
+              <li><a href="#">My Alts & Fits</a></li>
+              <li><a href="#">My Stats</a></li>
+              <li><a href="#">My SRP</a></li>
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="icon-windows"></i><strike>Squad Stuff</strike></a>
+            <a href="#squadtools" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-star"></i> Squad Stuff</a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
-              <strike><li><a href="#">Squad Fittings</a></strike></li>
-              <strike><li><a href="#">Squad Roles</a></strike></li>
-              <strike><li><a href="#">Squad Stats</a></strike></li>
-              <strike><li><a href="#">NewBro Guide</a></strike></li>
+              <li><a href="#">Squad Fittings</a></li>
+              <li><a href="#">Squad Roles</a></li>
+              <li><a href="#">Squad Stats</a></li>
+              <li><a href="#">NewBro Guide</a></li>
             </ul>
           </li>
-          <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-chain"></i>Incursion Forums</a></li>
+          <li> <a href="#"><i class="fas fa-link"></i> Incursion Forums</a></li>
         </ul>
         <span class="heading">Fleet Commander</span>
         <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander"> <i class="fa fa-gears"></i>Fleet Management</a></li>
-          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-users"><strike></i>Pilot Lookup</a></strike></li>
+          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="#"><i class="far fa-cogs"></i> Fleet Management</a></li>
+          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> 
+              <a href="#">
+                <span class="fa-layers fa-fw">
+                  <i class="fas fa-user"></i>
+                  <i class="fas fa-search" data-fa-transform="shrink-3 down-5 right-4" style="color:#C82333"></i>
+                </span>
+              Pilot Lookup</a>
+          </li>
           <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-            <a href="#squadmanagement" aria-expanded="${sidebarPayload.selected === 7 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="fa fa-wrench"><strike></i>Squad L</a></strike>
+            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed'><i class="fas fa-key"></i> Squad L</a>
             <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
-              <strike><li><a href="#">Ban List</a></strike></li>
-              <strike><li><a href="#">FC Management</a></strike></li>
-              <strike><li><a href="#">White List</a></strike></li>
+              <li><a href="#">Ban List</a></li>
+              <li><a href="#">FC Management</a></li>
+              <li><a href="#">White List</a></li>
             </ul>
           </li>
         </ul>

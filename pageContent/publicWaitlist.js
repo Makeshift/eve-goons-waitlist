@@ -33,7 +33,7 @@ module.exports = function(payloadContent) {
                       <label for="character">Select Pilot:</label>
                       <select class="form-control" id="character" required>
                         <!--<option value="">Choose</option>-->
-                        <option value="${payloadContent.user.CharacterID}" selected>${payloadContent.user.name}</option>
+                        <option value="1" selected>${payloadContent.user.name}</option>
                         <!--<option value="2">Samuel the Terrible</option>
                         <option value="3">Samuel the Merciless</option>-->
                       </select>
@@ -72,10 +72,10 @@ module.exports = function(payloadContent) {
                         </div>
                       </li>
                       <li>
-                        <label for="coms">Are you on comms?</label>
+                        <label for="coms">Are you on coms?</label>
                         <div class="form-check">
                           <label class="form-check-label">
-                          <input class="form-check-input" type="radio" id="comms" name="oncomms" required/> Yes
+                          <input class="form-check-input" type="radio" id="coms" name="oncoms" required/> Yes
                           </label>
                           <label class="form-check-label">
                           <input class="form-check-input" type="radio" name="oncoms"/> No
@@ -102,11 +102,11 @@ module.exports = function(payloadContent) {
                     <!-- Action Buttons -->
                     <button class="btn btn-success btn-block"><i class="fa fa-check"></i> Join the Waitlist</button>
                     <div class="row">
-                      <!--<div class="col-xl-12 col-lg-12 col-sm-12">
-                        <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
-                      </div>-->
                       <div class="col-xl-12 col-lg-12 col-sm-12">
-                        <button class="btn btn-danger btn-block"><i class="fa fa-warning"></i> Leave the Waitlist</button>
+                        <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
+                      </div>
+                      <div class="col-xl-12 col-lg-12 col-sm-12">
+                        <button class="btn btn-danger btn-block"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>
                       </div>
                     </div>
                   </form>
@@ -129,7 +129,7 @@ module.exports = function(payloadContent) {
                       </tr>
                       <tr>
                         <td>Wait Time:</td>
-                        <td>00H 11M</td>
+                        <td>00M 11H</td>
                       </tr>
                     </tbody>
                   </table>
