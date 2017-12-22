@@ -1,10 +1,34 @@
 var template = require('./template.js');
 var path = require('path');
+var setup = require('./setup.js');
+var fleets = require('./fleets.js')(setup);
+var users = require('./users.js')(setup);
 
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
 		if (req.isAuthenticated()) {
-			res.redirect('/waitlist');
+			//Since the user is at the index, let's force an update of their session, just in case
+			users.findAndReturnUser(req.user.characterID, function(userProfile) {
+				req.session.passport.user = userProfile;
+				req.session.save(function(err) {
+					
+					if (err) console.log(err);
+					var page = {
+						template: "publicWaitlist",
+						sidebar: {
+							selected: 1,
+							user: req.user
+						},
+						header: {
+							user: req.user
+						},
+						content: {
+						 user: req.user
+					  }
+					}
+					res.send(template.pageGenerate(page));
+				})
+			})
 		} else {
 			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
 		}
@@ -22,6 +46,31 @@ module.exports = function(app, setup) {
 			res.redirect('/');
 		}
 	});*/
+
+app.get('/commander/', function (req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+			fleets.getFCPageList(function(fleets) {
+				var page = {
+					template: "fcFleetList",
+					sidebar: {
+						selected: 5,
+						user: req.user
+					},
+					header: {
+						user: req.user
+					},
+					content: {
+					 user: req.user,
+					 fleets: fleets
+				  }
+				}
+				res.send(template.pageGenerate(page));
+			})
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+		}
+	});
+}
 
 
 	//For testing
