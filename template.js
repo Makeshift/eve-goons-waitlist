@@ -13,6 +13,12 @@ function pageGenerate(payload) {
     case "fcLookup":
       return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/fcLookup.js")))
     break;
+    case "publicProfile":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicProfile.js")))
+    break;
+    case "publicWaitlist":
+      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicWaitlist.js")))
+    break;
   }
 }
 

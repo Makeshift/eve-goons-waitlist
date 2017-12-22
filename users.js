@@ -18,26 +18,29 @@ module.exports = function (setup) {
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function(users, refreshToken, characterDetails, cb) {
 		//Check if the user exists
-		var foundUser = false;
-		var userProfile;
-		for (var i = 0; i < module.list.length; i++) {
-			if (module.list[i].characterID === characterDetails.CharacterID) {
-				foundUser = true;
-				userProfile = module.list[i];
-				break;
-			}
-		}
+		var userProfile = module.findAndReturnUser(characterDetails.CharacterID);
 		//We found the user, return it back to the callback
-		if (foundUser) {
+		if (userProfile) {
 			console.log(`Known user ${userProfile.name} has logged in.`);
 			cb(userProfile);
 		} else {
 			//We didn't find the user, create them as a master account
 			console.log(`Creating a new user for ${characterDetails.CharacterName}.`);
-			generateNewUser(refreshToken, characterDetails, false, null, function(userProfile) {
+			generateNewUser(refreshToken, characterDetails, null, null, function(userProfile) {
 				cb(userProfile);
 			});
 		}
+	};
+
+	module.findAndReturnUser = function(checkID) {
+		var userProfile = false;
+		for (var i = 0; i < module.list.length; i++) {
+			if (module.list[i].characterID === checkID) {
+				userProfile = module.list[i];
+				break;
+			}
+		}
+		return userProfile;
 	};
 
 	module.saveUserData = function() {

@@ -15,17 +15,17 @@ module.exports = function(app, setup) {
 		res.redirect('/');
 	});
 
-	app.get('/waitlist', function (req, res) {
+	/*app.get('/waitlist', function (req, res) {
 		if (req.isAuthenticated()) {
 			res.send(JSON.stringify(req.user, null, 4) + "<br><br><a href='/logout'>Log out</a>");
 		} else {
 			res.redirect('/');
 		}
-	});
+	});*/
 
 
 	//For testing
-	app.get('/html', function(req, res) {
+	app.get('/waitlist', function(req, res) {
 		//Still not entirely convinced I like this.
 		/*var exampleUser = {
 			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
@@ -80,9 +80,10 @@ module.exports = function(app, setup) {
 			     ]
 			 };*/
 		if (req.isAuthenticated()) {
+			console.log(require("./users.js").list)
 			var exampleUser = req.user;
 			var page = {
-				template: "fcLookup",
+				template: "publicWaitlist",
 				sidebar: {
 					selected: 6,
 					user: exampleUser
@@ -95,6 +96,8 @@ module.exports = function(app, setup) {
 			  }
 			}
 			res.send(template.pageGenerate(page));
+		} else {
+			res.redirect('/');
 		}
 	});
 
