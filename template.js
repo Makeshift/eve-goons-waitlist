@@ -126,7 +126,7 @@ function sidebar(sidebarPayload) {
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="icon-windows"></i>Squad Stuff</a>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="icon-windows"></i><strike>Squad Stuff</strike></a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
               <strike><li><a href="#">Squad Fittings</a></strike></li>
               <strike><li><a href="#">Squad Roles</a></strike></li>
@@ -134,18 +134,18 @@ function sidebar(sidebarPayload) {
               <strike><li><a href="#">NewBro Guide</a></strike></li>
             </ul>
           </li>
-          <li> <a href="#"> <i class="fa fa-chain"></i>Incursion Forums</a></li>
+          <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-chain"></i>Incursion Forums</a></li>
         </ul>
         <span class="heading">Fleet Commander</span>
         <ul class="list-unstyled">
           <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander"> <i class="fa fa-gears"></i>Fleet Management</a></li>
           <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-users"><strike></i>Pilot Lookup</a></strike></li>
           <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-            <a href="#squadmanagement" aria-expanded="${sidebarPayload.selected === 7 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="fa fa-wrench"></i>Squad L</a>
+            <a href="#squadmanagement" aria-expanded="${sidebarPayload.selected === 7 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="fa fa-wrench"><strike></i>Squad L</a></strike>
             <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
-              <li><a href="#">Ban List</a></li>
-              <li><a href="#">FC Management</a></li>
-              <li><a href="#">White List</a></li>
+              <strike><li><a href="#">Ban List</a></strike></li>
+              <strike><li><a href="#">FC Management</a></strike></li>
+              <strike><li><a href="#">White List</a></strike></li>
             </ul>
           </li>
         </ul>
