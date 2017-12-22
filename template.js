@@ -9,17 +9,7 @@ module.exports = {
 }
 
 function pageGenerate(payload) {
-  switch(payload.template) {
-    case "fcLookup":
-      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/fcLookup.js")))
-    break;
-    case "publicProfile":
-      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicProfile.js")))
-    break;
-    case "publicWaitlist":
-      return generateTemplate(payload, require(path.normalize(__dirname + "/pageContent/publicWaitlist.js")))
-    break;
-  }
+  return generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)));
 }
 
 //TODO: Undecided if I like this system.
@@ -125,31 +115,31 @@ function sidebar(sidebarPayload) {
         </div>
         <span class="heading">Pilot</span>
         <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="#"><i class="fa fa-list"></i>Waitlist</a></li>
+          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="/"><i class="fa fa-list"></i>Waitlist</a></li>
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
-            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i>My Account</a>
+            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"><strike></i>My Account</a></strike>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
-              <li><a href="#">My Alts</a></li>
-              <li><a href="#">My Fits</a></li>
-              <li><a href="#">My Stats</a></li>
-              <li><a href="#">My SRP</a></li>
+              <strike><li><a href="#">My Alts</a></strike></li>
+              <strike><li><a href="#">My Fits</a></strike></li>
+              <strike><li><a href="#">My Stats</a></strike></li>
+              <strike><li><a href="#">My SRP</a></strike></li>
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
             <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="icon-windows"></i>Squad Stuff</a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
-              <li><a href="#">Squad Fittings</a></li>
-              <li><a href="#">Squad Roles</a></li>
-              <li><a href="#">Squad Stats</a></li>
-              <li><a href="#">NewBro Guide</a></li>
+              <strike><li><a href="#">Squad Fittings</a></strike></li>
+              <strike><li><a href="#">Squad Roles</a></strike></li>
+              <strike><li><a href="#">Squad Stats</a></strike></li>
+              <strike><li><a href="#">NewBro Guide</a></strike></li>
             </ul>
           </li>
           <li> <a href="#"> <i class="fa fa-chain"></i>Incursion Forums</a></li>
         </ul>
         <span class="heading">Fleet Commander</span>
         <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-gears"></i>Fleet Management</a></li>
-          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-users"></i>Pilot Lookup</a></li>
+          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander"> <i class="fa fa-gears"></i>Fleet Management</a></li>
+          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"> <i class="fa fa-users"><strike></i>Pilot Lookup</a></strike></li>
           <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
             <a href="#squadmanagement" aria-expanded="${sidebarPayload.selected === 7 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}> <i class="fa fa-wrench"></i>Squad L</a>
             <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">

@@ -1,10 +1,24 @@
 var template = require('./template.js');
 var path = require('path');
+var fleets = require('./fleets.js');
 
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
 		if (req.isAuthenticated()) {
-			res.redirect('/waitlist');
+			var page = {
+				template: "publicWaitlist",
+				sidebar: {
+					selected: 1,
+					user: req.user
+				},
+				header: {
+					user: req.user
+				},
+				content: {
+				 user: req.user
+			  }
+			}
+			res.send(template.pageGenerate(page));
 		} else {
 			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
 		}
@@ -23,10 +37,31 @@ module.exports = function(app, setup) {
 		}
 	});*/
 
+app.get('/commander/', function (req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+			var page = {
+				template: "fcFleetList",
+				sidebar: {
+					selected: 5,
+					user: req.user
+				},
+				header: {
+					user: req.user
+				},
+				content: {
+				 user: req.user,
+				 fleets: fleets.getFCPageList()
+			  }
+			}
+			res.send(template.pageGenerate(page));
+		} else {
+			res.redirect('/');
+		}
+	});
+}
 
-	//For testing
-	app.get('/waitlist', function(req, res) {
-		//Still not entirely convinced I like this.
+
+
 		/*var exampleUser = {
 			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
 			     name: "Caitlin Viliana",
@@ -79,26 +114,3 @@ module.exports = function(app, setup) {
 			      }
 			     ]
 			 };*/
-		if (req.isAuthenticated()) {
-			console.log(require("./users.js").list)
-			var exampleUser = req.user;
-			var page = {
-				template: "publicWaitlist",
-				sidebar: {
-					selected: 6,
-					user: exampleUser
-				},
-				header: {
-					user: exampleUser
-				},
-				content: {
-				 user: exampleUser
-			  }
-			}
-			res.send(template.pageGenerate(page));
-		} else {
-			res.redirect('/');
-		}
-	});
-
-}

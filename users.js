@@ -60,6 +60,7 @@ module.exports = function (setup) {
 			refreshToken: refreshToken,
 			avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
 			role: "Member",
+			roleNumeric: 0,
 			registrationDate: new Date(),
 			notes: "",
 			ships: [],

@@ -1,0 +1,97 @@
+module.exports = function(payloadContent) {
+  console.log(payloadContent);
+/*
+Fleet object format:
+
+{
+	fc: user object,
+	backseat: user object,
+	type: "hq",
+	status: "text",
+	location: {
+		id: id,
+		name: "Jita"
+	},
+	members: [user objects],
+	size: members.length,
+	url: "hhttps://esi.tech.ccp.is..."
+}
+
+*/
+var fleets = "";
+  for (var i = 0; i < payloadContent.fleets.length; i++) {
+  	fleets += `
+
+    <tr>
+      <td><img src="${payloadContent.fleets[i].fc.avatar}" alt="FCs Avatar"></td>
+      <td><a href="#">${payloadContent.fleets[i].fc.name}</a></td>
+      <td><a href="#">${payloadContent.fleets[i].backseat.name}</a>
+      <td>${payloadContent.fleets[i].type}</td>
+      <td>${payloadContent.fleets[i].status}</td>
+      <td>${payloadContent.fleets[i].fc.location}</td>
+      <td>${payloadContent.fleets[i].members.length}</td>
+      <td><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></td>
+    </tr>
+
+  	`
+  }
+
+  return `
+      <!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header">
+          <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Fleet Management</h2>
+          </div>
+        </div>
+        <section class="no-padding-top no-padding-bottom">
+          <div class="container-fluid">
+            <div class="row">
+              <!-- Create Fleet -->
+              <div class="col-md-12 col-sm-12">
+                <div class="statistic-block block">
+                  <div class="vertical-input-group">
+                    <div class="input-group">
+                      <!--<span class="input-group-addon" data-toggle="tooltip" title="The pilot must log in at least once before you can add them to the team."><i class="fas fa-info-circle"></i></span>-->
+                      <span class="input-group-addon">Fleet Boss: ${payloadContent.user.name}</span>
+                      <input type="text" class="form-control" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus/>
+                      <select class="form-control dropdown">
+                        <option value="Vanguards">Vanguards</option>
+                        <option value="Assaults">Assaults</option>
+                        <option value="Headquarters" selected>Headquarters</option>
+                      </select>
+                      <button class="btn btn-success" type="submit"><i class="fas fa-user-plus"></i> Register</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Fleet List -->
+              <div class="col-md-12 col-sm-12">
+                <div class="statistic-block block">
+                  <div class="progress-details d-flex align-items-end justify-content-between">
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th class="tr35"></th>
+                          <th>Active FC</th>
+                          <th>Backseat</th>
+                          <th>Type</th>
+                          <th>Status</th>
+                          <th>Fleet Location</th>
+                          <th>Size</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      ${fleets}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+  `
+
+}
