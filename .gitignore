@@ -1,5 +1,6 @@
 setup.js
 data/
+sessions/
 *-lock*
 # Logs
 logs
