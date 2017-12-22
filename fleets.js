@@ -47,7 +47,7 @@ Fleet object format:
 
 	module.getFCPageList = function(cb) {
 		module.createFleetsVariable(function() {
-			cb()
+			cb(module.list)
 		})
 	}
 
