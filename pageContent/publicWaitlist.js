@@ -106,7 +106,7 @@ module.exports = function(payloadContent) {
                         <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
                       </div>-->
                       <div class="col-xl-12 col-lg-12 col-sm-12">
-                        <button class="btn btn-danger btn-block"><i class="fa fa-warning"></i> Leave the Waitlist</button>
+                        <button class="btn btn-danger btn-block"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>
                       </div>
                     </div>
                   </form>
