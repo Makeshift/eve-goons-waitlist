@@ -35,7 +35,6 @@ Fleet object format:
 				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), function(err, data) {
 					if (typeof data !== 'undefined') {
 						module.list = JSON.parse(data);
-						console.log("Existing fleets found: " + module.list.length);
 					}
 					cb();
 				});
@@ -102,9 +101,7 @@ Fleet object format:
 			module.createFleetsVariable(function() {
 				var count = 0;
 				for (var i = 0; i < module.list.length; i++) {
-					console.log("Updating members for "+module.list[i].id)
 					module.getMembers(module.list[i].fc.characterID, module.list[i].fc.refreshToken, module.list[i].id, function(members, fleetid) {
-						console.log(members)
 						for (var x = 0; x < module.list.length; x++) {
 							if (module.list[x].id === fleetid) {
 								module.list[x].members = members;
@@ -122,9 +119,7 @@ Fleet object format:
 
 						
 						count++;
-						console.log(`Count: ${count}, i: ${i}`)
 						if (count == i) {
-							console.log("saving");
 							module.saveFleetData();
 							module.timers();
 						}

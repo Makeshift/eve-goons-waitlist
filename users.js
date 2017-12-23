@@ -11,7 +11,6 @@ module.exports = function (setup) {
 				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), function(err, data) {
 					if (typeof data !== 'undefined') {
 						module.list = JSON.parse(data);
-						console.log("Existing users found: " + module.list.length);
 					}
 					cb();
 				});

@@ -6,6 +6,7 @@ var users = require('./users.js')(setup);
 var esi = require('eve-swagger');
 var refresh = require('passport-oauth2-refresh');
 var cache = require('./cache.js')(setup);
+var waitlist = require('./globalWaitlist.js')(setup);
 
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
@@ -14,28 +15,52 @@ module.exports = function(app, setup) {
 			users.findAndReturnUser(req.user.characterID, function(userProfile) {
 				req.session.passport.user = userProfile;
 				req.session.save(function(err) {
-
-					if (err) console.log(err);
-					var page = {
-						template: "publicWaitlist",
-						sidebar: {
-							selected: 1,
-							user: req.user
-						},
-						header: {
-							user: req.user
-						},
-						content: {
-						 user: req.user
-					  }
-					}
-					res.send(template.pageGenerate(page));
+					//Grab all fleets
+					fleets.getFCPageList(function(fleets) {
+						if (err) console.log(err);
+						var page = {
+							template: "publicWaitlist",
+							sidebar: {
+								selected: 1,
+								user: req.user
+							},
+							header: {
+								user: req.user
+							},
+							content: {
+							 user: req.user,
+							 fleets: fleets
+						  }
+						}
+						res.send(template.pageGenerate(page));
+					});
 				})
 			})
 		} else {
 			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
 		}
 	});
+
+	app.post('/', function(req, res) {
+		if (req.isAuthenticated()) {
+			console.log(req.body);
+			var userAdd = {
+				user: req.user,
+				ship: req.body.ship
+			}
+			waitlist.addToWaitlist(userAdd, function() {
+				res.redirect('/');
+			});
+		}
+	});
+
+	app.get('/remove', function(req, res) {
+		if (req.isAuthenticated()) {
+			waitlist.remove(req.user.characterID, function() {
+				res.redirect('/')
+			})
+		}
+	})
 
 	app.get('/logout', function(req, res) {
 		req.logout();
