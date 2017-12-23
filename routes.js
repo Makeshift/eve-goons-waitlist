@@ -148,7 +148,9 @@ app.get('/commander/:fleetid/', function(req, res) {
 }
 
 
-
+	//For testing
+	app.get('/waitlist', function(req, res) {
+		//Still not entirely convinced I like this.
 		/*var exampleUser = {
 			     avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
 			     name: "Caitlin Viliana",
@@ -201,3 +203,26 @@ app.get('/commander/:fleetid/', function(req, res) {
 			      }
 			     ]
 			 };*/
+		if (req.isAuthenticated()) {
+			console.log(require("./users.js").list)
+			var exampleUser = req.user;
+			var page = {
+				template: "publicWaitlist",
+				sidebar: {
+					selected: 6,
+					user: exampleUser
+				},
+				header: {
+					user: exampleUser
+				},
+				content: {
+				 user: exampleUser
+			  }
+			}
+			res.send(template.pageGenerate(page));
+		} else {
+			res.redirect('/');
+		}
+	});
+
+}

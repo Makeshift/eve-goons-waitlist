@@ -10,7 +10,6 @@ const url = require('url');
 const session = require('express-session');
 const fs = require('fs');
 const path = require('path');
-const fileStore = require('session-file-store')(session);
 
 //Custom imports
 if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
@@ -78,10 +77,6 @@ users.createUsersVariable(function() {
     app.use(passport.session());
     app.use( bodyParser.urlencoded({ extended: true }) );
     app.use('/includes', express.static('public/includes'));
-
-    //Routes
-    require('./oAuthRoutes.js')(app, passport, setup);
-    require('./routes.js')(app, setup);
 
     //Configure Express webserver
     app.listen(setup.settings.port, function listening() {
