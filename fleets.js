@@ -1,6 +1,9 @@
 var fs = require('fs');
 var path = require('path');
 var esi = require('eve-swagger');
+var refresh = require('passport-oauth2-refresh');
+var setup = require('./setup.js');
+var users = require('./users.js')(setup);
 
 module.exports = function (setup) {
 	var module = {};
@@ -46,24 +49,32 @@ Fleet object format:
 		return module.list;
 	};
 
-	module.updateMembers = function(cb) {
-		console.log("Members updating...")
-
+	module.getMembers = function(characterID, refreshToken, fleetid, cb) {
+		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
+			if (err) console.log(err);
+			users.updateRefreshToken(characterID, newRefreshToken);
+			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function(members) {
+				cb(members, fleetid)
+			});
+		});
 	}
 
 	module.register = function(data) {
-		data.timer = setTimeout()
-		module.list.push(data); //Do I want the calling function to do all the work?
-		module.saveFleetData();
+		module.createFleetsVariable(function() {
+			module.list.push(data); //Do I want the calling function to do all the work?
+			module.saveFleetData();
+		})
 	}
 
 	module.saveFleetData = function() {
-	try {
-		fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(module.list, null, 2));
-	} catch (e) {
-		console.log(e)
-		console.log("Failed to save fleet data");
-	}
+		module.createFleetsVariable(function() {
+			try {
+				fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(module.list, null, 2));
+			} catch (e) {
+				console.log(e)
+				console.log("Failed to save fleet data");
+			}
+	})
 };
 
 
@@ -71,6 +82,36 @@ Fleet object format:
 		module.createFleetsVariable(function() {
 			cb(module.list)
 		})
+	}
+
+
+	module.timers = function() {	
+		setTimeout(function() {
+			module.createFleetsVariable(function() {
+				var count = 0;
+				for (var i = 0; i < module.list.length; i++) {
+					console.log("Updating members for "+module.list[i].id)
+					module.getMembers(module.list[i].fc.characterID, module.list[i].fc.refreshToken, module.list[i].id, function(members, fleetid) {
+						console.log(members)
+						for (var x = 0; x < module.list.length; x++) {
+							if (module.list[x].id === fleetid) {
+								module.list[x].members = members;
+								break;
+							}
+						}
+						
+						count++;
+						console.log(`Count: ${count}, i: ${i}`)
+						if (count == i) {
+							console.log("saving");
+							module.saveFleetData();
+							module.timers();
+						}
+					})
+				}
+			});
+		}, 10000)
+
 	}
 
 

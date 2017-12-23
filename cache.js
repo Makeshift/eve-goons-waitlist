@@ -51,6 +51,15 @@ module.exports = function (setup) {
 		})
 	}
 
+	module.massQuery = function(ids, cb) {
+		module.createCacheVariable(function() {
+			esi.names([34, 35]).then(function(items) {
+				console.log(items)
+			})
+		})
+	}
+	module.massQuery();
+
 		module.saveCacheData = function() {
 			try {
 				fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/cache.json`), JSON.stringify(module.list, null, 2));

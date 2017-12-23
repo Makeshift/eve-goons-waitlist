@@ -19,6 +19,7 @@ if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
 const setup = require('./setup.js');
 const users = require('./users.js')(setup);
 const customSSO = require('./customSSO.js')(refresh, setup, request, url);
+const fleets = require('./fleets.js')(setup);
 //Make the data folder
 if (!fs.existsSync(path.normalize(__dirname + "/" + setup.data.directory))) {
     console.log("Creating data folder");
@@ -26,6 +27,8 @@ if (!fs.existsSync(path.normalize(__dirname + "/" + setup.data.directory))) {
 }
 
 users.createUsersVariable(function() {
+    //Start timers
+    fleets.timers();
 
     //Configure Passport's oAuth
     var oauthStrategy = new OAuth2Strategy({

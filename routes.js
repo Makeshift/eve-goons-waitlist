@@ -79,13 +79,10 @@ app.post('/commander/', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 		refresh.requestNewAccessToken('provider', req.user.refreshToken, function(err, accessToken, newRefreshToken) {
 			users.updateRefreshToken(req.user.characterID, newRefreshToken);
-			console.log(err)
-			console.log(accessToken)
-			console.log(newRefreshToken)
 			esi.characters(req.user.characterID, accessToken).location().then(function(locationResult) {
 				cache.get([locationResult.solar_system_id], function(locationName) {
 					var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-					esi.characters(req.user.characterID, accessToken).fleet(fleetid).members().then(function(members) {
+					fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, function(members) {
 						var fleetInfo = {
 							fc: req.user,
 							backseat: {},
