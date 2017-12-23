@@ -53,12 +53,31 @@ module.exports = function (setup) {
 
 	module.massQuery = function(ids, cb) {
 		module.createCacheVariable(function() {
-			esi.names([34, 35]).then(function(items) {
-				console.log(items)
-			})
+			var fullquery = [];
+			for (var i = 0; i < ids.length; i++) {
+				var found = false;
+				for (var x = 0; x < module.list.length; x++) {
+					if (ids[i] === module.list[x].id) {
+						found = true;
+					}
+				}
+				if (!found) {
+					fullquery.push(ids[i]);
+				}
+			}
+			if (fullquery.length > 0) {
+				esi.names(fullquery).then(function(items) {
+					for (var i = 0; i < items.length; i++) {
+						module.list.push(items[i]);
+					}
+					module.saveCacheData();
+					if (typeof cb === "function") {
+						cb(items);
+					}
+				})
+			}
 		})
 	}
-	module.massQuery();
 
 		module.saveCacheData = function() {
 			try {

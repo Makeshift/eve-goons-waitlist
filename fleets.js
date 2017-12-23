@@ -4,6 +4,7 @@ var esi = require('eve-swagger');
 var refresh = require('passport-oauth2-refresh');
 var setup = require('./setup.js');
 var users = require('./users.js')(setup);
+var cache = require('./cache.js')(setup);
 
 module.exports = function (setup) {
 	var module = {};
@@ -99,6 +100,15 @@ Fleet object format:
 								break;
 							}
 						}
+
+						//loop through members and grab all the static ID's
+						var staticIDs = [];
+						for (var f = 0; f < members.length; f++) {
+							staticIDs.push(members[f].ship_type_id);
+							staticIDs.push(members[f].solar_system_id);
+						}
+						cache.massQuery(staticIDs);
+
 						
 						count++;
 						console.log(`Count: ${count}, i: ${i}`)
