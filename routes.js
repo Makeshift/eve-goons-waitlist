@@ -110,7 +110,23 @@ app.post('/commander/', function(req, res) {
 
 app.get('/commander/:fleetid/', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-		res.send(req.params.fleetid)
+		fleets.get(req.params.fleetid, function(fleet) {
+			var page = {
+						template: "fcFleetManage",
+						sidebar: {
+							selected: 5,
+							user: req.user
+						},
+						header: {
+							user: req.user
+						},
+						content: {
+						 user: req.user,
+						 fleet: fleet
+					  }
+					}
+					res.send(template.pageGenerate(page));
+				})
 	} else {
 		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 	}

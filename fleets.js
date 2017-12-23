@@ -50,6 +50,17 @@ Fleet object format:
 		return module.list;
 	};
 
+	module.get = function(id, cb) {
+		module.createFleetsVariable(function() {
+			for (var i = 0; i < module.list.length; i++) {
+				if (module.list[i].id == id) {
+					cb(module.list[i]);
+					break;
+				}
+			}
+		})
+	}
+
 	module.getMembers = function(characterID, refreshToken, fleetid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
 			if (err) console.log(err);

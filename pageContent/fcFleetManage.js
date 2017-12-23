@@ -1,7 +1,21 @@
+var setup = require('../setup.js');
+var cache = require('../cache.js')(setup);
+
 module.exports = function(payloadContent) {
   console.log(payloadContent);
 
-
+  var ships = [];
+  for (var i = 0; i < payloadContent.fleet.members.length; i++) {
+  	ships.push(payloadContent.fleet.members[i].ship_type_id)
+  }
+  var distribution = ships.reduce((acum,cur) => Object.assign(acum,{[cur]: (acum[cur] | 0)+1}),{}); //Shamelessly stolen from stackoverflow
+  var shiptable = "";
+  for (var i = 0; i < Object.keys(distribution).length; i++) {
+  	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${Object.keys(distribution)[i]}_32.png" alt="Ship Icon"></td>
+	  	<td class="tw20per"><a href="#">${cache.getSync(Object.keys(distribution)[i]).name}</a>
+	  	<td>${distribution[Object.keys(distribution)[i]]}</td>
+  	`;
+  }
 
   return `
   	      <!-- Page Content -->
@@ -81,7 +95,7 @@ module.exports = function(payloadContent) {
                       </tr>
                       <tr>
                         <td>Fleet System:</td>
-                        <td colspan="2"><a href="#">${payloadContent.fleet.location}</a></td>
+                        <td colspan="2"><a href="#">${payloadContent.fleet.location.name}</a></td>
                       </tr>
                     </tbody>
                   </table>
@@ -102,15 +116,7 @@ module.exports = function(payloadContent) {
                         <table class="table table-striped table-hover table-sm">
                           <tbody>
                             <tr>
-                              <td class="tw35"><img src="https://image.eveonline.com/Render/17738_32.png" alt="Ship Icon"></td>
-                              <td class="tw20per"><a href="#">Machariel</a>
-                              <td>6</td>
-                              <td class="tw35"><img src="https://image.eveonline.com/Render/17738_32.png" alt="Ship Icon"></td>
-                              <td class="tw20per"><a href="#">Machariel</a>
-                              <td>6</td>
-                              <td class="tw35"><img src="https://image.eveonline.com/Render/17738_32.png" alt="Ship Icon"></td>
-                              <td class="tw20per"><a href="#">Machariel</a>
-                              <td>6</td>
+                            ${shiptable}
                             </tr>
                           </tbody>
                         </table>
