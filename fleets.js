@@ -1,3 +1,6 @@
+var fs = require('fs');
+var path = require('path');
+
 module.exports = function (setup) {
 	var module = {};
 	module.list = [];
@@ -25,8 +28,10 @@ Fleet object format:
 		try {
 			if (module.list.length === 0) {
 				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), function(err, data) {
-					module.list = JSON.parse(data);
-					console.log("Existing fleets found: " + module.list.length);
+					if (typeof data !== 'undefined') {
+						module.list = JSON.parse(data);
+						console.log("Existing fleets found: " + module.list.length);
+					}
 					cb();
 				});
 			} else {
@@ -42,7 +47,17 @@ Fleet object format:
 
 	module.register = function(data) {
 		module.list.push(data); //Do I want the calling function to do all the work?
+		module.saveFleetData();
 	}
+
+	module.saveFleetData = function() {
+	try {
+		fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(module.list, null, 2));
+	} catch (e) {
+		console.log(e)
+		console.log("Failed to save fleet data");
+	}
+};
 
 
 	module.getFCPageList = function(cb) {

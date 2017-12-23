@@ -62,6 +62,16 @@ module.exports = function (setup) {
 		});
 	};
 
+	module.updateRefreshToken = function(checkID, token) {
+		for (var i = 0; i < module.list.length; i++) {
+			if (module.list[i].characterID == checkID) {
+				module.list[i].refreshToken = token;
+				module.saveUserData();
+				break;
+			}
+		}
+	}
+
 	module.saveUserData = function() {
 		try {
 			fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), JSON.stringify(module.list, null, 2));

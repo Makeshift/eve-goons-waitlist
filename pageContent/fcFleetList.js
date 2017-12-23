@@ -18,21 +18,20 @@ Fleet object format:
 }
 
 */
+
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
   	fleets += `
-
     <tr>
-      <td><img src="${payloadContent.fleets[i].fc.avatar}" alt="FCs Avatar"></td>
+      <td><img src="${payloadContent.fleets[i].fc.avatar}" alt="FCs Avatar" height=30%></td>
       <td><a href="#">${payloadContent.fleets[i].fc.name}</a></td>
-      <td><a href="#">${payloadContent.fleets[i].backseat.name}</a>
+      <td><a href="#">${payloadContent.fleets[i].backseat.name || "None"}</a>
       <td>${payloadContent.fleets[i].type}</td>
       <td>${payloadContent.fleets[i].status}</td>
-      <td>${payloadContent.fleets[i].fc.location}</td>
+      <td>${payloadContent.fleets[i].location.name || "Unknown"}</td>
       <td>${payloadContent.fleets[i].members.length}</td>
-      <td><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></td>
+      <td><a href="/commander/${payloadContent.fleets[i].id}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
     </tr>
-
   	`
   }
 
@@ -50,12 +49,13 @@ var fleets = "";
               <!-- Create Fleet -->
               <div class="col-md-12 col-sm-12">
                 <div class="statistic-block block">
+                <form action="/commander" method="POST" role="form">
                   <div class="vertical-input-group">
                     <div class="input-group">
                       <!--<span class="input-group-addon" data-toggle="tooltip" title="The pilot must log in at least once before you can add them to the team."><i class="fas fa-info-circle"></i></span>-->
                       <span class="input-group-addon">Fleet Boss: ${payloadContent.user.name}</span>
-                      <input type="text" class="form-control" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus/>
-                      <select class="form-control dropdown">
+                      <input type="text" name="url" class="form-control" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus/>
+                      <select name="type" class="form-control dropdown">
                         <option value="Vanguards">Vanguards</option>
                         <option value="Assaults">Assaults</option>
                         <option value="Headquarters" selected>Headquarters</option>
@@ -63,6 +63,7 @@ var fleets = "";
                       <button class="btn btn-success" type="submit"><i class="fas fa-user-plus"></i> Register</button>
                     </div>
                   </div>
+                  </form>
                 </div>
               </div>
               <!-- Fleet List -->

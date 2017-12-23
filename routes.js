@@ -3,6 +3,8 @@ var path = require('path');
 var setup = require('./setup.js');
 var fleets = require('./fleets.js')(setup);
 var users = require('./users.js')(setup);
+var esi = require('eve-swagger');
+var refresh = require('passport-oauth2-refresh');
 
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
@@ -11,7 +13,7 @@ module.exports = function(app, setup) {
 			users.findAndReturnUser(req.user.characterID, function(userProfile) {
 				req.session.passport.user = userProfile;
 				req.session.save(function(err) {
-					
+
 					if (err) console.log(err);
 					var page = {
 						template: "publicWaitlist",
@@ -70,6 +72,64 @@ app.get('/commander/', function (req, res) {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
 	});
+
+
+app.post('/commander/', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		refresh.requestNewAccessToken('provider', req.user.refreshToken, function(err, accessToken, newRefreshToken) {
+			users.updateRefreshToken(req.user.characterID, newRefreshToken);
+			console.log(err)
+			console.log(accessToken)
+			console.log(newRefreshToken)
+			esi.characters(req.user.characterID, accessToken).location().then(function(locationResult) {
+				esi.solarSystems.names([locationResult.solar_system_id]).then(function(locationName) {
+					var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
+					esi.characters(req.user.characterID, accessToken).fleet(fleetid).members().then(function(members) {
+						var fleetInfo = {
+							fc: req.user,
+							backseat: {},
+							type: req.body.type,
+							status: "Forming",
+							location: locationName[0],
+							members: members,
+							url: req.body.url,
+							id: fleetid
+						}
+						console.log(fleetInfo);
+						fleets.register(fleetInfo);
+						res.redirect(302, '/commander/')
+						})
+					
+				})
+			})
+			
+		})
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+});
+
+app.get('/commander/:fleetid/', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		res.send(req.params.fleetid)
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 
