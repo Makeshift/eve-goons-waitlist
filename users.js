@@ -9,8 +9,10 @@ module.exports = function (setup) {
 		try {
 			if (module.list.length === 0) {
 				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), function(err, data) {
-					module.list = JSON.parse(data);
-					console.log("Existing users found: " + module.list.length);
+					if (typeof data !== 'undefined') {
+						module.list = JSON.parse(data);
+						console.log("Existing users found: " + module.list.length);
+					}
 					cb();
 				});
 			} else {
@@ -22,14 +24,6 @@ module.exports = function (setup) {
 		}
 		return module.list;
 	};
-
-	module.createUsersVariableAsync = function(cb) {
-		try {
-
-		} catch (e) {
-			console.log("No users found");
-		}
-	}
 
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function(users, refreshToken, characterDetails, cb) {

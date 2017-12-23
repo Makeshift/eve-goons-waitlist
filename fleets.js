@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var esi = require('eve-swagger');
 
 module.exports = function (setup) {
 	var module = {};
@@ -45,7 +46,13 @@ Fleet object format:
 		return module.list;
 	};
 
+	module.updateMembers = function(cb) {
+		console.log("Members updating...")
+
+	}
+
 	module.register = function(data) {
+		data.timer = setTimeout()
 		module.list.push(data); //Do I want the calling function to do all the work?
 		module.saveFleetData();
 	}
