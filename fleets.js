@@ -121,10 +121,10 @@ Fleet object format:
 						count++;
 						if (count == i) {
 							module.saveFleetData();
-							module.timers();
 						}
 					})
 				}
+				module.timers();
 			});
 		}, 10000)
 
