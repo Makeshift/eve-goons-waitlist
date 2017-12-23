@@ -5,6 +5,7 @@ var fleets = require('./fleets.js')(setup);
 var users = require('./users.js')(setup);
 var esi = require('eve-swagger');
 var refresh = require('passport-oauth2-refresh');
+var cache = require('./cache.js')(setup);
 
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
@@ -82,7 +83,7 @@ app.post('/commander/', function(req, res) {
 			console.log(accessToken)
 			console.log(newRefreshToken)
 			esi.characters(req.user.characterID, accessToken).location().then(function(locationResult) {
-				esi.solarSystems.names([locationResult.solar_system_id]).then(function(locationName) {
+				cache.get([locationResult.solar_system_id], function(locationName) {
 					var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
 					esi.characters(req.user.characterID, accessToken).fleet(fleetid).members().then(function(members) {
 						var fleetInfo = {
@@ -90,10 +91,11 @@ app.post('/commander/', function(req, res) {
 							backseat: {},
 							type: req.body.type,
 							status: "Forming",
-							location: locationName[0],
+							location: locationName,
 							members: members,
 							url: req.body.url,
-							id: fleetid
+							id: fleetid,
+							comms: "Incursions -> A"
 						}
 						console.log(fleetInfo);
 						fleets.register(fleetInfo);
