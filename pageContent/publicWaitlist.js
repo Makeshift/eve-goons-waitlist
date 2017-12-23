@@ -156,11 +156,7 @@ var fleets = "";
                         <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
                       </div>-->
                       <div class="col-xl-12 col-lg-12 col-sm-12">
-<<<<<<< HEAD
-                        <button class="btn btn-danger btn-block" onclick="location.href='/remove';"><i class="fa fa-warning"></i> Leave the Waitlist</button>
-=======
-                        <button class="btn btn-danger btn-block"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>
->>>>>>> f5646c55a60dceef873fce044277e708a18d9214
+                        <button class="btn btn-danger btn-block" onclick="location.href='/remove';"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>
                       </div>
                     </div>
                 </div>
