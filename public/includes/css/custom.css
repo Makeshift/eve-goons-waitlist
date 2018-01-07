@@ -8,6 +8,13 @@ body{
 	font-weight: normal;
 }
 
+/* Navbar Icons */
+nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul > li > a > span.fa-layers{
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 /* White text on info buttons */
 .btn-info{
 	color: white;
