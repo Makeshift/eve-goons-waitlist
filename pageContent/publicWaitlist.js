@@ -7,8 +7,9 @@ module.exports = function(payloadContent) {
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
     fleets += `
+              <div class="col-md-6 col-sm-12"> 
+                <div class="statistic-block block">
                   <div class="title"  style="padding-top:25px">
-                    <div class="icon"></div>
                     <strong>Fleet Info</strong>
                   </div>
                   <table class="table table-striped table-hover table-sm noselect">
@@ -43,8 +44,8 @@ var fleets = "";
                       </tr>
                     </tbody>
                   </table>
-                </div>
-              </div>
+                </div> 
+              </div>          
     `
   }
 
@@ -70,10 +71,9 @@ var fleets = "";
             <!-- Waitlist Panel -->
             <div class="row">
               <!-- Waitlist Panel -->
-              <div class="col-md-4 col-sm-6">
+              <div class="col-md-4 col-sm-12">
                 <div class="statistic-block block">
                   <div class="title">
-                    <div class="icon"></div>
                     <strong>Join the Waitlist</strong>
                   </div>
                     <!-- Select Character -->
@@ -160,13 +160,10 @@ var fleets = "";
                       </div>
                     </div>
                 </div>
-              </div>
-              <!-- End Waitlist Panel -->
-              <!-- Fleet Info -->
-              <div class="col-md-4 col-sm-6">
+                <!-- End Waitlist Panel -->
+                <!-- Waitlist Queue Panel -->
                 <div class="statistic-block block">
-                  <div class="title">
-                    <div class="icon"></div>
+                  <div class="title">                    
                     <strong>Queue Info</strong>
                   </div>
                   <!-- Your Position Table -->
@@ -176,17 +173,28 @@ var fleets = "";
                         <td class="tw60per">Your Position:</td>
                         <td>${position.position || "##"} out of ${position.length || "##"}</td>
                       </tr>
-                      <!--<tr>
+                      <tr>
                         <td>Wait Time:</td>
                         <td>00H 11M</td>
-                      </tr>-->
+                      </tr>
                     </tbody>
                   </table>
+                </div>
+              </div>
+              <!-- End Waitlist Queue Panel -->
+              
+              <!-- Fleet Info -->
+              <div class="col-md-8 col-sm-12">
+                <div class="row">
                   <!-- Fleet Info Table -->		  
                   ${fleets}
-              <!-- Fleet Info -->
+                </div>
+              </div>
+              
+              <!-- End Fleet Info -->
+              
             </div>
-          </div>
+          </div> 
         </section>
         `;
 }

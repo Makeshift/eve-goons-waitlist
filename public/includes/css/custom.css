@@ -3,6 +3,11 @@ body{
 	overflow-x: hidden!important;
 }
 
+/* Card Titles */
+.title strong{
+	font-weight: normal;
+}
+
 /* White text on info buttons */
 .btn-info{
 	color: white;
@@ -40,7 +45,6 @@ body{
 
 /* global-banner */
 .global-banner{
-	width: 94%;
 	margin-left: 1.5%;
 	margin-right: 1.5%;
 	margin-top: -20px;
