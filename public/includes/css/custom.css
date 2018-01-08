@@ -58,6 +58,17 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	border-radius: 0px;
 }
 
+/* No Fleet-banner */
+.global-banner-inactive{
+	margin-left: 1.5%;
+	margin-right: 1.5%;
+	margin-top: -20px;
+	border-radius: 0px;
+	color: white;
+	background-color: #dc3545;
+	border-color: white;
+}
+
 
 /* Fit selection buttons */
 .fit-selected, .fit:hover, .fit:focus{

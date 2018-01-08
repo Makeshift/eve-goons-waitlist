@@ -28,7 +28,7 @@ var fleets = "";
       <td><a href="#">${payloadContent.fleets[i].backseat.name || "None"}</a>
       <td>${payloadContent.fleets[i].type}</td>
       <td>${payloadContent.fleets[i].status}</td>
-      <td>${payloadContent.fleets[i].location.name || "Unknown"}</td>
+      <td><a href="#">${payloadContent.fleets[i].location.name || "Unknown"}</a></td>
       <td>${payloadContent.fleets[i].members.length}</td>
       <td><a href="/commander/${payloadContent.fleets[i].id}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
     </tr>

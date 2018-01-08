@@ -9,7 +9,7 @@ var fleets = "";
     fleets += `
               <div class="col-md-6 col-sm-12"> 
                 <div class="statistic-block block">
-                  <div class="title"  style="padding-top:25px">
+                  <div class="title">
                     <strong>Fleet Info</strong>
                   </div>
                   <table class="table table-striped table-hover table-sm noselect">
@@ -64,14 +64,37 @@ var fleets = "";
           <div role="alert" class="alert alert-dark global-banner">
             <strong>PLEASE NOTE:</strong> This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.
           </div>
+          <!-- No Fleet -->
+          <div role="alert" class="alert alert-primary global-banner-inactive">
+            <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
+          </div>
         </section>
         <!-- Main Content -->
         <section class="no-padding-top padding-bottom">
           <div class="container-fluid">
-            <!-- Waitlist Panel -->
             <div class="row">
-              <!-- Waitlist Panel -->
               <div class="col-md-4 col-sm-12">
+                <!-- Waitlist Queue Panel -->
+                <div class="statistic-block block">
+                  <div class="title">                    
+                    <strong>Queue Info</strong>
+                  </div>
+                  <!-- Your Position Table -->
+                  <table class="table table-striped table-hover table-sm noselect">
+                    <tbody>
+                      <tr>
+                        <td class="tw60per">Your Position:</td>
+                        <td>${position.position || "##"} out of ${position.length || "##"}</td>
+                      </tr>
+                      <tr>
+                        <td>Wait Time:</td>
+                        <td>00H 11M</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- End Waitlist Queue Panel -->
+                <!-- Waitlist Panel -->
                 <div class="statistic-block block">
                   <div class="title">
                     <strong>Join the Waitlist</strong>
@@ -161,27 +184,8 @@ var fleets = "";
                     </div>
                 </div>
                 <!-- End Waitlist Panel -->
-                <!-- Waitlist Queue Panel -->
-                <div class="statistic-block block">
-                  <div class="title">                    
-                    <strong>Queue Info</strong>
-                  </div>
-                  <!-- Your Position Table -->
-                  <table class="table table-striped table-hover table-sm noselect">
-                    <tbody>
-                      <tr>
-                        <td class="tw60per">Your Position:</td>
-                        <td>${position.position || "##"} out of ${position.length || "##"}</td>
-                      </tr>
-                      <tr>
-                        <td>Wait Time:</td>
-                        <td>00H 11M</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
               </div>
-              <!-- End Waitlist Queue Panel -->
+              
               
               <!-- Fleet Info -->
               <div class="col-md-8 col-sm-12">
