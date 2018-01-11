@@ -61,6 +61,7 @@ var fleets = "";
         </div>
         <!-- Banner Message -->
         <section>
+          <!-- FC Banner Message -->
           <div role="alert" class="alert alert-dark global-banner">
             <strong>PLEASE NOTE:</strong> This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.
           </div>
@@ -89,6 +90,14 @@ var fleets = "";
                       <tr>
                         <td>Wait Time:</td>
                         <td>00H 11M</td>
+                      </tr>
+                      <tr>
+                        <td>FC sees you as: <div class="d-inline" data-toggle="tooltip" data-placement="top" title="The FC sees you as your first pilot on the waitlist."><i class="fas fa-question-circle"></i></div></td>
+                        <td>Caitlin Viliana</td>
+                      </tr>                      
+                      <tr>
+                        <td>Alts on Waitlist:</td>
+                        <td>##</td>
                       </tr>
                     </tbody>
                   </table>
