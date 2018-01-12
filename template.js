@@ -119,8 +119,7 @@ function sidebar(sidebarPayload) {
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
             <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i> <strike>My Account</a></strike>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
-              <strike><li><a href="#">My Alts</a></strike></li>
-              <strike><li><a href="#">My Fits</a></strike></li>
+              <strike><li><a href="#">My Alts & Fits</a></strike></li>
               <strike><li><a href="#">My Stats</a></strike></li>
               <strike><li><a href="#">My SRP</a></strike></li>
             </ul>
