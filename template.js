@@ -119,8 +119,7 @@ function sidebar(sidebarPayload) {
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
             <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i> <strike>My Account</a></strike>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
-              <strike><li><a href="#">My Alts</a></strike></li>
-              <strike><li><a href="#">My Fits</a></strike></li>
+              <strike><li><a href="#">My Alts & Fits</a></strike></li>
               <strike><li><a href="#">My Stats</a></strike></li>
               <strike><li><a href="#">My SRP</a></strike></li>
             </ul>
@@ -155,19 +154,16 @@ function sidebar(sidebarPayload) {
             </ul>
           </li>
         </ul>
+        <hr>
+        <ul class="list-unstyled">
+        <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
+        </li>
       </nav>
 `;
 }
 
 function footer(footerPayload) {
     return `
-        <!-- Footer-->
-        <footer class="footer">
-            <div class="footer__block block no-margin-bottom">
-              <div class="container-fluid text-center">
-                <p class="no-margin-bottom"><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></p>
-              </div>
-            </div>
             <!-- Legal Notices  Modal -->
             <div role="dialog" tabindex="-1" class="modal fade" id="legal">
               <div class="modal-dialog" role="document">
@@ -188,7 +184,6 @@ function footer(footerPayload) {
             </div>
           </footer>
         </div>
-      </div>
     <!-- Javascript files-->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"> </script>
