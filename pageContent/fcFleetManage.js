@@ -133,21 +133,153 @@ module.exports = function(payloadContent) {
             <div class="row">
               <div class="col-md-12 col-sm-12">
                 <div class="statistic-block block">
+                
+                <!-- Waitlist Navigation Tabs -->
+                <div>
+                <ul class="nav nav-pills nav-justified">
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active"><div class="badge badge-dark">42</div> Fleet Waitlist</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link"><div class="badge badge-dark">42</div> Fleet Comp</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Fleet Waitlist -->
+                  <div role="tabpanel" class="tab-pane fade show active" id="waitlist">                
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th class="tw30"></th>
+                          <th class="tw20per">Name</th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw80">Fits</th>
+                          <th>System</th>
+                          <th>Wait Time</th>
+                          <th>Language</th>
+                          <th>On Coms?</th>
+                          <th>Ingame Channel?</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="invite-default">
+                          <td>
+                            <img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="avatar"> 
+                          </td>
+                          <td>
+                            <a href="#">Caitlin Viliana</a>
+                            <p>Newbro</p>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                              <div class="dropdown-menu" role="menu">
+                                <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                <a class="dropdown-item" href="#">View Pilot Skills</a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          </td>
+                          <td>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                          </td>
+                          <td><a href="#">Jita</a></td>
+                          <td>00M 00H</td>
+                          <td>English</td>
+                          <td>Yes</td>
+                          <td>Yes</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- End Fleet Waitlist -->
+                    
+                    <hr />
+                    
+                    <!-- Alt Waitlist -->
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th class="tw30 text-right">Alt</th>
+                          <th class="tw20per">Name // Main in Fleet</th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw80">Fits</th>
+                          <th>System</th>
+                          <th>Wait Time</th>
+                          <th>Language</th>
+                          <th>Alts in Fleet</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="invite-default">
+                          <td>
+                            <img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="avatar"> 
+                          </td>
+                          <td>
+                            <a href="#">Caitlin Viliana</a>
+                            <p>Newbro</p>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                              <div class="dropdown-menu" role="menu">
+                                <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                <a class="dropdown-item" href="#">View Pilot Skills</a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          </td>
+                          <td>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                          </td>
+                          <td><a href="#">Jita</a></td>
+                          <td>00M 00H</td>
+                          <td>English</td>
+                          <td>##</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- End Alt Waitlist -->
+
+                  <!-- Fleetlist -->
+                  <div role="tabpanel" class="tab-pane fade" id="fleetlist">
                   <table class="table table-striped table-hover table-sm">
                     <thead>
                       <tr>
                         <th class="tw30"></th>
-                        <th>Name</th>
+                        <th class="tw20per">Name</th>
                         <th class="tw30"></th>
                         <th class="tw30"></th>
-                        <th class="tw30"></th>
-                        <th class="tw30"></th>
-                        <th class="tw80">Fits</th>
+                        <th>Current Ship</th>
+                        <th>Wing // Squad</th>
+                        <th class="tw15per">Waitlisted With</th>
                         <th>System</th>
-                        <th>Wait Time</th>
+                        <th>Fleet Time</th>
                         <th>Language</th>
-                        <th>On Coms?</th>
-                        <th>Ingame Channel?</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -158,10 +290,7 @@ module.exports = function(payloadContent) {
                         <td>
                           <a href="#">Caitlin Viliana</a>
                           <p>Newbro</p>
-                        </td>
-                        <td>
-                          <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
-                        </td>
+                        </td>   
                         <td>
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
@@ -172,11 +301,10 @@ module.exports = function(payloadContent) {
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
-                        </td>
-                        <td>
                           <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                         </td>
+                        <th><a href="#">Thanatos</a></th>
+                        <td>Active // Logi</td>
                         <td>
                           <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
                           <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
@@ -186,16 +314,45 @@ module.exports = function(payloadContent) {
                         <td><a href="#">Jita</a></td>
                         <td>00M 00H</td>
                         <td>English</td>
-                        <td>Yes</td>
-                        <td>Yes</td>
+                      </tr>
+                      <tr class="invite-default">
+                          <td></td>
+                          <td>
+                            &nbsp;&nbsp;<a href="#">404 Viliana</a>
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                              <div class="dropdown-menu" role="menu">
+                                <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                <a class="dropdown-item" href="#">View Pilot Skills</a>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          </td>                          
+                          <th><a href="#">Thanatos</a></th>
+                          <td>Active // Logi</td>
+                          <td>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                          </td>
+                          <td><a href="#">Jita</a></td>
+                          <td>00M 00H</td>
+                          <td>English</td>
+                        </tr>                                       
                     </tbody>
                   </table>
                 </div>
               </div>
             </div>
-            <!-- End Waitlist Section -->
           </div>
-        </section>
+          <!-- End Waitlist Section -->
+        </div>
+      </section>
   `
 
 }
