@@ -6,19 +6,19 @@
 }
 
 /* Invite send PENDING */
-.invite-pending{
+.invite-pending, .invite-pending a{
 	background-color: #37cfdc!important; 
 	color:black;
 }
 
 /* Invite send OKAY */
-.invite-sent{
+.invite-sent, .invite-sent a{
 	background-color: #055a05!important;
-	color:white;
+	color:white!important;
 }
 
 /* Invite send FAILED */
-.invite-failed{
+.invite-failed, .invite-failed a{
 	background-color: #B70404!important;
 	color: white;
 }
@@ -26,4 +26,15 @@
 .invite-alert{
 	background-color: #18ba85!important;
 	color: black;
+}
+
+/* Skills */
+.skills-pass, .skills-pass a{
+	background-color: #055a05!important;
+	color:white!important;
+}
+
+.skills-failed, .skills-failed a{
+	background-color: #940707!important;
+	color:white!important;
 }
