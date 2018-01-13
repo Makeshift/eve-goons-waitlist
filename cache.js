@@ -6,7 +6,6 @@ module.exports = function (setup) {
 	var module = {};
 	module.list = [];
 	module.createCacheVariable = function(cb) {
-	try {
 		if (module.list.length === 0) {
 			fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/cache.json`), function(err, data) {
 				if (typeof data !== 'undefined') {
@@ -17,14 +16,12 @@ module.exports = function (setup) {
 		} else {
 			cb()
 		}
-		
-	} catch (e) {
-		console.log("No cache found.");
-		cb()
-	}
 };
 
 	module.query = function(id, cb) {
+		if (typeof id === "number" || typeof id === "string") {
+			id = new Array(id);
+		}
 		esi.names(id).then(function(item) {
 			cb(item[0])
 		})
@@ -36,7 +33,7 @@ module.exports = function (setup) {
 			for (var i = 0; i < module.list.length; i++) {
 				if (module.list[i].id === id) {
 					cb(module.list[i]);
-					var found = true;
+					found = true;
 					break;
 				}
 			}

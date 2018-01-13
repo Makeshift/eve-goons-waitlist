@@ -72,7 +72,8 @@ users.createUsersVariable(function() {
             saveUninitialized: false,
             retries: 1 //This errors a whole bunch on Windows so we're limiting this to 1 for now before testing on Linux. Still works though.
         }),
-        secret: setup.data.sessionSecret
+        secret: setup.data.sessionSecret,
+        cookie: { maxAge: 604800 } //Week long cookies for week long incursions!
     }))
     app.use(passport.initialize());
     app.use(passport.session());

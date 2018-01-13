@@ -2,7 +2,6 @@ var setup = require('../setup.js');
 var cache = require('../cache.js')(setup);
 
 module.exports = function(payloadContent, cb) {
-  console.log(payloadContent);
 
   var ships = [];
   for (var i = 0; i < payloadContent.fleet.members.length; i++) {
@@ -10,15 +9,21 @@ module.exports = function(payloadContent, cb) {
   }
   var distribution = ships.reduce((acum,cur) => Object.assign(acum,{[cur]: (acum[cur] | 0)+1}),{}); //Shamelessly stolen from stackoverflow
   var shiptable = "";
-  for (var i = 0; i < Object.keys(distribution).length; i++) {
-  	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${Object.keys(distribution)[i]}_32.png" alt="Ship Icon"></td>
-	  	<td class="tw20per"><a href="#">${cache.get(Object.keys(distribution)[i]).name}</a>
-	  	<td>${distribution[Object.keys(distribution)[i]]}</td>
-  	`;
-  }
 
-  cb(`
-  	      <!-- Page Content -->
+  var numOfShips = Object.keys(distribution).length;
+  var counter = 0;
+  //Unpleasant hack for dealing with async for loops because I really should learn promises and await...
+  for (var i = 0; i < numOfShips; i++) {
+    cache.get(Object.keys(distribution)[i], function(item){
+      counter++;
+    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id}_32.png" alt="Ship Icon"></td>
+  	  	<td class="tw20per"><a href="#">${item.name || "CacheError"}</a>
+  	  	<td>${distribution[item.id]}</td>
+    	`;
+
+      if (counter >= numOfShips) {
+        cb(`
+          <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
           <div class="container-fluid">
@@ -102,7 +107,7 @@ module.exports = function(payloadContent, cb) {
                 </div>
               </div>
               <!-- End Upper Fleet Panel -->
-              <!-- Fleet Comp Overview -->			  		  
+              <!-- Fleet Comp Overview -->              
               <div class="col-md-6 col-sm-12">
                 <div class="statistic-block block">
                   <div>
@@ -354,5 +359,11 @@ module.exports = function(payloadContent, cb) {
         </div>
       </section>
   `)
+      }
+
+    })
+  }
+
+  
 
 }

@@ -123,7 +123,6 @@ app.post('/commander/', function(req, res) {
 							id: fleetid,
 							comms: "Incursions -> A"
 						}
-						console.log(fleetInfo);
 						fleets.register(fleetInfo);
 						res.redirect(302, '/commander/')
 						})

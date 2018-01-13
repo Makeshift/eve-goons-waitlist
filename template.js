@@ -28,7 +28,6 @@ function generateTemplate(payload, content, cb) {
 }
 
 function header(headerPayload, cb) {
-  console.log(headerPayload)
   var notifications = "";
   for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
     notifications += `<a href="#" class="dropdown-item">
