@@ -1,4 +1,4 @@
-module.exports = function(payloadContent) {
+module.exports = function(payloadContent, cb) {
   console.log(payloadContent);
 /*
 Fleet object format:
@@ -35,7 +35,7 @@ var fleets = "";
   	`
   }
 
-  return `
+  cb(`
       <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -93,6 +93,6 @@ var fleets = "";
             </div>
           </div>
         </section>
-  `
+  `)
 
 }

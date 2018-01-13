@@ -68,19 +68,19 @@ module.exports = function(setup) {
     	})
     }
 
-    module.getUserPositionSync = function(characterID) {
-    	try {
-	    	var waitlistData = JSON.parse(fs.readFileSync(path.normalize(`${__dirname}/${setup.data.directory}/waitlist.json`)));
-			for (var i = 0; i < waitlistData.length; i++) {
-				if (waitlistData[i].user.characterID == characterID) {
-					return {position: i+1, length: waitlistData.length};
-					break;
-				}
-			}
-		} catch(e) {
-			console.log(e);
-		}
-		return {position: "##", length: "##"}
+    module.getUserPosition = function(characterID, cb) {
+        module.createWaitlistVariable(function() {
+            var found = false;
+            for (var i = 0; i < module.list.length; i++) {
+                if (module.list[i].user.characterID == characterID) {
+                    cb({position: i+1, length: module.list.length})
+                    found = true;
+                }
+            }
+            if (!found) {
+                cb({position: "##", length: "##"})
+            }
+        })
     }
 
     module.saveWaitlistData = function(forceData) {

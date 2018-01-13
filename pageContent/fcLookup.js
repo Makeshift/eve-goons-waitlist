@@ -1,4 +1,4 @@
-module.exports = function(payloadContent) {
+module.exports = function(payloadContent, cb) {
   console.log(payloadContent);
 
 /*
@@ -73,7 +73,7 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
   `
 }
 
-	return `
+  cb(`
           <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -241,5 +241,5 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
               </div>
             </div>
         </section>
-	`;
+	`);
 }

@@ -1,7 +1,7 @@
 var setup = require('../setup.js');
 var cache = require('../cache.js')(setup);
 
-module.exports = function(payloadContent) {
+module.exports = function(payloadContent, cb) {
   console.log(payloadContent);
 
   var ships = [];
@@ -12,12 +12,12 @@ module.exports = function(payloadContent) {
   var shiptable = "";
   for (var i = 0; i < Object.keys(distribution).length; i++) {
   	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${Object.keys(distribution)[i]}_32.png" alt="Ship Icon"></td>
-	  	<td class="tw20per"><a href="#">${cache.getSync(Object.keys(distribution)[i]).name}</a>
+	  	<td class="tw20per"><a href="#">${cache.get(Object.keys(distribution)[i]).name}</a>
 	  	<td>${distribution[Object.keys(distribution)[i]]}</td>
   	`;
   }
 
-  return `
+  cb(`
   	      <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -353,6 +353,6 @@ module.exports = function(payloadContent) {
           <!-- End Waitlist Section -->
         </div>
       </section>
-  `
+  `)
 
 }

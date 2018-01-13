@@ -8,16 +8,26 @@ module.exports = {
     pageGenerate: pageGenerate
 }
 
-function pageGenerate(payload) {
-  return generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)));
+function pageGenerate(payload, cb) {
+  generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)), function(generatedPage) {
+    cb(generatedPage);
+  })
 }
 
 //TODO: Undecided if I like this system.
-function generateTemplate(payload, content) {
-    return header(payload.header) + sidebar(payload.sidebar) + content(payload.content) + footer();
+function generateTemplate(payload, content, cb) {
+  header(payload.header, function(header) {
+    sidebar(payload.sidebar, function(sidebar) {
+      content(payload.content, function(content) {
+        footer(null, function(footer) {
+          cb(header + sidebar + content + footer);
+        })
+      })
+    })
+  })
 }
 
-function header(headerPayload) {
+function header(headerPayload, cb) {
   console.log(headerPayload)
   var notifications = "";
   for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
@@ -31,7 +41,7 @@ function header(headerPayload) {
     notificationBadge = `<span class="badge dashbg-3">!</span>`;
   }
 
-    return `
+    cb(`
   <!DOCTYPE html>
 <html>
   <head>
@@ -96,13 +106,13 @@ function header(headerPayload) {
         </div>
       </nav>
     </header>
-  `
+  `)
 }
 
 //TODO: Dynamically select which page we're on for selection
-function sidebar(sidebarPayload) {
+function sidebar(sidebarPayload, cb) {
 
-    return `
+  cb(`
     <!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
       <nav id="sidebar">
@@ -159,11 +169,11 @@ function sidebar(sidebarPayload) {
         <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
         </li>
       </nav>
-`;
+`);
 }
 
-function footer(footerPayload) {
-    return `
+function footer(footerPayload, cb) {
+    cb(`
             <!-- Legal Notices  Modal -->
             <div role="dialog" tabindex="-1" class="modal fade" id="legal">
               <div class="modal-dialog" role="document">
@@ -199,5 +209,5 @@ function footer(footerPayload) {
 </script>
     </body>
   </html>
-`;
+`);
 }

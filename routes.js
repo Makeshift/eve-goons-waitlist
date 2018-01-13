@@ -32,7 +32,9 @@ module.exports = function(app, setup) {
 							 fleets: fleets
 						  }
 						}
-						res.send(template.pageGenerate(page));
+						template.pageGenerate(page, function(generatedPage) {
+							res.send(generatedPage);
+						})
 					});
 				})
 			})
@@ -92,7 +94,9 @@ app.get('/commander/', function (req, res) {
 					 fleets: fleets
 				  }
 				}
-				res.send(template.pageGenerate(page));
+				template.pageGenerate(page, function(generatedPage) {
+					res.send(generatedPage);
+				})
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -150,7 +154,9 @@ app.get('/commander/:fleetid/', function(req, res) {
 						 fleet: fleet
 					  }
 					}
-					res.send(template.pageGenerate(page));
+					template.pageGenerate(page, function(generatedPage) {
+						res.send(generatedPage);
+					})
 				})
 	} else {
 		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");

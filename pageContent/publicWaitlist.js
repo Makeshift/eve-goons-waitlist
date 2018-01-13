@@ -1,8 +1,16 @@
 var setup = require('../setup.js');
 var waitlist = require('../globalWaitlist.js')(setup);
 
-module.exports = function(payloadContent) {
+module.exports = function(payloadContent, cb) {
   console.log(payloadContent);
+
+var inactive = "";
+if (payloadContent.fleets.length === 0) {
+  inactive = `<div role="alert" class="alert alert-primary global-banner-inactive">
+            <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
+          </div>`
+}
+
 
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
@@ -49,9 +57,9 @@ var fleets = "";
     `
   }
 
-  var position = waitlist.getUserPositionSync(payloadContent.user.characterID);
+waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
 
-      return `
+      cb(`
       <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -66,9 +74,7 @@ var fleets = "";
             <strong>PLEASE NOTE:</strong> This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.
           </div>
           <!-- No Fleet -->
-          <div role="alert" class="alert alert-primary global-banner-inactive">
-            <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
-          </div>
+          ${inactive}
         </section>
         <!-- Main Content -->
         <section class="no-padding-top padding-bottom">
@@ -89,15 +95,15 @@ var fleets = "";
                       </tr>
                       <tr>
                         <td>Wait Time:</td>
-                        <td>00H 11M</td>
+                        <td>{Todo}</td>
                       </tr>
                       <tr>
                         <td>FC sees you as: <div class="d-inline" data-toggle="tooltip" data-placement="top" title="The FC sees you as your first pilot on the waitlist."><i class="fas fa-question-circle"></i></div></td>
-                        <td>Caitlin Viliana</td>
+                        <td>{Todo}</td>
                       </tr>                      
                       <tr>
                         <td>Alts on Waitlist:</td>
-                        <td>##</td>
+                        <td>{Todo}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -209,5 +215,6 @@ var fleets = "";
             </div>
           </div> 
         </section>
-        `;
+        `);
+  });
 }

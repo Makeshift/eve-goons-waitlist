@@ -1,7 +1,7 @@
-module.exports = function(payloadContent) {
+module.exports = function(payloadContent, cb) {
 	console.log(payloadContent);
 
-return `
+ cb(`
 
 <!-- Page Content -->
       <div class="page-content">
@@ -107,6 +107,6 @@ return `
         </section>
 
 
-`;
+`);
 
 }

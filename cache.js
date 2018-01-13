@@ -51,20 +51,6 @@ module.exports = function (setup) {
 		})
 	}
 
-	module.getSync = function(id, cb) {
-		var cacheFile = fs.readFileSync(path.normalize(`${__dirname}/${setup.data.directory}/cache.json`));
-		if (typeof cacheFile !== 'undefined') {
-			var data = JSON.parse(cacheFile);
-			for (var i = 0; i < data.length; i++) {
-				if (data[i].id == id) {
-					return data[i];
-					break;
-				}
-			}
-			return {name: id};
-		}
-	}
-
 	module.massQuery = function(ids, cb) {
 		module.createCacheVariable(function() {
 			var fullquery = [];
