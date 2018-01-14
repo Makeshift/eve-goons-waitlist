@@ -162,6 +162,17 @@ app.get('/commander/:fleetid/', function(req, res) {
 	}
 })
 
+app.get('/commander/:fleetid/delete', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		fleets.delete(req.params.fleetid, function() {
+			res.redirect('/commander/');
+		});
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+
+})
+
 
 
 

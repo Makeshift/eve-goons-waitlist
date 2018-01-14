@@ -22,7 +22,16 @@ module.exports = function(payloadContent, cb) {
     	`;
 
       if (counter >= numOfShips) {
-        cb(`
+        contWaitlistGenerate(shiptable, cb);
+      }
+
+    })
+  }
+
+  function contWaitlistGenerate(shiptable, cb) {
+
+
+       cb(`
           <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -51,7 +60,7 @@ module.exports = function(payloadContent, cb) {
                       <tr>
                         <td>Backseating FC:</td>
                         <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
-                        <td><button class="btn btn-sm btn-info btn-block">Unset FC</button></td>
+                        <td><button class="btn btn-sm btn-info btn-block">Unset Backseat</button></td>
                       </tr>
                       <tr>
                         <td>Fleet Status:</td>
@@ -85,7 +94,7 @@ module.exports = function(payloadContent, cb) {
                         </td>
                       </tr>
                       <tr>
-                        <td>Fleet Coms:</td>
+                        <td>Fleet Comms:</td>
                         <td><a href="#">${payloadContent.fleet.comms}</a></td>
                         <td>
                           <div class="dropdown">
@@ -102,6 +111,13 @@ module.exports = function(payloadContent, cb) {
                         <td>Fleet System:</td>
                         <td colspan="2"><a href="#">${payloadContent.fleet.location.name}</a></td>
                       </tr>
+                      <tr>
+                        <td colspan="3">
+                          <form action="/commander/${payloadContent.fleet.id}/delete">
+                            <button class="btn btn-danger btn-sm btn-block" type="submit"><i class="fas fa-warning"></i> Close the Fleet! <i class="fas fa-warning"></i></button>
+                          </form>
+                        </td>
+                      </tr>
                     </tbody>
                   </table>
                 </div>
@@ -111,11 +127,7 @@ module.exports = function(payloadContent, cb) {
               <div class="col-md-6 col-sm-12">
                 <div class="statistic-block block">
                   <div>
-                    <ul class="nav" style="margin-top: -15px; background:none!important;background-image:none!important;">
-                      <li class="nav-item tab"><a role="tab" data-toggle="tab" href="#tab-1" class="nav-link active">Fleet Comp</a></li>
-                      <li class="nav-item tab"></li>
-                      <a role="tab" data-toggle="tab" href="#tab-2" class="nav-link">FC Actions</a></li>
-                    </ul>
+                      <strong>Glance Fleet Comp</strong>
                     <div class="tab-content">
                       <div role="tabpanel" class="tab-pane active" id="tab-1">
                         <table class="table table-striped table-hover table-sm">
@@ -125,9 +137,6 @@ module.exports = function(payloadContent, cb) {
                             </tr>
                           </tbody>
                         </table>
-                      </div>
-                      <div role="tabpanel" class="tab-pane" id="tab-2">
-                        <button class="btn btn-danger btn-sm btn-block" type="submit"><i class="fas fa-warning"></i> Close the Fleet! <i class="fas fa-warning"></i></button>
                       </div>
                     </div>
                   </div>
@@ -228,7 +237,8 @@ module.exports = function(payloadContent, cb) {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="invite-default">
+                      Alt waitlist will go here!
+                        <!--<tr class="invite-default">
                           <td>
                             <img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="avatar"> 
                           </td>
@@ -263,7 +273,7 @@ module.exports = function(payloadContent, cb) {
                           <td><a href="#">Jita</a></td>
                           <td>00M 00H</td>
                           <td>English</td>
-                          <td>##</td>
+                          <td>##</td>-->
                         </tr>
                       </tbody>
                     </table>
@@ -359,11 +369,6 @@ module.exports = function(payloadContent, cb) {
         </div>
       </section>
   `)
-      }
-
-    })
   }
-
-  
 
 }

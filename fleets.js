@@ -73,20 +73,18 @@ Fleet object format:
 	module.register = function(data) {
 		module.createFleetsVariable(function() {
 			module.list.push(data); //Do I want the calling function to do all the work?
-			module.saveFleetData();
+			module.saveFleetData(module.list, function() {
+				//Debug stuff here
+			});
 		})
 	}
 
-	module.saveFleetData = function() {
-		module.createFleetsVariable(function() {
-			try {
-				fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(module.list, null, 2));
-			} catch (e) {
-				console.log(e)
-				console.log("Failed to save fleet data");
-			}
-	})
-};
+	module.saveFleetData = function(data, cb) {
+		fs.writeFile(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(data, null, 2), function(err) {
+			if (err) console.log(err);
+			cb();
+		});
+	};
 
 
 	module.getFCPageList = function(cb) {
@@ -95,8 +93,26 @@ Fleet object format:
 		})
 	}
 
+	module.delete = function(id, cb) {
+		module.createFleetsVariable(function() {
+			for (var i = 0; i < module.list.length; i++) {
+				if (module.list[i].id == id) {
+					console.log("Deleted fleet: " + id);
+					module.list.splice(i, 1);
+					module.saveFleetData(module.list, function() {
+						console.log("FLEET HAS BEEN DELETED HERE:")
+						console.log(module.list);
+						cb();
+					});
+					break;
+				}
+			}
+		});
+	}
+
 
 	module.timers = function() {	
+		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
 		setTimeout(function() {
 			module.createFleetsVariable(function() {
 				var count = 0;
@@ -120,7 +136,9 @@ Fleet object format:
 						
 						count++;
 						if (count == i) {
-							module.saveFleetData();
+							module.saveFleetData(module.list, function() {
+								//Debug Stuff Here
+							});
 						}
 					})
 				}
