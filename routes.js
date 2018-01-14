@@ -48,7 +48,10 @@ module.exports = function(app, setup) {
 			console.log(req.body);
 			var userAdd = {
 				user: req.user,
-				ship: req.body.ship
+				ship: req.body.ship,
+				ingameChat: req.body.ingame,
+				onComms: req.body.oncomms,
+				language: req.body.language
 			}
 			waitlist.addToWaitlist(userAdd, function() {
 				res.redirect('/');
@@ -106,37 +109,30 @@ app.get('/commander/', function (req, res) {
 
 app.post('/commander/', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-		refresh.requestNewAccessToken('provider', req.user.refreshToken, function(err, accessToken, newRefreshToken) {
-			users.updateRefreshToken(req.user.characterID, newRefreshToken);
-			esi.characters(req.user.characterID, accessToken).location().then(function(locationResult) {
-				cache.get([locationResult.solar_system_id], function(locationName) {
-					var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-					fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, function(members) {
-						var fleetInfo = {
-							fc: req.user,
-							backseat: {},
-							type: req.body.type,
-							status: "Forming",
-							location: locationName,
-							members: members,
-							url: req.body.url,
-							id: fleetid,
-							comms: "Incursions -> A"
-						}
-						fleets.register(fleetInfo, function(success, errTxt) {
-							if (!success) {
-								res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
-							} else {
-								res.redirect(302, '/commander/')
-							}
-						});
-						
-						})
-					
-				})
-			})
-			
+		users.getLocation(req.user, function(location) {
+			var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
+			fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, function(members) {
+				var fleetInfo = {
+					fc: req.user,
+					backseat: {},
+					type: req.body.type,
+					status: "Forming",
+					location: location.name,
+					members: members,
+					url: req.body.url,
+					id: fleetid,
+					comms: "Incursions -> A"
+				}
+				fleets.register(fleetInfo, function(success, errTxt) {
+					if (!success) {
+						res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
+					} else {
+						res.redirect(302, '/commander/')
+					}
+				});
+			})	
 		})
+					
 	} else {
 		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 	}

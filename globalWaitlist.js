@@ -23,13 +23,20 @@ module.exports = function(setup) {
         }
     };
 
+    module.get = function(cb) {
+        module.createWaitlistVariable(function() {
+            cb(module.list);
+        })
+    }
+
     module.addToWaitlist = function(user, cb) {
     	module.checkIfUserIsIn(user.characterID, function(status) {
     		if (!status) {
 		    	module.createWaitlistVariable(function() {
 			    	module.list.push(user);
-			    	module.saveWaitlistData();
-			    	cb(true);
+			    	module.saveWaitlistData(module.list, function() {
+                        cb(true);
+                    });
 			   	})
 		   	} else {
 		   		cb(true);
@@ -53,15 +60,13 @@ module.exports = function(setup) {
     }
 
     module.remove = function(characterID, cb) {
-    	console.log("Removing " + characterID)
     	module.createWaitlistVariable(function() {
     		for (var i = 0; i < module.list.length; i++) {
-    			console.log(`if ${module.list[i].user.characterID} == ${characterID}`)
     			if (module.list[i].user.characterID == characterID) {
     				module.list.splice(i, 1);
-    				console.log(module.list);
-    				module.saveWaitlistData(module.list);
-    				cb();
+    				module.saveWaitlistData(module.list, function() {
+                        cb();
+                    });
     				break;
     			}
     		}
@@ -73,22 +78,24 @@ module.exports = function(setup) {
             var found = false;
             for (var i = 0; i < module.list.length; i++) {
                 if (module.list[i].user.characterID == characterID) {
-                    cb({position: i+1, length: module.list.length})
+                    console.log("Waitlist is returning that the player is in it")
+                    cb({position: i+1, length: module.list.length}, true, module.list[i].user.name)
                     found = true;
+                    break;
                 }
             }
             if (!found) {
-                cb({position: "##", length: "##"})
+                cb({position: "##", length: "##"}, false)
             }
         })
     }
 
-    module.saveWaitlistData = function(forceData) {
+    module.saveWaitlistData = function(data, cb) {
         try {
-        	if (forceData) {
-        		module.list = forceData;
-        	}
-            fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/waitlist.json`), JSON.stringify(module.list, null, 2));
+            fs.writeFile(path.normalize(`${__dirname}/${setup.data.directory}/waitlist.json`), JSON.stringify(data, null, 2), function(err) {
+                if (err) console.log(err);
+                cb();
+            });
         } catch (e) {
             console.log(e)
             console.log("Failed to save waitlist data");

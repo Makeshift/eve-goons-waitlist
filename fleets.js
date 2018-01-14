@@ -78,7 +78,6 @@ Fleet object format:
 	module.register = function(data, cb) {
 		module.createFleetsVariable(function() {
 			module.get(data.id, function(fleets, fleetCheck) {
-				console.log("Fleet has been found: " + fleetCheck);
 				if (!fleetCheck) {
 					module.list.push(data); //Do I want the calling function to do all the work?
 					module.saveFleetData(module.list, function() {

@@ -1,10 +1,13 @@
 var setup = require('../setup.js');
 var cache = require('../cache.js')(setup);
+var waitlist = require('../globalWaitlist.js')(setup);
+var users = require('../users.js')(setup);
 
 module.exports = function(payloadContent, cb) {
 
   var ships = [];
-  for (var i = 0; i < payloadContent.fleet.members.length; i++) {
+  var fleetLength = payloadContent.fleet.members.length;
+  for (var i = 0; i < fleetLength; i++) {
   	ships.push(payloadContent.fleet.members[i].ship_type_id)
   }
   var distribution = ships.reduce((acum,cur) => Object.assign(acum,{[cur]: (acum[cur] | 0)+1}),{}); //Shamelessly stolen from stackoverflow
@@ -22,16 +25,71 @@ module.exports = function(payloadContent, cb) {
     	`;
 
       if (counter >= numOfShips) {
-        contWaitlistGenerate(shiptable, cb);
+        contWaitlistGenerate(shiptable, fleetLength, cb);
       }
 
     })
   }
 
-  function contWaitlistGenerate(shiptable, cb) {
+  function contWaitlistGenerate(shiptable, fleetLength, cb) {
+    var waitlistHTML = "";
+    waitlist.get(function(usersOnWaitlist) {
+      console.log(usersOnWaitlist)
+      var usersNeeded = usersOnWaitlist.length;
+      var count = 0;
+      for (var i = 0; i < usersNeeded; i++) {
+        users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
+          count++
+          waitlistHTML += `
+          <tr class="invite-default">
+                            <td>
+                              <img src="http://image.eveonline.com/Character/${entry.user.characterID}_32.jpg" alt="avatar"> 
+                            </td>
+                            <td>
+                              <a href="#">${entry.user.name}</a>
+                              <p>${entry.user.role}</p>
+                            </td>
+                            <td>
+                              <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                            </td>
+                            <td>
+                              <div class="dropdown">
+                                <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                                <div class="dropdown-menu" role="menu">
+                                  <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                  <a class="dropdown-item" href="#">View Pilot Skills</a>
+                                </div>
+                              </div>
+                            </td>
+                            <td>
+                              <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                            </td>
+                            <td>
+                              <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                            </td>
+                            <td>
+                              <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.user.ship}" alt="${entry.user.ship}"></a>
+                            </td>
+                            <td><a href="#">${location.name}</a></td>
+                            <td>00M 00H</td>
+                            <td>${entry.language}</td>
+                            <td>${entry.onComms}</td>
+                            <td>${entry.ingameChat}</td>
+                          </tr>
+          `;
+          if (count >= usersNeeded) {
+            genPage(waitlistHTML, usersNeeded, fleetLength, cb);
+          }
+        }, usersOnWaitlist[i]);
+      }
+      if (usersNeeded === 0) {
+        genPage("", usersNeeded, fleetLength, cb)
+      }
+    })
+  }
 
-
-       cb(`
+  function genPage(waitlistHTML, usersNeededWaitlist, fleetLength, cb) {
+    cb(`
           <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
@@ -151,8 +209,8 @@ module.exports = function(payloadContent, cb) {
                 <!-- Waitlist Navigation Tabs -->
                 <div>
                 <ul class="nav nav-pills nav-justified">
-                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active"><div class="badge badge-dark">42</div> Fleet Waitlist</a></li>
-                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link"><div class="badge badge-dark">42</div> Fleet Comp</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active"><div class="badge badge-dark">${usersNeededWaitlist}</div> Fleet Waitlist</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link"><div class="badge badge-dark">${fleetLength}</div> Fleet Comp</a></li>
                 </ul>
                 <div class="tab-content">
                 <!-- Fleet Waitlist -->
@@ -170,49 +228,12 @@ module.exports = function(payloadContent, cb) {
                           <th>System</th>
                           <th>Wait Time</th>
                           <th>Language</th>
-                          <th>On Coms?</th>
+                          <th>On Comms?</th>
                           <th>Ingame Channel?</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr class="invite-default">
-                          <td>
-                            <img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="avatar"> 
-                          </td>
-                          <td>
-                            <a href="#">Caitlin Viliana</a>
-                            <p>Newbro</p>
-                          </td>
-                          <td>
-                            <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
-                          </td>
-                          <td>
-                            <div class="dropdown">
-                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
-                              <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item" href="#">View Pilot Profile</a>
-                                <a class="dropdown-item" href="#">View Pilot Skills</a>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
-                          </td>
-                          <td>
-                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
-                          </td>
-                          <td>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
-                          </td>
-                          <td><a href="#">Jita</a></td>
-                          <td>00M 00H</td>
-                          <td>English</td>
-                          <td>Yes</td>
-                          <td>Yes</td>
-                        </tr>
+                      ${waitlistHTML}
                       </tbody>
                     </table>
                     <!-- End Fleet Waitlist -->
@@ -282,7 +303,8 @@ module.exports = function(payloadContent, cb) {
 
                   <!-- Fleetlist -->
                   <div role="tabpanel" class="tab-pane fade" id="fleetlist">
-                  <table class="table table-striped table-hover table-sm">
+                  Todo
+                  <!--<table class="table table-striped table-hover table-sm">
                     <thead>
                       <tr>
                         <th class="tw30"></th>
@@ -360,7 +382,7 @@ module.exports = function(payloadContent, cb) {
                           <td>English</td>
                         </tr>                                       
                     </tbody>
-                  </table>
+                  </table>-->
                 </div>
               </div>
             </div>

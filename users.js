@@ -1,5 +1,9 @@
 const path = require('path');
 const fs = require('fs');
+var setup = require('./setup.js');
+var refresh = require('passport-oauth2-refresh');
+var esi = require('eve-swagger');
+var cache = require('./cache.js')(setup);
 
 module.exports = function (setup) {
 	var module = {};
@@ -73,6 +77,20 @@ module.exports = function (setup) {
 			console.log("Failed to save user data");
 		}
 	};
+
+	module.getLocation = function(user, cb, passthrough) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function(err, accessToken, newRefreshToken) {
+			module.updateRefreshToken(user.characterID, newRefreshToken);
+			esi.characters(user.characterID, accessToken).location().then(function(locationResult) {
+				cache.get([locationResult.solar_system_id], function(locationName) {
+					cb({
+						id: locationResult.solar_system_id,
+						name: locationName.name
+					}, passthrough)
+				})
+			})
+		})
+	}
 
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		var newUserTemplate = {

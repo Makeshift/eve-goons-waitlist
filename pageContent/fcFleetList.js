@@ -1,5 +1,4 @@
 module.exports = function(payloadContent, cb) {
-  console.log(payloadContent);
 /*
 Fleet object format:
 

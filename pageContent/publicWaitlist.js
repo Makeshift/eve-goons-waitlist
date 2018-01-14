@@ -57,7 +57,26 @@ var fleets = "";
     `
   }
 
-waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
+waitlist.getUserPosition(payloadContent.user.characterID, function(position, found, name) {
+  //If they have a char in the waitlist AND they have no related chars, hide the "Join Waitlist" button
+  var joinWaitlist = `<button class="btn btn-success btn-block" type="submit"><i class="fa fa-check"></i> Join the Waitlist</button>`;
+  var leaveWaitlist = `<button class="btn btn-danger btn-block" onclick="location.href='/remove';"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>`;
+  if (found && payloadContent.user.relatedChars.length === 0) {
+    joinWaitlist = "";
+  }
+  //If they have no char in the waitlist, hide the leave waitlist button
+  if (!found) {
+    leaveWaitlist = "";
+  }
+  var usernames = `<option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>`;
+  //If the user's main character is already in the waitlist, hide them from the list
+  if (name == payloadContent.user.name) {
+    usernames = "";
+  }
+  
+  for (var i = 0; i < payloadContent.user.relatedChars.length; i++) {
+    usernames += `<option value="${payloadContent.user.relatedChars[i].name}" selected>${payloadContent.user.relatedChars[i].name}</option>`;
+  }
 
       cb(`
       <!-- Page Content -->
@@ -126,17 +145,21 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
                         </select>
                       </div>
                       <!-- Select Language -->
-                      <!--<div class="form-group">
-                        <label for="lan">Language:</label>
+                      <div class="form-group">
+                        <label for="lan">Primary Language:</label>
                         <select name="language" class="form-control" id="lan">
                           <option value="">Choose</option>
                           <option value="English">English</option>
                           <option value="Chinese">Chinese</option>
+                          <option value="German">German</option>
+                          <option value="French">French</option>
+                          <option value="Deaf">Deaf (Need Relay)</option>
+                          <option value="Other">Other</option>
                         </select>
-                      </div>-->
+                      </div>
                       <!-- Yes/No Options -->
-                      <!--<ul class="list-unstyled">
-                        <li>
+                      <ul class="list-unstyled">
+                        <!--<li>
                           <label for="translator">Do you require a translator?</label>
                           <div class="form-check">
                             <label class="form-check-label">
@@ -146,9 +169,9 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
                             <input class="form-check-input" type="radio" name="translator" value="false"/> No
                             </label>
                           </div>
-                        </li>
+                        </li>-->
                         <li>
-                          <label for="ingame">Are you in our in-game channel?</label>
+                          <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
                           <div class="form-check">
                             <label class="form-check-label">
                             <input class="form-check-input" type="radio" id="ingame" name="ingame" value="true" required/> Yes
@@ -165,14 +188,14 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
                             <input class="form-check-input" type="radio" id="comms" name="oncomms" value="true" required/> Yes
                             </label>
                             <label class="form-check-label">
-                            <input class="form-check-input" type="radio" value="false" name="oncoms"/> No
+                            <input class="form-check-input" type="radio" value="false" name="oncomms"/> No
                             </label>
                           </div>
                         </li>
-                      </ul>-->
+                      </ul>
                       <!-- Select Fits -->
                       <div id="fits">
-                        <!--<strong>Select your fits <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Please select up to four fits you're willing to bring. You can manage your fits from the 'My Account' option on the menu."></i> </strong>-->
+                        <strong>Select your fits <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Please select up to four fits you're willing to bring. You can manage your fits from the 'My Account' option on the menu."></i> </strong>
                         <!--<ul class="list-unstyled">
                           <li>
                             <button class="btn btn-sm btn-block fit" type="button">a</button>
@@ -187,14 +210,14 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position) {
                         </div>
                       </div>
                       <!-- Action Buttons -->
-                      <button class="btn btn-success btn-block" type="submit"><i class="fa fa-check"></i> Join the Waitlist</button>
+                      ${joinWaitlist}
                     </form>
                     <div class="row">
                       <!--<div class="col-xl-12 col-lg-12 col-sm-12">
                         <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
                       </div>-->
                       <div class="col-xl-12 col-lg-12 col-sm-12">
-                        <button class="btn btn-danger btn-block" onclick="location.href='/remove';"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>
+                        ${leaveWaitlist}
                       </div>
                     </div>
                 </div>
