@@ -30,6 +30,11 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	color: white;
 }
 
+/* Default Button Style */
+.btn-default{
+	background-color: rgb(221,221,221);
+}
+
 /* Inline radio button spacing */
 .form-check-label{
 	margin-right: 10px;
@@ -49,6 +54,11 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	background-color: #282b2f!important;
 	color: white;
 }
+
+/* Removed broken carret from dropdown navs */
+.dropdown-toggle::after, nav#sidebar a[data-toggle="collapse"]::after{
+	display:none;
+ }
 
 /* global-banner */
 .global-banner{

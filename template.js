@@ -126,7 +126,7 @@ function sidebar(sidebarPayload, cb) {
         <ul class="list-unstyled">
           <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="/"><i class="fas fa-hourglass-half"></i> Waitlist</a></li>
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
-            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i> <strike>My Account</a></strike>
+            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i> <strike>My Account <i class="fas fa-sort-down float-right"></i></a></strike>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
               <strike><li><a href="#">My Alts & Fits</a></strike></li>
               <strike><li><a href="#">My Stats</a></strike></li>
@@ -134,12 +134,12 @@ function sidebar(sidebarPayload, cb) {
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fas fa-star"></i> <strike>Squad Stuff</strike></a>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fas fa-star"></i> <strike>Squad Stuff</strike> <i class="fas fa-sort-down float-right"></i></a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
               <strike><li><a href="#">Squad Fittings</a></strike></li>
               <strike><li><a href="#">Squad Roles</a></strike></li>
               <strike><li><a href="#">Squad Stats</a></strike></li>
-              <strike><li><a href="#">NewBro Guide</a></strike></li>
+              <strike><li><a href="#">New Pilot Guide</a></strike></li>
             </ul>
           </li>
           <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-link"></i> Incursion Forums</a></li>
@@ -155,7 +155,7 @@ function sidebar(sidebarPayload, cb) {
           </li>          
           <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
           <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-lock-alt"></i> <strike>Squad L</a></strike>
+            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-lock-alt"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
             <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
               <strike><li><a href="#">Ban List</a></strike></li>
               <strike><li><a href="#">FC Management</a></strike></li>
