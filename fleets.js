@@ -51,11 +51,16 @@ Fleet object format:
 
 	module.get = function(id, cb) {
 		module.createFleetsVariable(function() {
+			var found = false;
 			for (var i = 0; i < module.list.length; i++) {
 				if (module.list[i].id == id) {
-					cb(module.list[i]);
+					found = true;
+					cb(module.list[i], true);
 					break;
 				}
+			}
+			if (!found) {
+				cb(null, false);
 			}
 		})
 	}
@@ -70,11 +75,19 @@ Fleet object format:
 		});
 	}
 
-	module.register = function(data) {
+	module.register = function(data, cb) {
 		module.createFleetsVariable(function() {
-			module.list.push(data); //Do I want the calling function to do all the work?
-			module.saveFleetData(module.list, function() {
-				//Debug stuff here
+			module.get(data.id, function(fleets, fleetCheck) {
+				console.log("Fleet has been found: " + fleetCheck);
+				if (!fleetCheck) {
+					module.list.push(data); //Do I want the calling function to do all the work?
+					module.saveFleetData(module.list, function() {
+						//Debug stuff here
+						cb(true);
+					});
+				} else {
+					cb(false, "This fleet ID has already been registered. Are you trying to register the same fleet twice?");
+				}
 			});
 		})
 	}
@@ -100,11 +113,8 @@ Fleet object format:
 					console.log("Deleted fleet: " + id);
 					module.list.splice(i, 1);
 					module.saveFleetData(module.list, function() {
-						console.log("FLEET HAS BEEN DELETED HERE:")
-						console.log(module.list);
 						cb();
 					});
-					break;
 				}
 			}
 		});

@@ -123,8 +123,14 @@ app.post('/commander/', function(req, res) {
 							id: fleetid,
 							comms: "Incursions -> A"
 						}
-						fleets.register(fleetInfo);
-						res.redirect(302, '/commander/')
+						fleets.register(fleetInfo, function(success, errTxt) {
+							if (!success) {
+								res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
+							} else {
+								res.redirect(302, '/commander/')
+							}
+						});
+						
 						})
 					
 				})
