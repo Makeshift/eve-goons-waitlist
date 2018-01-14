@@ -7,25 +7,24 @@
 
 /* Invite send PENDING */
 .invite-pending, .invite-pending a{
-	background-color: #37cfdc!important; 
-	color:black;
+	background-color: #055673!important; 
+	color:white;
 }
 
 /* Invite send OKAY */
 .invite-sent, .invite-sent a{
-	background-color: #055a05!important;
+	background-color: #1a461a!important;
 	color:white!important;
 }
 
 /* Invite send FAILED */
 .invite-failed, .invite-failed a{
-	background-color: #B70404!important;
+	background-color: #670808!important;
 	color: white;
 }
 
 .invite-alert{
-	background-color: #18ba85!important;
-	color: black;
+	background-color: rgba(128, 128, 128, 0.22)!important;
 }
 
 /* Skills */
