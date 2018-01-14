@@ -108,7 +108,7 @@ module.exports = function(payloadContent, cb) {
                     <strong>Fleet Info</strong>
                   </div>
                   <!-- Fleet Settings Table -->
-                  <table class="table table-striped table-hover table-sm">
+                  <table class="table table-striped table-sm">
                     <tbody>
                       <tr>
                         <td>FC (Boss):</td>
@@ -185,10 +185,10 @@ module.exports = function(payloadContent, cb) {
               <div class="col-md-6 col-sm-12">
                 <div class="statistic-block block">
                   <div>
-                      <strong>Glance Fleet Comp</strong>
+                      <strong>Fleet at a Glance</strong>
                     <div class="tab-content">
                       <div role="tabpanel" class="tab-pane active" id="tab-1">
-                        <table class="table table-striped table-hover table-sm">
+                        <table class="table table-striped table-sm">
                           <tbody>
                             <tr>
                             ${shiptable}
