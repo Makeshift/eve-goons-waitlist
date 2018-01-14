@@ -134,7 +134,7 @@ function sidebar(sidebarPayload, cb) {
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fas fa-star"></i> <strike>Squad Stuff</strike> <i class="fas fa-sort-down float-right"></i></a>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> <strike>Squad Stuff</strike> <i class="fas fa-sort-down float-right"></i></a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
               <strike><li><a href="#">Squad Fittings</a></strike></li>
               <strike><li><a href="#">Squad Roles</a></strike></li>
@@ -155,7 +155,7 @@ function sidebar(sidebarPayload, cb) {
           </li>          
           <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
           <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-lock-alt"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
+            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
             <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
               <strike><li><a href="#">Ban List</a></strike></li>
               <strike><li><a href="#">FC Management</a></strike></li>
