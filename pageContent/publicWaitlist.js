@@ -15,12 +15,12 @@ if (payloadContent.fleets.length === 0) {
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
     fleets += `
-              <div class="col-md-6 col-sm-12"> 
+              <div class="col-md-12"> 
                 <div class="statistic-block block">
                   <div class="title">
                     <strong>Fleet Info</strong>
                   </div>
-                  <table class="table table-striped table-hover table-sm noselect">
+                  <table class="table table-striped table-sm noselect">
                     <tbody>
                       <tr>
                         <td  class="tw60per">Fleet Commander:</td>
@@ -99,14 +99,14 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
         <section class="no-padding-top padding-bottom">
           <div class="container-fluid">
             <div class="row">
-              <div class="col-md-4 col-sm-12">
+              <div class="col-lg-4 col-md-6 col-sm-12">
                 <!-- Waitlist Queue Panel -->
                 <div class="statistic-block block">
                   <div class="title">                    
                     <strong>Queue Info</strong>
                   </div>
                   <!-- Your Position Table -->
-                  <table class="table table-striped table-hover table-sm noselect">
+                  <table class="table table-striped table-sm noselect">
                     <tbody>
                       <tr>
                         <td class="tw60per">Your Position:</td>
@@ -213,26 +213,53 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       ${joinWaitlist}
                     </form>
                     <div class="row">
-                      <!--<div class="col-xl-12 col-lg-12 col-sm-12">
-                        <button class="btn btn-info btn-block"><i class="fa fa-check"></i> Update the Waitlist</button>
-                      </div>-->
                       <div class="col-xl-12 col-lg-12 col-sm-12">
                         ${leaveWaitlist}
                       </div>
+                      
+                      <hr/>
+                      
+                      <!-- Alt Waitlist Up -->
+                      <div class="col-xl-12 col-lg-12 col-sm-12" style="margin-top:10px">
+                        <strong>Join the Waitlist</strong>                      
+                          <table class="table table-responsive table-sm">
+                            <tbody>
+                              <tr style="height:33px;">
+                                <td><a href="#">MyAltOne</a></td>
+                                <td>
+                                  <select name="ship" class="form-control" id="ship" style="height: 30px;line-height: 1px;font font-size:;font-size: 10px;">
+                                    <option value="">Choose</option>
+                                  </select>                              
+                                </td>
+                                <td><button class="btn btn-sm btn-success"><i class="fas fa-plus"></i></button></td>
+                              </tr>
+                              <tr style="height:33px;">
+                                <td><a href="#">MyAltTwo</a></td>
+                                <td>
+                                  <select name="ship" class="form-control" id="ship" style="height: 30px;line-height: 1px;font font-size:;font-size: 10px;">
+                                    <option value="">Choose</option>
+                                  </select>                              
+                                </td>                              
+                                <td><button class="btn btn-sm btn-danger"><i class="fas fa-minus"></i></button></td>
+                              </tr>
+                            </tbody>
+                          </table>                      
+                        <button class="btn btn-sm btn-success float-right">Add all alts</button>
+                        <button class="btn btn-sm btn-danger float-right">Remove all alts</button> 
+                      </div>
+                      <!-- End Alt Waitlist Up -->                    
                     </div>
+                  </div>
                 </div>
                 <!-- End Waitlist Panel -->
-              </div>
-              
               
               <!-- Fleet Info -->
-              <div class="col-md-8 col-sm-12">
+              <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="row">
                   <!-- Fleet Info Table -->		  
                   ${fleets}
                 </div>
               </div>
-              
               <!-- End Fleet Info -->
               
             </div>
