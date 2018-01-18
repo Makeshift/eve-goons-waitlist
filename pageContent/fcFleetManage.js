@@ -54,7 +54,7 @@ module.exports = function(payloadContent, cb) {
                             </td>
                             <td>
                               <div class="dropdown">
-                                <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                                <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                                 <div class="dropdown-menu" role="menu">
                                   <a class="dropdown-item" href="#">View Pilot Profile</a>
                                   <a class="dropdown-item" href="#">View Pilot Skills</a>
@@ -108,24 +108,24 @@ module.exports = function(payloadContent, cb) {
                     <strong>Fleet Info</strong>
                   </div>
                   <!-- Fleet Settings Table -->
-                  <table class="table table-striped table-hover table-sm">
+                  <table class="table table-striped table-sm">
                     <tbody>
                       <tr>
                         <td>FC (Boss):</td>
                         <td><a href="#">${payloadContent.fleet.fc.name}</a></td>
-                        <td><button class="btn btn-sm btn-info btn-block">I'm the FC</button></td>
+                        <td><button class="btn btn-sm btn-block">I'm the FC</button></td>
                       </tr>
                       <tr>
                         <td>Backseating FC:</td>
                         <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
-                        <td><button class="btn btn-sm btn-info btn-block">Unset Backseat</button></td>
+                        <td><button class="btn btn-sm btn-block">Unset Backseat</button></td>
                       </tr>
                       <tr>
                         <td>Fleet Status:</td>
                         <td>${payloadContent.fleet.status}</td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-info btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status </button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
                               <a class="dropdown-item" href="#">Forming</a>
                               <a class="dropdown-item" href="#">Running</a>
@@ -141,7 +141,7 @@ module.exports = function(payloadContent, cb) {
                         <td>${payloadContent.fleet.type}</td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-info btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type </button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
                               <a class="dropdown-item" href="#">Vanguards</a>
                               <a class="dropdown-item" href="#">Assaults</a>
@@ -156,7 +156,7 @@ module.exports = function(payloadContent, cb) {
                         <td><a href="#">${payloadContent.fleet.comms}</a></td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-info btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel </button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
                               <a class="dropdown-item" href="#">Incursions -> A</a>
                               <a class="dropdown-item" href="#">Incursions -> B</a>
@@ -172,7 +172,7 @@ module.exports = function(payloadContent, cb) {
                       <tr>
                         <td colspan="3">
                           <form action="/commander/${payloadContent.fleet.id}/delete">
-                            <button class="btn btn-danger btn-sm btn-block" type="submit"><i class="fas fa-warning"></i> Close the Fleet! <i class="fas fa-warning"></i></button>
+                            <button class="btn btn-danger btn-sm btn-block" type="submit"><i class="fas fa-exclamation-triangle"></i> Close the Fleet! <i class="fas fa-exclamation-triangle"></i></button>
                           </form>
                         </td>
                       </tr>
@@ -185,10 +185,10 @@ module.exports = function(payloadContent, cb) {
               <div class="col-md-6 col-sm-12">
                 <div class="statistic-block block">
                   <div>
-                      <strong>Glance Fleet Comp</strong>
+                      <strong>Fleet at a Glance</strong>
                     <div class="tab-content">
                       <div role="tabpanel" class="tab-pane active" id="tab-1">
-                        <table class="table table-striped table-hover table-sm">
+                        <table class="table table-striped table-sm">
                           <tbody>
                             <tr>
                             ${shiptable}
