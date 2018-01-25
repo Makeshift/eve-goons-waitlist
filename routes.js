@@ -11,33 +11,27 @@ var waitlist = require('./globalWaitlist.js')(setup);
 module.exports = function(app, setup) {
 	app.get('/', function(req, res) {
 		if (req.isAuthenticated()) {
-			//Since the user is at the index, let's force an update of their session, just in case
-			users.findAndReturnUser(req.user.characterID, function(userProfile) {
-				req.session.passport.user = userProfile;
-				req.session.save(function(err) {
-					//Grab all fleets
-					fleets.getFCPageList(function(fleets) {
-						if (err) console.log(err);
-						var page = {
-							template: "publicWaitlist",
-							sidebar: {
-								selected: 1,
-								user: req.user
-							},
-							header: {
-								user: req.user
-							},
-							content: {
-							 user: req.user,
-							 fleets: fleets
-						  }
-						}
-						template.pageGenerate(page, function(generatedPage) {
-							res.send(generatedPage);
-						})
-					});
+			//Grab all fleets
+			fleets.getFCPageList(function(fleets) {
+				if (err) console.log(err);
+				var page = {
+					template: "publicWaitlist",
+					sidebar: {
+						selected: 1,
+						user: req.user
+					},
+					header: {
+						user: req.user
+					},
+					content: {
+					 user: req.user,
+					 fleets: fleets
+				  }
+				}
+				template.pageGenerate(page, function(generatedPage) {
+					res.send(generatedPage);
 				})
-			})
+			});
 		} else {
 			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
 		}

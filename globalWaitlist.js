@@ -1,43 +1,24 @@
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
+const db = require('./dbhandler.js').db.collection('waitlist');
 
 module.exports = function(setup) {
     var module = {};
-    module.list = [];
-    module.createWaitlistVariable = function(cb) {
-        try {
-            if (module.list.length === 0) {
-                fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/waitlist.json`), function(err, data) {
-                    if (typeof data !== 'undefined') {
-                        module.list = JSON.parse(data);
-                    }
-                    cb();
-                });
-            } else {
-                cb()
-            }
-
-        } catch (e) {
-            console.log("No waitlist found.");
-            cb()
-        }
-    };
 
     module.get = function(cb) {
-        module.createWaitlistVariable(function() {
-            cb(module.list);
+        db.find({}).toArray(function(err, docs) {
+            if (err) console.log(err);
+            cb(docs);
         })
     }
 
     module.addToWaitlist = function(user, cb) {
     	module.checkIfUserIsIn(user.characterID, function(status) {
     		if (!status) {
-		    	module.createWaitlistVariable(function() {
-			    	module.list.push(user);
-			    	module.saveWaitlistData(module.list, function() {
-                        cb(true);
-                    });
-			   	})
+                db.insert(user, function(err, doc) {
+                    if (err) console.log(err);
+                    cb(true);
+                })
 		   	} else {
 		   		cb(true);
 		   	}
@@ -45,62 +26,24 @@ module.exports = function(setup) {
     }
 
     module.checkIfUserIsIn = function(characterID, cb) {
-    	module.createWaitlistVariable(function() {
-    		var found = false;
-    		for (var i = 0; i < module.list.length; i++) {
-    			if (module.list[i].user.characterID == characterID) {
-    				found = true;
-    				cb(true)
-    			}
-    		}
-    		if (!found) {
-    			cb(false);
-    		}
-    	})
+            db.findOne({ "characterID": characterID}, function(err, doc) {
+                if (err) console.log(err);
+                if (doc.length === 0) {
+                    cb(false)
+                } else {
+                    cb(true);
+                }
+            })
     }
 
     module.remove = function(characterID, cb) {
-    	module.createWaitlistVariable(function() {
-    		for (var i = 0; i < module.list.length; i++) {
-    			if (module.list[i].user.characterID == characterID) {
-    				module.list.splice(i, 1);
-    				module.saveWaitlistData(module.list, function() {
-                        cb();
-                    });
-    				break;
-    			}
-    		}
-    	})
-    }
-
-    module.getUserPosition = function(characterID, cb) {
-        module.createWaitlistVariable(function() {
-            var found = false;
-            for (var i = 0; i < module.list.length; i++) {
-                if (module.list[i].user.characterID == characterID) {
-                    console.log("Waitlist is returning that the player is in it")
-                    cb({position: i+1, length: module.list.length}, true, module.list[i].user.name)
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                cb({position: "##", length: "##"}, false)
-            }
+    	db.deleteOne({ 'characterID': characterID }, function(err, result) {
+            if (err) console.log(err);
+            cb();
         })
     }
 
-    module.saveWaitlistData = function(data, cb) {
-        try {
-            fs.writeFile(path.normalize(`${__dirname}/${setup.data.directory}/waitlist.json`), JSON.stringify(data, null, 2), function(err) {
-                if (err) console.log(err);
-                cb();
-            });
-        } catch (e) {
-            console.log(e)
-            console.log("Failed to save waitlist data");
-        }
-    };
-
-    return module;
-}
+    //TODO: Broken due to mongo. Do we care about the user knowing their position? We don't use it on the FC side really anyway.
+    module.getUserPosition = function(characterID, cb) {
+        cb({position: "##", length: "##"}, false)
+    }
