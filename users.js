@@ -1,32 +1,13 @@
 const path = require('path');
 const fs = require('fs');
-var setup = require('./setup.js');
-var refresh = require('passport-oauth2-refresh');
-var esi = require('eve-swagger');
-var cache = require('./cache.js')(setup);
+const setup = require('./setup.js');
+const refresh = require('passport-oauth2-refresh');
+const esi = require('eve-swagger');
+const cache = require('./cache.js')(setup);
+const db = require('./dbhandler.js').db.collection('users');
 
 module.exports = function (setup) {
 	var module = {};
-	module.list = [];
-	//I hate this and it sucks. It needs replacing with a database.
-	module.createUsersVariable = function(cb) {
-		try {
-			if (module.list.length === 0) {
-				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), function(err, data) {
-					if (typeof data !== 'undefined') {
-						module.list = JSON.parse(data);
-					}
-					cb();
-				});
-			} else {
-				cb()
-			}
-			
-		} catch (e) {
-			console.log("No users found.");
-		}
-		return module.list;
-	};
 
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function(users, refreshToken, characterDetails, cb) {
@@ -47,36 +28,20 @@ module.exports = function (setup) {
 	};
 
 	module.findAndReturnUser = function(checkID, cb) {
-		module.createUsersVariable(function() {
-			var userProfile = false;
-			for (var i = 0; i < module.list.length; i++) {
-				if (module.list[i].characterID == checkID) {
-					userProfile = module.list[i];
-					break;
-				}
+		db.find({'characterID': checkID}).toArray(function(err, docs) {
+			if (docs.length === 0) {
+				cb(false)
+			} else {
+				cb(docs[0])
 			}
-			cb(userProfile);
 		});
 	};
 
 	module.updateRefreshToken = function(checkID, token) {
-		for (var i = 0; i < module.list.length; i++) {
-			if (module.list[i].characterID == checkID) {
-				module.list[i].refreshToken = token;
-				module.saveUserData();
-				break;
-			}
-		}
+		db.updateOne({'characterID': checkID}, { $set: {refreshToken: token}}, function(err, result) {
+			if (err) console.log(err);
+		})
 	}
-
-	module.saveUserData = function() {
-		try {
-			fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/registeredUsers.json`), JSON.stringify(module.list, null, 2));
-		} catch (e) {
-			console.log(e)
-			console.log("Failed to save user data");
-		}
-	};
 
 	module.getLocation = function(user, cb, passthrough) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function(err, accessToken, newRefreshToken) {
@@ -108,9 +73,10 @@ module.exports = function (setup) {
 			statistics: { sites: {} },
 			notifications: []
 		}
-		module.list.push(newUserTemplate);
-		cb(newUserTemplate);
-		module.saveUserData();
+		db.insert(newUserTemplate, function(err, result) {
+			if (err) console.log(err);
+			cb(newUserTemplate);
+		})
 	};
 
 	return module;
