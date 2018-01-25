@@ -15,14 +15,15 @@
   "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "connect-mongo": "^2.0.1",
     "eve-swagger": "^0.3.3",
     "express": "^4.16.2",
     "express-session": "^1.15.6",
+    "mongodb": "^3.0.1",
     "passport": "^0.4.0",
     "passport-oauth2": "^1.4.0",
     "passport-oauth2-refresh": "^1.0.0",
-    "request": "^2.83.0",
-    "session-file-store": "^1.2.0"
+    "request": "^2.83.0"
   },
   "repository": {
     "type": "git",

@@ -4,6 +4,7 @@ The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet 
 ### Installation and Setup
 * Clone repo
 * Run `npm install` to grab dependencies
+* Install a MongoDB instance
 * Create a `setup.js` file using the template below.
 
 Setup.js:
@@ -19,7 +20,9 @@ exports.oauth = {
 
 exports.data = {
 	directory: "data", //Where data will be stored
-	sessionSecret: "RandomStringHere"
+	sessionSecret: "RandomStringHere",
+	mongoDbURL: "mongoDB://localhost:27017",
+	mongoDbName: "eve-goons-waitlist"
 }
 
 exports.settings = {
