@@ -1,10 +1,11 @@
-var fs = require('fs');
-var path = require('path');
-var esi = require('eve-swagger');
-var refresh = require('passport-oauth2-refresh');
-var setup = require('./setup.js');
-var users = require('./users.js')(setup);
-var cache = require('./cache.js')(setup);
+const fs = require('fs');
+const path = require('path');
+const esi = require('eve-swagger');
+const refresh = require('passport-oauth2-refresh');
+const setup = require('./setup.js');
+const users = require('./users.js')(setup);
+const cache = require('./cache.js')(setup);
+const db = require('./dbhandler.js').db.collection('fleets');
 
 module.exports = function (setup) {
 	var module = {};
@@ -29,40 +30,16 @@ Fleet object format:
 
 */
 
-	module.createFleetsVariable = function(cb) {
-		try {
-			if (module.list.length === 0) {
-				fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), function(err, data) {
-					if (typeof data !== 'undefined') {
-						module.list = JSON.parse(data);
-					}
-					cb();
-				});
-			} else {
-				cb()
-			}
-			
-		} catch (e) {
-			console.log("No fleets found.");
-			cb()
-		}
-		return module.list;
-	};
-
 	module.get = function(id, cb) {
-		module.createFleetsVariable(function() {
-			var found = false;
-			for (var i = 0; i < module.list.length; i++) {
-				if (module.list[i].id == id) {
-					found = true;
-					cb(module.list[i], true);
-					break;
-				}
+		db.findOne({'id': id}, function(err, doc) {
+			if (err) console.log(err);
+			if (doc.length === 0) {
+				cb(null, false)
+			} else {
+				cb(doc, true);
 			}
-			if (!found) {
-				cb(null, false);
-			}
-		})
+
+		});
 	}
 
 	module.getMembers = function(characterID, refreshToken, fleetid, cb) {
@@ -76,83 +53,52 @@ Fleet object format:
 	}
 
 	module.register = function(data, cb) {
-		module.createFleetsVariable(function() {
 			module.get(data.id, function(fleets, fleetCheck) {
 				if (!fleetCheck) {
-					module.list.push(data); //Do I want the calling function to do all the work?
-					module.saveFleetData(module.list, function() {
-						//Debug stuff here
+					db.insert(data, function(err, result) {
+						if (err) console.log(err);
 						cb(true);
 					});
 				} else {
 					cb(false, "This fleet ID has already been registered. Are you trying to register the same fleet twice?");
 				}
 			});
-		})
 	}
 
-	module.saveFleetData = function(data, cb) {
-		fs.writeFile(path.normalize(`${__dirname}/${setup.data.directory}/fleets.json`), JSON.stringify(data, null, 2), function(err) {
-			if (err) console.log(err);
-			cb();
-		});
-	};
-
-
 	module.getFCPageList = function(cb) {
-		module.createFleetsVariable(function() {
-			cb(module.list)
+		db.find({}).toArray(function(err, docs) {
+			if (err) console.log(err);
+			cb(docs);
 		})
 	}
 
 	module.delete = function(id, cb) {
-		module.createFleetsVariable(function() {
-			for (var i = 0; i < module.list.length; i++) {
-				if (module.list[i].id == id) {
-					console.log("Deleted fleet: " + id);
-					module.list.splice(i, 1);
-					module.saveFleetData(module.list, function() {
-						cb();
-					});
-				}
-			}
-		});
+		db.deleteOne({ 'id': id }, function(err, result) {
+			if (err) console.log(err);
+			cb();
+		})
 	}
 
 
 	module.timers = function() {	
 		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
 		setTimeout(function() {
-			module.createFleetsVariable(function() {
-				var count = 0;
-				for (var i = 0; i < module.list.length; i++) {
-					module.getMembers(module.list[i].fc.characterID, module.list[i].fc.refreshToken, module.list[i].id, function(members, fleetid) {
-						for (var x = 0; x < module.list.length; x++) {
-							if (module.list[x].id === fleetid) {
-								module.list[x].members = members;
-								break;
+				var checkCache = [];
+				db.find().forEach(function(doc) {
+					module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, function(members, fleetid) {
+						db.updateOne({ 'id' : fleetid }, { $set: { "members": members }}, function(err, result) {
+							if (err) console.log(err);
+						})
+						members.forEach(function(member, i) {
+							checkCache.push(member.ship_type_id);
+							checkCache.push(member.solar_system_id);
+							if (i == members.length-1) {
+								cache.massQuery(checkCache);
 							}
-						}
-
-						//loop through members and grab all the static ID's
-						var staticIDs = [];
-						for (var f = 0; f < members.length; f++) {
-							staticIDs.push(members[f].ship_type_id);
-							staticIDs.push(members[f].solar_system_id);
-						}
-						cache.massQuery(staticIDs);
-
-						
-						count++;
-						if (count == i) {
-							module.saveFleetData(module.list, function() {
-								//Debug Stuff Here
-							});
-						}
+						})
 					})
-				}
+				})
 				module.timers();
-			});
 		}, 10000)
 
 	}
