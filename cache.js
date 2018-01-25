@@ -69,7 +69,6 @@ module.exports = function (setup) {
 				fullquery.push(docs[i].id);
 			}
 			var newBulkSearch = uniq(diffArray(fullquery, ids));
-			console.log(newBulkSearch)
 			if (newBulkSearch.length > 0) {
 			esi.names(newBulkSearch).then(function(items) {
 				db.insertMany(items, function(err, result) {

@@ -28,7 +28,7 @@ module.exports = function(setup) {
     module.checkIfUserIsIn = function(characterID, cb) {
             db.findOne({ "characterID": characterID}, function(err, doc) {
                 if (err) console.log(err);
-                if (doc.length === 0) {
+                if (doc === null) {
                     cb(false)
                 } else {
                     cb(true);
