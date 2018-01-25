@@ -24,14 +24,6 @@ database.connect(function() {
     const customSSO = require('./customSSO.js')(refresh, setup, request, url);
     const fleets = require('./fleets.js')(setup);
 
-
-
-
-    //Make the data folder
-    if (!fs.existsSync(path.normalize(__dirname + "/" + setup.data.directory))) {
-        console.log("Creating data folder");
-        fs.mkdirSync(path.normalize(__dirname + "/" + setup.data.directory))
-    }
     //Start timers
     fleets.timers();
 
@@ -80,6 +72,7 @@ database.connect(function() {
     app.use(passport.session());
     app.use( bodyParser.urlencoded({ extended: true }) );
     app.use('/includes', express.static('public/includes'));
+    app.use(users.updateUserSession); //Force the session to update from DB on every page load because sessions are not the source of truth here!
 
     //Routes
     require('./oAuthRoutes.js')(app, passport, setup);

@@ -9,6 +9,16 @@ const db = require('./dbhandler.js').db.collection('users');
 module.exports = function (setup) {
 	var module = {};
 
+	module.updateUserSession = function(req, res, next) {
+		module.findAndReturnUser(req.session.passport.user.characterID, function(userData) {
+			req.session.passport.user = userData;
+			req.session.save(function(err) {
+				if (err) console.log(err);
+				next();
+			})
+		})
+	}
+
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function(users, refreshToken, characterDetails, cb) {
 		//Check if the user exists

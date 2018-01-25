@@ -1,22 +1,10 @@
 var fs = require('fs');
 var path = require('path');
 var esi = require('eve-swagger');
+const db = require('./dbhandler.js').db.collection('cache');
 
 module.exports = function (setup) {
 	var module = {};
-	module.list = [];
-	module.createCacheVariable = function(cb) {
-		if (module.list.length === 0) {
-			fs.readFile(path.normalize(`${__dirname}/${setup.data.directory}/cache.json`), function(err, data) {
-				if (typeof data !== 'undefined') {
-					module.list = JSON.parse(data);
-				}
-				cb();
-			});
-		} else {
-			cb()
-		}
-};
 
 	module.query = function(id, cb) {
 		if (typeof id === "number" || typeof id === "string") {
@@ -27,63 +15,51 @@ module.exports = function (setup) {
 		})
 	}
 
-	module.get = function(id, cb) {
-		module.createCacheVariable(function() {
-			var found = false;
-			for (var i = 0; i < module.list.length; i++) {
-				if (module.list[i].id === id) {
-					cb(module.list[i]);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				module.query(id, function(item) {
-					module.list.push(item);
-					cb(item);
-					module.saveCacheData();
-				})
-			}
-			
+	module.addToDb = function(data, cb) {
+		db.insert(data, function(err, result) {
+			if (err) console.log(err);
+			cb();
 		})
+	}
+
+	module.get = function(id, cb) {
+		db.findOne({'id': id}, function(err, doc) {
+			if (err) console.log(err);
+			if (docs.length === 0) {
+				module.query(id, function(item) {
+					module.addToDb(item);
+					cb(item);
+				})
+			} else {
+				cb(doc)
+			}
+		});
+		
 	}
 
 	module.massQuery = function(ids, cb) {
 		module.createCacheVariable(function() {
-			var fullquery = [];
-			for (var i = 0; i < ids.length; i++) {
-				var found = false;
-				for (var x = 0; x < module.list.length; x++) {
-					if (ids[i] === module.list[x].id) {
-						found = true;
-					}
+			db.find({ 'id': { $in: ids }}).toArray(function(err, docs) {
+				if (err) console.log(err);
+				var fullquery = [];
+				for (var i = 0; i < docs.length; i++) {
+					fullquery.push(docs[i].id);
 				}
-				if (!found) {
-					fullquery.push(ids[i]);
-				}
-			}
-			if (fullquery.length > 0) {
+
+				if (fullquery.length > 0) {
 				esi.names(fullquery).then(function(items) {
-					for (var i = 0; i < items.length; i++) {
-						module.list.push(items[i]);
-					}
-					module.saveCacheData();
-					if (typeof cb === "function") {
-						cb(items);
-					}
+					db.insertMany(items, function(err, result) {
+						if (err) console.log(err);
+						if (typeof cb === "function") {
+							cb(items);
+						}
+					})	
 				})
 			}
+			});
+			
 		})
 	}
-
-		module.saveCacheData = function() {
-			try {
-				fs.writeFileSync(path.normalize(`${__dirname}/${setup.data.directory}/cache.json`), JSON.stringify(module.list, null, 2));
-			} catch (e) {
-				console.log(e)
-				console.log("Failed to save cache data");
-			}
-		};
 
 	return module;
 }
