@@ -13,7 +13,6 @@ module.exports = function(app, setup) {
 		if (req.isAuthenticated()) {
 			//Grab all fleets
 			fleets.getFCPageList(function(fleets) {
-				if (err) console.log(err);
 				var page = {
 					template: "publicWaitlist",
 					sidebar: {
@@ -45,7 +44,8 @@ module.exports = function(app, setup) {
 				ship: req.body.ship,
 				ingameChat: req.body.ingame,
 				onComms: req.body.oncomms,
-				language: req.body.language
+				language: req.body.language,
+				signupTime: new Date()
 			}
 			waitlist.addToWaitlist(userAdd, function() {
 				res.redirect('/');

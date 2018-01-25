@@ -47,3 +47,7 @@ module.exports = function(setup) {
     module.getUserPosition = function(characterID, cb) {
         cb({position: "##", length: "##"}, false)
     }
+
+    return module;
+
+}

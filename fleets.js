@@ -33,7 +33,7 @@ Fleet object format:
 	module.get = function(id, cb) {
 		db.findOne({'id': id}, function(err, doc) {
 			if (err) console.log(err);
-			if (doc.length === 0) {
+			if (doc === null) {
 				cb(null, false)
 			} else {
 				cb(doc, true);
