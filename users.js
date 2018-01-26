@@ -8,16 +8,20 @@ const db = require('./dbhandler.js').db.collection('users');
 
 module.exports = function (setup) {
 	var module = {};
-
+	//This nested if stuff is kinda unpleasant and I'd like to fix it
 	module.updateUserSession = function(req, res, next) {
 		if (typeof req.session.passport !== "undefined") {
-			module.findAndReturnUser(req.session.passport.user.characterID, function(userData) {
-				req.session.passport.user = userData;
-				req.session.save(function(err) {
-					if (err) console.log(err);
-					next();
+			if (typeof req.session.passport.user !== "undefined") {
+				module.findAndReturnUser(req.session.passport.user.characterID, function(userData) {
+					req.session.passport.user = userData;
+					req.session.save(function(err) {
+						if (err) console.log(err);
+						next();
+					})
 				})
-			})
+			} else {
+				next();
+			}
 		} else {
 			next();
 		}
