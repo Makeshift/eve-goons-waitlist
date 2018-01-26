@@ -10,7 +10,7 @@ module.exports = function (setup) {
 	var module = {};
 
 	module.updateUserSession = function(req, res, next) {
-		if (typeof req.session.passport.user !== "undefined") {
+		if (typeof req.session.passport !== "undefined") {
 			module.findAndReturnUser(req.session.passport.user.characterID, function(userData) {
 				req.session.passport.user = userData;
 				req.session.save(function(err) {
