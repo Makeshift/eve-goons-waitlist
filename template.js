@@ -100,7 +100,7 @@ function header(headerPayload, cb) {
               </ul>
             </li>
             <!-- Logout -->
-            <li class="list-inline-item logout"><a id="logout" href="#" class="nav-link">Logout <i class="icon-logout"></i></a></li>
+            <li class="list-inline-item logout"><a id="logout" href="/logout" class="nav-link">Logout <i class="icon-logout"></i></a></li>
           </ul>
         </div>
       </nav>
@@ -182,7 +182,7 @@ function footer(footerPayload, cb) {
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                   </div>
                   <div class="modal-body">
-                    <p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to DYNAMIC. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
+                    <p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to the Goon Incursions Squad. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
                     <ul class="list-unstyled text-center">
                       <li><small>Design by <a href="#">Caitlin  Viliana</a>, theme by: <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
                       <li><small>Website developed and maintained by: <a href="#">Makeshift Storque</a></small></li>
