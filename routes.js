@@ -182,12 +182,13 @@ app.get('/commander/:fleetid/', function(req, res) {
 	}
 });
 
-app.get('/commander/:fleetid/invite/:characterID', function(req, res) {
+app.get('/commander/:fleetid/invite/:characterID/:tableID', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 		fleets.get(req.params.fleetid, function(fleet) {
 			fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function() {
 				res.redirect(302, '/commander/'+req.params.fleetid);
 			});
+			waitlist.setAsInvited(req.params.tableID);
 		})
 		
 	} else {

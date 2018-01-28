@@ -13,6 +13,13 @@ module.exports = function(setup) {
         })
     }
 
+    module.getSingleFromTableID = function(id, cb) {
+        db.findOne({'_id': ObjectId(id)}, function(err, result) {
+            if (err) console.log(err);
+            if (typeof cb === "function") cb(result);
+        })
+    }
+
     module.addToWaitlist = function(user, cb) {
     	module.checkIfUserIsIn(user.name, function(status) {
     		if (!status) {
@@ -24,6 +31,14 @@ module.exports = function(setup) {
 		   		cb(true);
 		   	}
 	   	})
+    }
+
+    module.setAsInvited = function(tableID, cb) {
+        db.updateOne({'_id': ObjectId(tableID)}, { $set: {"invited": true}}, function(err, result) {
+            if (err) console.log(err);
+            if (typeof cb === "function") cb();
+        })
+        
     }
 
     module.checkIfUserIsIn = function(name, cb) {

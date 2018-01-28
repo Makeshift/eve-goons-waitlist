@@ -45,6 +45,10 @@ module.exports = function(payloadContent, cb) {
           var name = entry.user.name;
           var role = entry.user.role;
           var removetext = "";
+          var invited = "invite-default";
+          if (entry.invited === true) {
+            invited = "invite-sent";
+          }
           if (typeof entry.alt === "object") {
             characterID = entry.alt.id;
             name = entry.alt.name;
@@ -52,7 +56,7 @@ module.exports = function(payloadContent, cb) {
             removetext = "?alt=true"
           }
           waitlistHTML += `
-          <tr class="invite-default">
+          <tr class="${invited}">
                             <td>
                               <img src="http://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
                             </td>
@@ -61,7 +65,7 @@ module.exports = function(payloadContent, cb) {
                               <p>${role}</p>
                             </td>
                             <td>
-                              <a href="/commander/${fleetid}/invite/${characterID}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>
+                              <a href="/commander/${fleetid}/invite/${characterID}/${tableID}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>
                             </td>
                             <td>
                               <div class="dropdown">
