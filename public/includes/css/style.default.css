@@ -1569,7 +1569,6 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
 
 .login-page .form-holder .form form {
   width: 100%;
-  max-width: 400px;
 }
 
 .login-page .form-holder .form #login,
