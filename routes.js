@@ -115,7 +115,8 @@ app.post('/commander/', function(req, res) {
 					members: members,
 					url: req.body.url,
 					id: fleetid,
-					comms: "Incursions -> A"
+					comms: "Incursions -> A",
+					errors: 0
 				}
 				fleets.register(fleetInfo, function(success, errTxt) {
 					if (!success) {
