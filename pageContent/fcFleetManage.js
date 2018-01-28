@@ -25,13 +25,13 @@ module.exports = function(payloadContent, cb) {
     	`;
 
       if (counter >= numOfShips) {
-        contWaitlistGenerate(shiptable, fleetLength, cb);
+        contWaitlistGenerate(shiptable, fleetLength, payloadContent.fleet.id, cb);
       }
 
     })
   }
 
-  function contWaitlistGenerate(shiptable, fleetLength, cb) {
+  function contWaitlistGenerate(shiptable, fleetLength, fleetid, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
       console.log(usersOnWaitlist)
@@ -41,12 +41,15 @@ module.exports = function(payloadContent, cb) {
         users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
           count++;
           var characterID = entry.user.characterID;
+          var tableID = entry._id;
           var name = entry.user.name;
           var role = entry.user.role;
+          var removetext = "";
           if (typeof entry.alt === "object") {
             characterID = entry.alt.id;
             name = entry.alt.name;
             role = "Alt of: " + entry.user.name;
+            removetext = "?alt=true"
           }
           waitlistHTML += `
           <tr class="invite-default">
@@ -58,7 +61,7 @@ module.exports = function(payloadContent, cb) {
                               <p>${role}</p>
                             </td>
                             <td>
-                              <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                              <a href="/commander/${fleetid}/invite/${characterID}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>
                             </td>
                             <td>
                               <div class="dropdown">
@@ -73,7 +76,7 @@ module.exports = function(payloadContent, cb) {
                               <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                             </td>
                             <td>
-                              <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                              <a href="/commander/${fleetid}/remove/${tableID}/"><button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button></a>
                             </td>
                             <td>
                               <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.user.ship}" alt="${entry.user.ship}"></a>

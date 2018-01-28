@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const db = require('./dbhandler.js').db.collection('waitlist');
+const ObjectId = require('mongodb').ObjectID;
 
 module.exports = function(setup) {
     var module = {};
@@ -36,10 +37,11 @@ module.exports = function(setup) {
             })
     }
 
-    module.remove = function(characterID, cb) {
-    	db.deleteOne({ 'characterID': characterID }, function(err, result) {
+    module.remove = function(tableID, cb) {
+        console.log("Deleting ID from waitlist: " + tableID);
+    	db.deleteOne({ '_id': ObjectId(tableID) }, function(err, result) {
             if (err) console.log(err);
-            cb();
+            if (typeof cb === "function") cb();
         })
     }
 

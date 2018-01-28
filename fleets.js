@@ -6,6 +6,7 @@ const setup = require('./setup.js');
 const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
 const db = require('./dbhandler.js').db.collection('fleets');
+var waitlist = require('./globalWaitlist.js')(setup);
 
 module.exports = function (setup) {
 	var module = {};
@@ -56,7 +57,7 @@ Fleet object format:
 		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
 			if (err) throw err;
 			users.updateRefreshToken(fcid, newRefreshToken);
-			esi.characters(fcid, accessToken).fleet(fleetid).invite({"character_id": inviteeid});
+			esi.characters(fcid, accessToken).fleet(fleetid).invite({"character_id": inviteeid, "role": "squad_member"});
 			if (typeof cb === "function") {
 				cb();
 			}
@@ -90,9 +91,37 @@ Fleet object format:
 		})
 	}
 
+	module.checkForDuplicates = function() {
+		db.find({}).toArray(function(err, docs) {
+			if (err) console.log(err);
+			var members = [];
+			//Concat didn't work here for some reason? Weird for loop madness instead
+			for (var i = 0; i < docs.length; i++) {
+				for (var x = 0; x < docs[i].members.length; x++) {
+					members.push(docs[i].members[x].character_id);
+				}
+			}
+			waitlist.get(function(onWaitlist) {
+				for (var i = 0; i < onWaitlist.length; i++) {
+						var charID = onWaitlist[i].user.characterID;
+						var charName = onWaitlist[i].user.name;
+						if (onWaitlist[i].alt) {
+							charID = onWaitlist[i].alt.id;
+							charName = onWaitlist[i].alt.name;
+						}
+						if (members.includes(charID)) {
+							console.log(`Character ${charName} found in fleet and removed from waitlist.`);
+							waitlist.remove(onWaitlist[i]._id);
+						}
+				}
+			})
+		})
+	}
+
 
 	module.timers = function() {	
 		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
+		//TODO: Error checking doesn't work due to how ESI module handles errors
 		setTimeout(function() {
 				var checkCache = [];
 					db.find().forEach(function(doc) {
@@ -101,6 +130,7 @@ Fleet object format:
 								module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, function(members, fleetid) {
 									db.updateOne({ 'id' : fleetid }, { $set: { "members": members, "errors": 0 }}, function(err, result) {
 										if (err) console.log(err);
+										module.checkForDuplicates();
 									})
 									members.forEach(function(member, i) {
 										checkCache.push(member.ship_type_id);

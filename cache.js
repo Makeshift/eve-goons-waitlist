@@ -21,7 +21,7 @@ module.exports = function (setup) {
 			if (typeof cb === "function") cb();
 		})
 	}
-
+	//Duplicate key errors are caused by trying to 'get' stuff too quickly. NEED to make getting a background process
 	module.get = function(id, cb) {
 		db.findOne({'id': id}, function(err, doc) {
 			if (err) console.log(err);
@@ -68,7 +68,7 @@ module.exports = function (setup) {
 			for (var i = 0; i < docs.length; i++) {
 				fullquery.push(docs[i].id);
 			}
-			var newBulkSearch = uniq(diffArray(fullquery, ids));
+			var newBulkSearch = uniq(diffArray(fullquery, uniq(ids)));
 			if (newBulkSearch.length > 0) {
 			esi.names(newBulkSearch).then(function(items) {
 				db.insertMany(items, function(err, result) {

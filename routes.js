@@ -185,7 +185,7 @@ app.get('/commander/:fleetid/', function(req, res) {
 app.get('/commander/:fleetid/invite/:characterID', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 		fleets.get(req.params.fleetid, function(fleet) {
-			invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function() {
+			fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function() {
 				res.redirect(302, '/commander/'+req.params.fleetid);
 			});
 		})
@@ -194,6 +194,16 @@ app.get('/commander/:fleetid/invite/:characterID', function(req, res) {
 		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 	}
 });
+
+app.get('/commander/:fleetid/remove/:tableID', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		waitlist.remove(req.params.tableID, function() {
+			res.redirect(302, '/commander/'+req.params.fleetid);
+		});
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+})
 
 app.get('/commander/:fleetid/delete', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
