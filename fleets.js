@@ -52,6 +52,17 @@ Fleet object format:
 		});
 	}
 
+	module.invite = function(fcid, refreshToken, fleetid, inviteeid, cb) {
+		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
+			if (err) throw err;
+			users.updateRefreshToken(fcid, newRefreshToken);
+			esi.characters(fcid, accessToken).fleet(fleetid).invite({"character_id": inviteeid});
+			if (typeof cb === "function") {
+				cb();
+			}
+		})
+	}
+
 	module.register = function(data, cb) {
 			module.get(data.id, function(fleets, fleetCheck) {
 				if (!fleetCheck) {

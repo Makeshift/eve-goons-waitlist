@@ -13,7 +13,7 @@ module.exports = function(setup) {
     }
 
     module.addToWaitlist = function(user, cb) {
-    	module.checkIfUserIsIn(user.characterID, function(status) {
+    	module.checkIfUserIsIn(user.name, function(status) {
     		if (!status) {
                 db.insert(user, function(err, doc) {
                     if (err) console.log(err);
@@ -25,8 +25,8 @@ module.exports = function(setup) {
 	   	})
     }
 
-    module.checkIfUserIsIn = function(characterID, cb) {
-            db.findOne({ "characterID": characterID}, function(err, doc) {
+    module.checkIfUserIsIn = function(name, cb) {
+            db.findOne({ "name": name}, function(err, doc) {
                 if (err) console.log(err);
                 if (doc === null) {
                     cb(false)

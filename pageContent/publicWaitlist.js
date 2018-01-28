@@ -78,6 +78,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
     usernames += `<option value="${payloadContent.user.relatedChars[i].name}" selected>${payloadContent.user.relatedChars[i].name}</option>`;
   }
 
+
       cb(`
       <!-- Page Content -->
       <div class="page-content">
@@ -88,12 +89,10 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
         </div>
         <!-- Banner Message -->
         <section>
-          <!-- FC Banner Message -->
-          <div role="alert" class="alert alert-dark global-banner">
-            <strong>PLEASE NOTE:</strong> This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.
-          </div>
           <!-- No Fleet -->
+          <div id="alertarea">
           ${inactive}
+          </div>
         </section>
         <!-- Main Content -->
         <section class="no-padding-top padding-bottom">
@@ -136,13 +135,13 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                     <!-- Select Character -->
                     <form method="POST" action="/" role="form">
                       <div class="form-group">
-                        <label for="character">Select Pilot:</label>
-                        <select name="user" class="form-control" id="character">
-                          <!--<option value="">Choose</option>-->
+                        <label for="character">Select Pilot (Temporary Override):</label>
+                        <!--<select name="user" class="form-control" id="character">
+                          <option value="">Choose</option>
                           <option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>
-                          <!--<option value="2">Samuel the Terrible</option>
-                          <option value="3">Samuel the Merciless</option>-->
-                        </select>
+                        </select>-->
+                        <input type="text" name="name" class="form-control" id="name" value="${payloadContent.user.name}">
+                        <br>
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">
@@ -265,6 +264,34 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
             </div>
           </div> 
         </section>
+        <script>
+          function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\\[\\]]/g, "\\\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\\+/g, " "));
+          }
+
+          var doc = document.getElementById("alertarea");
+
+          var errtext = getParameterByName("err");
+          var infotext = getParameterByName("info");
+          if (errtext) {
+            doc.innerHTML += \`<div role="alert" class="alert alert-primary global-banner-inactive">
+              <strong>Error:</strong> \$\{errtext\}
+            </div>\`;
+          }
+          if (!infotext) {
+            infotext = 'This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.';
+          }
+          doc.innerHTML += \`<div role="alert" class="alert alert-dark global-banner">
+            <strong>INFO: \$\{infotext\}</strong> 
+          </div>\`;
+
+        </script>
         `);
   });
 }
