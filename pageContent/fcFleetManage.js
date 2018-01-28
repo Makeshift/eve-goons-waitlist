@@ -39,15 +39,23 @@ module.exports = function(payloadContent, cb) {
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {
         users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
-          count++
+          count++;
+          var characterID = entry.user.characterID;
+          var name = entry.user.name;
+          var role = entry.user.role;
+          if (typeof entry.alt === "object") {
+            characterID = entry.alt.id;
+            name = entry.alt.name;
+            role = "Alt of: " + entry.user.name;
+          }
           waitlistHTML += `
           <tr class="invite-default">
                             <td>
-                              <img src="http://image.eveonline.com/Character/${entry.user.characterID}_32.jpg" alt="avatar"> 
+                              <img src="http://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
                             </td>
                             <td>
-                              <a href="#">${entry.user.name}</a>
-                              <p>${entry.user.role}</p>
+                              <a href="#">${name}</a>
+                              <p>${role}</p>
                             </td>
                             <td>
                               <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
