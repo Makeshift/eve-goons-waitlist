@@ -48,7 +48,7 @@ var fleets = "";
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
-                        <td><a href="#">${payloadContent.fleets[i].comms}</a></td>
+                        <td><a href="${payloadContent.fleets[i].comms.url}">${payloadContent.fleets[i].comms.name}</a></td>
                       </tr>
                     </tbody>
                   </table>

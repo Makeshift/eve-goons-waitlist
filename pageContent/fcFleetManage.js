@@ -104,6 +104,34 @@ module.exports = function(payloadContent, cb) {
   }
 
   function genPage(waitlistHTML, usersNeededWaitlist, fleetLength, cb) {
+    var commsChannels = `<script>function post(path, params) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", path);
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+            form.appendChild(hiddenField);
+        }
+    }
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>`;
+    for (var i = 0; i < setup.fleet.comms.length; i++) {
+      commsChannels += `
+        <a id="commsbutton-${i}" class="dropdown-item">${setup.fleet.comms[i].name}</a>
+        <script>
+          document.getElementById("commsbutton-${i}").addEventListener("click", function () {
+            post("/commander/${payloadContent.fleet.id}/update/comms", {name: "${setup.fleet.comms[i].name}", url: "${setup.fleet.comms[i].url}"});
+          });
+        </script>
+        `
+    }
+
     cb(`
           <!-- Page Content -->
       <div class="page-content">
@@ -168,14 +196,12 @@ module.exports = function(payloadContent, cb) {
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
-                        <td><a href="#">${payloadContent.fleet.comms}</a></td>
+                        <td><a href="${payloadContent.fleet.comms.url || "#"}">${payloadContent.fleet.comms.name}</a></td>
                         <td>
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Incursions -> A</a>
-                              <a class="dropdown-item" href="#">Incursions -> B</a>
-                              <a class="dropdown-item" href="#">Incursions -> C</a>
+                              ${commsChannels}
                             </div>
                           </div>
                         </td>

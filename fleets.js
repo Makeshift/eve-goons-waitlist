@@ -123,6 +123,13 @@ Fleet object format:
 		})
 	}
 
+	module.updateComms = function(fleetid, comms, cb) {
+		db.updateOne({'id': fleetid}, {$set: {comms: comms}}, function(err, result) {
+			if (err) console.log(err);
+			if (typeof cb === "function") cb();
+		});
+	}
+
 
 	module.timers = function() {	
 		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
