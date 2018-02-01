@@ -6,6 +6,7 @@ var users = require('../users.js')(setup);
 module.exports = function(payloadContent, cb) {
 
   var ships = [];
+  var members = [];
   var fleetLength = payloadContent.fleet.members.length;
   for (var i = 0; i < fleetLength; i++) {
   	ships.push(payloadContent.fleet.members[i].ship_type_id)
@@ -131,14 +132,26 @@ module.exports = function(payloadContent, cb) {
         </script>
         `
     }
-    
-    fleetTypes = ["Scouts", "Vanguards", "Assaults", "Headqurters", "Kundalini"];
-    fleetType = "";
-    for (var i = 0; i < fleetTypes.length; i++) {
-      fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypes[i]}</a>
+
+    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headqurters", "Kundalini"];
+    var fleetType = "";
+    for (var i = 0; i < fleetTypeList.length; i++) {
+      fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypeList[i]}</a>
         <script>
           document.getElementById("fleetTypeButton-${i}").addEventListener("click", function () {
-            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypes[i]}"});
+            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypeList[i]}"});
+          });
+        </script>
+      `
+    }
+
+    var fleetStatusList = ["Forming", "Running", "Docking Soon", "Short Break"];
+    var fleetStatus = "";
+    for (var i = 0; i < fleetTypeList.length; i++) {
+      fleetType += `<a class="dropdown-item" id="fleetStatus-${i}" href="#">${fleetStatusList[i]}</a>
+        <script>
+          document.getElementById("fleetStatus-${i}").addEventListener("click", function () {
+            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetStatusList[i]}"});
           });
         </script>
       `
@@ -173,7 +186,7 @@ module.exports = function(payloadContent, cb) {
                       <tr>
                         <td>Backseating FC:</td>
                         <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
-                        <td><button class="btn btn-sm btn-block">Unset Backseat</button></td>
+                        <td><button class="btn btn-sm btn-block">Todo</button></td>
                       </tr>
                       <tr>
                         <td>Fleet Status:</td>
@@ -182,11 +195,7 @@ module.exports = function(payloadContent, cb) {
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Forming</a>
-                              <a class="dropdown-item" href="#">Running</a>
-                              <a class="dropdown-item" href="#">Docking Soon</a>
-                              <a class="dropdown-item" href="#">Short Break</a>
-                              <a class="dropdown-item" href="#">Unlisted</a>
+                              ${fleetStatus}
                             </div>
                           </div>
                         </td>
