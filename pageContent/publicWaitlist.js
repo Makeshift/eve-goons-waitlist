@@ -150,7 +150,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">
-                        <label for="lan">Primary Language:</label>
+                        <label for="lan"><div class="d-inline" data-toggle="tooltip" title="Select English if you can understand FC instructions. If your English skills are poor, please select your primary language."><i class="fas fa-info-circle"></i></div>  Language:</label>
                         <select name="language" class="form-control" id="lan">
                           <option value="">Choose</option>
                           <option value="English">English</option>
