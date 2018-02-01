@@ -123,38 +123,44 @@ module.exports = function(payloadContent, cb) {
 }
 </script>`;
     for (var i = 0; i < setup.fleet.comms.length; i++) {
-      commsChannels += `
-        <a id="commsbutton-${i}" class="dropdown-item">${setup.fleet.comms[i].name}</a>
-        <script>
-          document.getElementById("commsbutton-${i}").addEventListener("click", function () {
-            post("/commander/${payloadContent.fleet.id}/update/comms", {name: "${setup.fleet.comms[i].name}", url: "${setup.fleet.comms[i].url}"});
-          });
-        </script>
-        `
+      if (payloadContent.fleet.comms.name !== setup.fleet.comms[i].name) {
+        commsChannels += `
+          <a id="commsbutton-${i}" class="dropdown-item">${setup.fleet.comms[i].name}</a>
+          <script>
+            document.getElementById("commsbutton-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/comms", {name: "${setup.fleet.comms[i].name}", url: "${setup.fleet.comms[i].url}"});
+            });
+          </script>
+          `
+        }
     }
 
-    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headqurters", "Kundalini"];
+    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headquarters", "Kundalini"];
     var fleetType = "";
     for (var i = 0; i < fleetTypeList.length; i++) {
-      fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypeList[i]}</a>
-        <script>
-          document.getElementById("fleetTypeButton-${i}").addEventListener("click", function () {
-            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypeList[i]}"});
-          });
-        </script>
-      `
+      if (payloadContent.fleet.type !== fleetTypeList[i]) {
+        fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypeList[i]}</a>
+          <script>
+            document.getElementById("fleetTypeButton-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypeList[i]}"});
+            });
+          </script>
+        `
+      }
     }
 
     var fleetStatusList = ["Forming", "Running", "Docking Soon", "Short Break"];
     var fleetStatus = "";
-    for (var i = 0; i < fleetTypeList.length; i++) {
-      fleetType += `<a class="dropdown-item" id="fleetStatus-${i}" href="#">${fleetStatusList[i]}</a>
-        <script>
-          document.getElementById("fleetStatus-${i}").addEventListener("click", function () {
-            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetStatusList[i]}"});
-          });
-        </script>
-      `
+    for (var i = 0; i < fleetStatusList.length; i++) {
+      if (payloadContent.fleet.status !== fleetStatusList[i]) {
+        fleetStatus += `<a class="dropdown-item" id="fleetStatus-${i}" href="#">${fleetStatusList[i]}</a>
+          <script>
+            document.getElementById("fleetStatus-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/status", {status: "${fleetStatusList[i]}"});
+            });
+          </script>
+        `
+      }
     }
 
     cb(`

@@ -239,7 +239,7 @@ app.post('/commander/:fleetid/update/type', function(req, res) {
 //TODO: DO VALIDATION ON THIS ENDPOINT
 app.post('/commander/:fleetid/update/status', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-		fleets.updateType(req.params.fleetid, req.body.status, function() {
+		fleets.updateStatus(req.params.fleetid, req.body.status, function() {
 			res.redirect('/commander/'+req.params.fleetid);
 		})
 	} else {

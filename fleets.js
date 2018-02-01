@@ -138,7 +138,7 @@ Fleet object format:
 	}
 
 	module.updateStatus = function(fleetid, status, cb) {
-		db.updateOne({'id': fleetid}, {$set: {type: status}}, function(err, result) {
+		db.updateOne({'id': fleetid}, {$set: {status: status}}, function(err, result) {
 			if (err) console.log(err);
 			if (typeof cb === "function") cb();
 		})
