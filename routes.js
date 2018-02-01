@@ -128,7 +128,7 @@ app.post('/commander/', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 		users.getLocation(req.user, function(location) {
 			var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-			fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, function(members) {
+			fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function(members) {
 				var fleetInfo = {
 					fc: req.user,
 					backseat: {},

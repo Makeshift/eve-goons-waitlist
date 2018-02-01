@@ -62,16 +62,27 @@ module.exports = function (setup) {
 	}
 
 	module.getLocation = function(user, cb, passthrough) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function(err, accessToken, newRefreshToken) {
-			module.updateRefreshToken(user.characterID, newRefreshToken);
-			esi.characters(user.characterID, accessToken).location().then(function(locationResult) {
-				cache.get([locationResult.solar_system_id], function(locationName) {
-					cb({
-						id: locationResult.solar_system_id,
-						name: locationName.name
-					}, passthrough)
+		module.findAndReturnUser(user.characterID, function(newUser) {
+			if (Date.now() > (newUser.location.lastCheck + 30000)) {
+				refresh.requestNewAccessToken('provider', user.refreshToken, function(err, accessToken, newRefreshToken) {
+					module.updateRefreshToken(user.characterID, newRefreshToken);
+					esi.characters(user.characterID, accessToken).location().then(function(locationResult) {
+						cache.get([locationResult.solar_system_id], function(locationName) {
+							var location = {
+								id: locationResult.solar_system_id,
+								name: locationName.name,
+								lastCheck: Date.now()
+							};
+							cb(location, passthrough);
+							db.updateOne({'characterID': user.characterID}, {$set: {location: location}}, function(err, result) {
+								if (err) console.log(err);
+							});
+						})
+					})
 				})
-			})
+			} else {
+				cb(newUser.location, passthrough);
+			}
 		})
 	}
 
@@ -89,7 +100,8 @@ module.exports = function (setup) {
 			ships: [],
 			relatedChars: [],
 			statistics: { sites: {} },
-			notifications: []
+			notifications: [],
+			location: {lastCheck: 0}
 		}
 		db.insert(newUserTemplate, function(err, result) {
 			if (err) console.log(err);

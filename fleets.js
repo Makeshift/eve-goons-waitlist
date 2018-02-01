@@ -50,7 +50,10 @@ Fleet object format:
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function(members) {
 				cb(members, fleetid, fullDoc)
 			}).catch(function(err) {
-				cb(null, fleetid, fullDoc);
+				console.log(err);
+				if (typeof cb === "function") {
+					cb(null, fleetid, fullDoc);
+				}
 			})
 		});
 	}
@@ -128,8 +131,6 @@ Fleet object format:
 				var checkCache = [];
 					db.find().forEach(function(doc) {
 								module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function(members, fleetid, fullDoc) {
-									console.log(typeof members)
-									console.log(members);
 									if (members == null) {
 										fleetHasErrored();
 									} else {

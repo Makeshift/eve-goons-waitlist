@@ -34,10 +34,10 @@ module.exports = function(payloadContent, cb) {
   function contWaitlistGenerate(shiptable, fleetLength, fleetid, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
-      console.log(usersOnWaitlist)
       var usersNeeded = usersOnWaitlist.length;
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {
+        //TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background and grabbed from the DB
         users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
           count++;
           var characterID = entry.user.characterID;

@@ -40,7 +40,7 @@ var fleets = "";
                       </tr>
                       <tr>
                         <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
+                        <td><a href="#">${payloadContent.fleets[i].location}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Size:</td>
