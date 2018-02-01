@@ -134,12 +134,12 @@ function sidebar(sidebarPayload, cb) {
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> <strike>Squad Stuff</strike> <i class="fas fa-sort-down float-right"></i></a>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> Squad Stuff <i class="fas fa-sort-down float-right"></i></a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
-              <strike><li><a href="#">Squad Fittings</a></strike></li>
+              <li><a href="https://goonfleet.com/index.php/topic/219113-incursion-squad-tutorial-directory-read-me/" target="blank">New Pilot Guide</a></li>  
+              <li><a href="https://goonfleet.com/index.php/topic/219234-incursion-squad-fitting-directory/" target="blank">Squad Fittings</a></li>
               <strike><li><a href="#">Squad Roles</a></strike></li>
               <strike><li><a href="#">Squad Stats</a></strike></li>
-              <strike><li><a href="#">New Pilot Guide</a></strike></li>
             </ul>
           </li>
           <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-link"></i> Incursion Forums</a></li>
