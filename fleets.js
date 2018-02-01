@@ -43,13 +43,15 @@ Fleet object format:
 		});
 	}
 
-	module.getMembers = function(characterID, refreshToken, fleetid, cb) {
+	module.getMembers = function(characterID, refreshToken, fleetid, fullDoc, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
 			if (err) throw err;
 			users.updateRefreshToken(characterID, newRefreshToken);
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function(members) {
-				cb(members, fleetid)
-			});
+				cb(members, fleetid, fullDoc)
+			}).catch(function(err) {
+				cb(null, fleetid, fullDoc);
+			})
 		});
 	}
 
@@ -87,7 +89,7 @@ Fleet object format:
 	module.delete = function(id, cb) {
 		db.deleteOne({ 'id': id }, function(err, result) {
 			if (err) console.log(err);
-			cb();
+			if (typeof cb === "function") cb();
 		})
 	}
 
@@ -125,30 +127,35 @@ Fleet object format:
 		setTimeout(function() {
 				var checkCache = [];
 					db.find().forEach(function(doc) {
-						if (doc.errors < 5) {
-							try {
-								module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, function(members, fleetid) {
-									db.updateOne({ 'id' : fleetid }, { $set: { "members": members, "errors": 0 }}, function(err, result) {
-										if (err) console.log(err);
-										module.checkForDuplicates();
-									})
-									members.forEach(function(member, i) {
-										checkCache.push(member.ship_type_id);
-										checkCache.push(member.solar_system_id);
-										if (i == members.length-1) {
-											cache.massQuery(checkCache);
+								module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function(members, fleetid, fullDoc) {
+									console.log(typeof members)
+									console.log(members);
+									if (members == null) {
+										fleetHasErrored();
+									} else {
+										db.updateOne({ 'id' : fleetid }, { $set: { "members": members, "errors": 0 }}, function(err, result) {
+											if (err) console.log(err);
+											module.checkForDuplicates();
+										})
+										members.forEach(function(member, i) {
+											checkCache.push(member.ship_type_id);
+											checkCache.push(member.solar_system_id);
+											if (i == members.length-1) {
+												cache.massQuery(checkCache);
+											}
+										})
+									}
+
+									function fleetHasErrored() {
+										if (doc.errors < 5) {
+											console.log("Fleet under " + fullDoc.fc.name + " caused an error.")
+											db.updateOne({ 'id': fleetid}, { $set: { "errors": fullDoc.errors+1 || 1 }})
+										} else {
+											console.log("Fleet under " + fullDoc.fc.name + " was deleted due to errors.")
+											module.delete(fleetid);
 										}
-									})
+									}
 								})
-							} catch(e) {
-								console.log("Fleet under " + doc.fc.name + " caused an error.")
-								db.updateOne({ 'id': doc.id}, { $set: { "errors": doc.errors+1 || 1 }})
-							}
-						} else {
-							module.delete(doc.id, function() {
-								console.log("Fleet under " + doc.fc.name + " deleted due to errors.");
-							})
-						}
 					})
 			module.timers();
 		}, 10000)

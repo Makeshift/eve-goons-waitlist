@@ -67,7 +67,7 @@ module.exports = function(app, setup) {
 					ingameChat: req.body.ingame,
 					onComms: req.body.oncomms,
 					language: req.body.language,
-					signupTime: new Date()
+					signupTime: Date.now()
 				}
 				waitlist.addToWaitlist(userAdd, function() {
 					res.redirect(`/?info=Character ${req.body.name} added to waitlist.`);

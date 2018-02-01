@@ -60,9 +60,36 @@ module.exports = function(setup) {
         })
     }
 
-    //TODO: Broken due to mongo. Do we care about the user knowing their position? We don't use it on the FC side really anyway.
     module.getUserPosition = function(characterID, cb) {
-        cb({position: "##", length: "##"}, false)
+        db.find({}).sort({ signupTime: 1 }).toArray(function(err, docs) {
+            var characterPositions = [];
+            for (var i = 0; i < docs.length; i++) {
+                if (docs[i].user.characterID == characterID) {
+                    characterPositions.push(i + 1);
+                }
+            }
+            if (characterPositions.length === 0) {
+                cb({position: "##", length: docs.length}, false);
+            } else {
+                cb({position: characterPositions, length: docs.length}, false)
+            }
+        })
+        
+    }
+
+    module.getCharsOnWaitlist = function(characterID, cb) {
+        db.find({"user.characterID": characterID}).toArray(function(err, chars) {
+            console.log(chars);
+            var charNames = [];
+            for (var i = 0; i < chars.length; i++) {
+                if (chars[i].alt) {
+                    charNames.push(chars[i].alt.name)
+                } else {
+                    charNames.push(chars[i].user.name);
+                }
+            }
+            cb(charNames);
+        })
     }
 
     return module;
