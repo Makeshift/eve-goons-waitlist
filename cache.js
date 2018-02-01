@@ -31,23 +31,25 @@ module.exports = function (setup) {
 	}
 	//Duplicate key errors are caused by trying to 'get' stuff too quickly. NEED to make getting a background process
 	module.get = function(id, cb) {
-		if (!cachetemp.includes(id)) {
-			cachetemp.push(id);
 			db.findOne({'id': id}, function(err, doc) {
 				if (err) console.log(err);
 				if (doc === null) {
-					module.query(id, function(item) {
-						module.addToDb(item);
-						cb(item);
-					})
+					if (!cachetemp.includes(id)) {
+						cachetemp.push(id);
+						module.query(id, function(item) {
+							module.addToDb(item);
+							cb(item);
+							module.removeFromCacheTemp(id);
+						})
+					} else {
+						cb(id);
+					}
 				} else {
 					cb(doc)
 					module.removeFromCacheTemp(id);
 				}
+			
 			});
-		} else {
-			cb(id);
-		}
 		
 	}
 

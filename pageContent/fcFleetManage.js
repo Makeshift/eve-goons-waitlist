@@ -19,8 +19,8 @@ module.exports = function(payloadContent, cb) {
   for (var i = 0; i < numOfShips; i++) {
     cache.get(Object.keys(distribution)[i], function(item){
       counter++;
-    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id}_32.png" alt="Ship Icon"></td>
-  	  	<td class="tw20per"><a href="#">${item.name || "CacheError"}</a>
+    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id || item}_32.png" alt="Ship Icon"></td>
+  	  	<td class="tw20per"><a href="#">${item.name || item || "CacheError"}</a>
   	  	<td>${distribution[item.id]}</td>
     	`;
 
@@ -182,7 +182,7 @@ module.exports = function(payloadContent, cb) {
                       </tr>
                       <tr>
                         <td>Fleet System:</td>
-                        <td colspan="2"><a href="#">${payloadContent.fleet.location.name}</a></td>
+                        <td colspan="2"><a href="#">${payloadContent.fleet.location}</a></td>
                       </tr>
                       <tr>
                         <td colspan="3">
