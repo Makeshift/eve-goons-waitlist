@@ -6,6 +6,7 @@ var users = require('../users.js')(setup);
 module.exports = function(payloadContent, cb) {
 
   var ships = [];
+  var members = [];
   var fleetLength = payloadContent.fleet.members.length;
   for (var i = 0; i < fleetLength; i++) {
   	ships.push(payloadContent.fleet.members[i].ship_type_id)
@@ -19,38 +20,53 @@ module.exports = function(payloadContent, cb) {
   for (var i = 0; i < numOfShips; i++) {
     cache.get(Object.keys(distribution)[i], function(item){
       counter++;
-    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id}_32.png" alt="Ship Icon"></td>
-  	  	<td class="tw20per"><a href="#">${item.name || "CacheError"}</a>
+    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id || item}_32.png" alt="Ship Icon"></td>
+  	  	<td class="tw20per"><a href="#">${item.name || item || "CacheError"}</a>
   	  	<td>${distribution[item.id]}</td>
     	`;
 
       if (counter >= numOfShips) {
-        contWaitlistGenerate(shiptable, fleetLength, cb);
+        contWaitlistGenerate(shiptable, fleetLength, payloadContent.fleet.id, cb);
       }
 
     })
   }
 
-  function contWaitlistGenerate(shiptable, fleetLength, cb) {
+  function contWaitlistGenerate(shiptable, fleetLength, fleetid, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
-      console.log(usersOnWaitlist)
       var usersNeeded = usersOnWaitlist.length;
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {
+        //TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background and grabbed from the DB
         users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
-          count++
+          count++;
+          var characterID = entry.user.characterID;
+          var tableID = entry._id;
+          var name = entry.user.name;
+          var role = entry.user.role;
+          var removetext = "";
+          var invited = "invite-default";
+          if (entry.invited === true) {
+            invited = "invite-sent";
+          }
+          if (typeof entry.alt === "object") {
+            characterID = entry.alt.id;
+            name = entry.alt.name;
+            role = "Alt of: " + entry.user.name;
+            removetext = "?alt=true"
+          }
           waitlistHTML += `
-          <tr class="invite-default">
+          <tr class="${invited}">
                             <td>
-                              <img src="http://image.eveonline.com/Character/${entry.user.characterID}_32.jpg" alt="avatar"> 
+                              <img src="http://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
                             </td>
                             <td>
-                              <a href="#">${entry.user.name}</a>
-                              <p>${entry.user.role}</p>
+                              <a href="#">${name}</a>
+                              <p>${role}</p>
                             </td>
                             <td>
-                              <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                              <a href="/commander/${fleetid}/invite/${characterID}/${tableID}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>
                             </td>
                             <td>
                               <div class="dropdown">
@@ -65,7 +81,7 @@ module.exports = function(payloadContent, cb) {
                               <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                             </td>
                             <td>
-                              <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                              <a href="/commander/${fleetid}/remove/${tableID}/"><button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button></a>
                             </td>
                             <td>
                               <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.user.ship}" alt="${entry.user.ship}"></a>
@@ -89,6 +105,64 @@ module.exports = function(payloadContent, cb) {
   }
 
   function genPage(waitlistHTML, usersNeededWaitlist, fleetLength, cb) {
+    var commsChannels = `<script>function post(path, params) {
+    var form = document.createElement("form");
+    form.setAttribute("method", "post");
+    form.setAttribute("action", path);
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+            form.appendChild(hiddenField);
+        }
+    }
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>`;
+    for (var i = 0; i < setup.fleet.comms.length; i++) {
+      if (payloadContent.fleet.comms.name !== setup.fleet.comms[i].name) {
+        commsChannels += `
+          <a id="commsbutton-${i}" class="dropdown-item">${setup.fleet.comms[i].name}</a>
+          <script>
+            document.getElementById("commsbutton-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/comms", {name: "${setup.fleet.comms[i].name}", url: "${setup.fleet.comms[i].url}"});
+            });
+          </script>
+          `
+        }
+    }
+
+    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headquarters", "Kundalini", "ARSEFleet"];
+    var fleetType = "";
+    for (var i = 0; i < fleetTypeList.length; i++) {
+      if (payloadContent.fleet.type !== fleetTypeList[i]) {
+        fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypeList[i]}</a>
+          <script>
+            document.getElementById("fleetTypeButton-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypeList[i]}"});
+            });
+          </script>
+        `
+      }
+    }
+
+    var fleetStatusList = ["Forming", "Running", "Docking Soon", "Short Break"];
+    var fleetStatus = "";
+    for (var i = 0; i < fleetStatusList.length; i++) {
+      if (payloadContent.fleet.status !== fleetStatusList[i]) {
+        fleetStatus += `<a class="dropdown-item" id="fleetStatus-${i}" href="#">${fleetStatusList[i]}</a>
+          <script>
+            document.getElementById("fleetStatus-${i}").addEventListener("click", function () {
+              post("/commander/${payloadContent.fleet.id}/update/status", {status: "${fleetStatusList[i]}"});
+            });
+          </script>
+        `
+      }
+    }
+
     cb(`
           <!-- Page Content -->
       <div class="page-content">
@@ -118,7 +192,7 @@ module.exports = function(payloadContent, cb) {
                       <tr>
                         <td>Backseating FC:</td>
                         <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
-                        <td><button class="btn btn-sm btn-block">Unset Backseat</button></td>
+                        <td><button class="btn btn-sm btn-block">Todo</button></td>
                       </tr>
                       <tr>
                         <td>Fleet Status:</td>
@@ -127,11 +201,7 @@ module.exports = function(payloadContent, cb) {
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Forming</a>
-                              <a class="dropdown-item" href="#">Running</a>
-                              <a class="dropdown-item" href="#">Docking Soon</a>
-                              <a class="dropdown-item" href="#">Short Break</a>
-                              <a class="dropdown-item" href="#">Unlisted</a>
+                              ${fleetStatus}
                             </div>
                           </div>
                         </td>
@@ -143,32 +213,26 @@ module.exports = function(payloadContent, cb) {
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Vanguards</a>
-                              <a class="dropdown-item" href="#">Assaults</a>
-                              <a class="dropdown-item" href="#">Headquarters</a>
-                              <a class="dropdown-item" href="#">Kundalini</a>
-                              <a class="dropdown-item" href="#">Arsefleet</a>
+                              ${fleetType}
                             </div>
                           </div>
                         </td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
-                        <td><a href="#">${payloadContent.fleet.comms}</a></td>
+                        <td><a href="${payloadContent.fleet.comms.url || "#"}">${payloadContent.fleet.comms.name}</a></td>
                         <td>
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Incursions -> A</a>
-                              <a class="dropdown-item" href="#">Incursions -> B</a>
-                              <a class="dropdown-item" href="#">Incursions -> C</a>
+                              ${commsChannels}
                             </div>
                           </div>
                         </td>
                       </tr>
                       <tr>
                         <td>Fleet System:</td>
-                        <td colspan="2"><a href="#">${payloadContent.fleet.location.name}</a></td>
+                        <td colspan="2"><a href="#">${payloadContent.fleet.location}</a></td>
                       </tr>
                       <tr>
                         <td colspan="3">

@@ -25,6 +25,22 @@ exports.data = {
 	mongoDbName: "eve-goons-waitlist"
 }
 
+exports.fleet = {
+	comms: [{
+		name: "Incursions -> A",
+		url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20A?title=Goonfleet&version=1.2.0"
+	},{
+		name: "Incursions -> B",
+		url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20B?title=Goonfleet&version=1.2.0" 
+	},{
+		name: "Incursions -> C",
+		url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20C?title=Goonfleet&version=1.2.0"
+	},{
+		name: "Incursions -> D",
+		url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20D?title=Goonfleet&version=1.2.0"
+	},]
+}
+
 exports.settings = {
 	port: 80
 }
