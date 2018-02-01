@@ -131,6 +131,18 @@ module.exports = function(payloadContent, cb) {
         </script>
         `
     }
+    
+    fleetTypes = ["Scouts", "Vanguards", "Assaults", "Headqurters", "Kundalini"];
+    fleetType = "";
+    for (var i = 0; i < fleetTypes.length; i++) {
+      fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypes[i]}</a>
+        <script>
+          document.getElementById("fleetTypeButton-${i}").addEventListener("click", function () {
+            post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypes[i]}"});
+          });
+        </script>
+      `
+    }
 
     cb(`
           <!-- Page Content -->
@@ -186,10 +198,7 @@ module.exports = function(payloadContent, cb) {
                           <div class="dropdown">
                             <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
                             <div class="dropdown-menu" role="menu">
-                              <a class="dropdown-item" href="#">Vanguards</a>
-                              <a class="dropdown-item" href="#">Assaults</a>
-                              <a class="dropdown-item" href="#">Headquarters</a>
-                              <a class="dropdown-item" href="#">Kundalini</a>
+                              ${fleetType}
                             </div>
                           </div>
                         </td>
