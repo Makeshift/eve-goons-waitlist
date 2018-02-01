@@ -35,16 +35,20 @@ var fleets = "";
                         <td>${payloadContent.fleets[i].type}</td>
                       </tr>
                       <tr>
+                        <td>Fleet Doctrine:</td>
+                        <td>{MainFleet/ArseFleet}</td>
+                      </tr>                      
+                      <tr>
                         <td>Fleet Status:</td>
                         <td>${payloadContent.fleets[i].status}</td>
                       </tr>
                       <tr>
-                        <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
-                      </tr>
-                      <tr>
                         <td>Fleet Size:</td>
                         <td>${payloadContent.fleets[i].members.length}</td>
+                      </tr>                      
+                      <tr>
+                        <td>Fleet Location:</td>
+                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
