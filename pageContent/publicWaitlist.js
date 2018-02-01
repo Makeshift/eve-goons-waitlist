@@ -35,6 +35,10 @@ var fleets = "";
                         <td>${payloadContent.fleets[i].type}</td>
                       </tr>
                       <tr>
+                        <td>Fleet Doctrine:</td>
+                        <td>{MainFleet/ArseFleet}</td>
+                      </tr>                      
+                      <tr>
                         <td>Fleet Status:</td>
                         <td>${payloadContent.fleets[i].status}</td>
                       </tr>
@@ -45,6 +49,10 @@ var fleets = "";
                       <tr>
                         <td>Fleet Size:</td>
                         <td>${payloadContent.fleets[i].members.length}</td>
+                      </tr>                      
+                      <tr>
+                        <td>Fleet Location:</td>
+                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
@@ -123,49 +131,70 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       </tbody>
                     </table>
                   </div>
-                  <!-- End Waitlist Queue Panel -->
-                  <!-- Waitlist Panel -->
-                  <div class="statistic-block block">
-                    <div class="title">
-                      <strong>Join the Waitlist</strong>
-                    </div>
-                      <!-- Select Character -->
-                      <form method="POST" action="/" role="form">
-                        <div class="form-group">
-                          <label for="character">Select Pilot (Temporary Override):</label>
-                          <!--<select name="user" class="form-control" id="character">
-                            <option value="">Choose</option>
-                            <option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>
-                          </select>-->
-                          <input type="text" name="name" class="form-control" id="name" value="${payloadContent.user.name}">
-                          <br>
-                        </div>
-                        <!-- Select Language -->
-                        <div class="form-group">
-                          <label for="lan">Primary Language:</label>
-                          <select name="language" class="form-control" id="lan">
-                            <option value="">Choose</option>
-                            <option value="English">English</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="German">German</option>
-                            <option value="French">French</option>
-                            <option value="Deaf">Deaf (Need Relay)</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
-                        <!-- Yes/No Options -->
-                        <ul class="list-unstyled">
-                          <!--<li>
-                            <label for="translator">Do you require a translator?</label>
-                            <div class="form-check">
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" id="translator" name="translator" value="true" required/> Yes
-                              </label>
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" name="translator" value="false"/> No
-                              </label>
-                            </div>
-                          </li>-->
+                    <!-- Select Character -->
+                    <form method="POST" action="/" role="form">
+                      <div class="form-group">
+                        <label for="character">Select Pilot:</label>
+                        <select name="user" class="form-control" id="character">
+                          <!--<option value="">Choose</option>-->
+                          <option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>
+                          <!--<option value="2">Samuel the Terrible</option>
+                          <option value="3">Samuel the Merciless</option>-->
+                        </select>
+                      </div>
+                      <!-- Select Language -->
+                      <div class="form-group">
+                        <label for="lan"><div class="d-inline" data-toggle="tooltip" title="Select English if you can understand FC instructions. If your English skills are poor, please select your primary language."><i class="fas fa-info-circle"></i></div>  Language:</label>
+                        <select name="language" class="form-control" id="lan">
+                          <option value="">Choose</option>
+                          <option value="English">English</option>
+                          <option value="Chinese">Chinese</option>
+                          <option value="German">German</option>
+                          <option value="French">French</option>
+                          <option value="Deaf">Deaf (Need Relay)</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <!-- Yes/No Options -->
+                      <ul class="list-unstyled">
+                        <!--<li>
+                          <label for="translator">Do you require a translator?</label>
+                          <div class="form-check">
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" id="translator" name="translator" value="true" required/> Yes
+                            </label>
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" name="translator" value="false"/> No
+                            </label>
+                          </div>
+                        </li>-->
+                        <li>
+                          <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
+                          <div class="form-check">
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" id="ingame" name="ingame" value="true" required/> Yes
+                            </label>
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" value="false" name="ingame"/> No
+                            </label>
+                          </div>
+                        </li>
+                        <li>
+                          <label for="coms">Are you on comms?</label>
+                          <div class="form-check">
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" id="comms" name="oncomms" value="true" required/> Yes
+                            </label>
+                            <label class="form-check-label">
+                            <input class="form-check-input" type="radio" value="false" name="oncomms"/> No
+                            </label>
+                          </div>
+                        </li>
+                      </ul>
+                      <!-- Select Fits -->
+                      <div id="fits">
+                        <strong>Select your fits <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Please select up to four fits you're willing to bring. You can manage your fits from the 'My Account' option on the menu."></i> </strong>
+                        <!--<ul class="list-unstyled">
                           <li>
                             <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
                             <div class="form-check">

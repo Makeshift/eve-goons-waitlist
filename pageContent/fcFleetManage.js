@@ -135,7 +135,7 @@ module.exports = function(payloadContent, cb) {
         }
     }
 
-    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headquarters", "Kundalini"];
+    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headquarters", "Kundalini", "ARSEFleet"];
     var fleetType = "";
     for (var i = 0; i < fleetTypeList.length; i++) {
       if (payloadContent.fleet.type !== fleetTypeList[i]) {
