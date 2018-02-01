@@ -139,6 +139,9 @@ Fleet object format:
 											module.checkForDuplicates();
 										})
 										members.forEach(function(member, i) {
+											if (member.role === "fleet_commander") {
+												updateFleetCommander(member, fullDoc.id);
+											}
 											checkCache.push(member.ship_type_id);
 											checkCache.push(member.solar_system_id);
 											if (i == members.length-1) {
@@ -155,6 +158,14 @@ Fleet object format:
 											console.log("Fleet under " + fullDoc.fc.name + " was deleted due to errors.")
 											module.delete(fleetid);
 										}
+									}
+
+									function updateFleetCommander(member, fleetid) {
+										users.findAndReturnUser(member.character_id, function(user) {
+											db.updateOne({'id' : fleetid}, {$set: {fc: user}}, function(err, result) {
+												if (err) console.log(err);
+											})
+										})
 									}
 								})
 					})

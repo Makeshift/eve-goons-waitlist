@@ -79,7 +79,6 @@ module.exports = function(setup) {
 
     module.getCharsOnWaitlist = function(characterID, cb) {
         db.find({"user.characterID": characterID}).toArray(function(err, chars) {
-            console.log(chars);
             var charNames = [];
             for (var i = 0; i < chars.length; i++) {
                 if (chars[i].alt) {

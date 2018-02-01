@@ -38,12 +38,10 @@ module.exports = function(app, setup) {
 
 	app.post('/', function(req, res) {
 		if (req.isAuthenticated()) {
-			console.log(req.body);
 			var alt = false;
 			if (req.user.name != req.body.name) {
 				esi.characters.search.strict(req.body.name).then(function(results) {
 						//This can be a user later
-						console.log(results);
 						alt = {
 							name: req.body.name,
 							id: results[0],
