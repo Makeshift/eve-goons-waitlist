@@ -43,10 +43,6 @@ var fleets = "";
                         <td>${payloadContent.fleets[i].status}</td>
                       </tr>
                       <tr>
-                        <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location}</a></td>
-                      </tr>
-                      <tr>
                         <td>Fleet Size:</td>
                         <td>${payloadContent.fleets[i].members.length}</td>
                       </tr>                      
@@ -131,16 +127,20 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       </tbody>
                     </table>
                   </div>
+                  <div class="statistic-block block">
                     <!-- Select Character -->
                     <form method="POST" action="/" role="form">
                       <div class="form-group">
                         <label for="character">Select Pilot:</label>
+                        <!-- 
                         <select name="user" class="form-control" id="character">
-                          <!--<option value="">Choose</option>-->
+                          <option value="">Choose</option>
                           <option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>
-                          <!--<option value="2">Samuel the Terrible</option>
-                          <option value="3">Samuel the Merciless</option>-->
+                          <option value="2">Samuel the Terrible</option>
+                          <option value="3">Samuel the Merciless</option>
                         </select>
+                        -->
+                        <input type="text" name="user" class="form-control" id="character" value="${payloadContent.user.name}">
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">
@@ -193,7 +193,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       </ul>
                       <!-- Select Fits -->
                       <div id="fits">
-                        <strong>Select your fits <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Please select up to four fits you're willing to bring. You can manage your fits from the 'My Account' option on the menu."></i> </strong>
+                        <strong><div class="d-inline" data-toggle="tooltip" data-placement="top" title="This is a temporary system, type your ship type (Example: NYX)"><i class="fa fa-info-circle"></i></div> Select your fits </strong>
                         <!--<ul class="list-unstyled">
                           <li>
                             <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
@@ -220,7 +220,6 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                         </ul>
                         <!-- Select Fits -->
                         <div id="fits">
-                          <strong>Select your fits <i class="fa fa-info-circle" data-toggle="tooltip" data-placement="top" title="Please select up to four fits you're willing to bring. You can manage your fits from the 'My Account' option on the menu."></i> </strong>
                           <!--<ul class="list-unstyled">
                             <li>
                               <button class="btn btn-sm btn-block fit" type="button">a</button>
@@ -276,7 +275,8 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                       </div>
                     </div>
                   </div>
-                  <!-- End Waitlist Panel -->
+                </div>
+                <!-- End Waitlist Panel -->
                 
                 <!-- Fleet Info -->
                 <div class="col-lg-4 col-md-6 col-sm-12">
