@@ -132,12 +132,15 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                     <form method="POST" action="/" role="form">
                       <div class="form-group">
                         <label for="character">Select Pilot:</label>
+                        <!-- 
                         <select name="user" class="form-control" id="character">
-                          <!--<option value="">Choose</option>-->
+                          <option value="">Choose</option>
                           <option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>
-                          <!--<option value="2">Samuel the Terrible</option>
-                          <option value="3">Samuel the Merciless</option>-->
+                          <option value="2">Samuel the Terrible</option>
+                          <option value="3">Samuel the Merciless</option>
                         </select>
+                        -->
+                        <input type="text" name="user" class="form-control" id="character" value="${payloadContent.user.name}">
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">
