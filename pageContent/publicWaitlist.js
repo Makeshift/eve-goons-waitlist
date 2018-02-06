@@ -140,7 +140,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                           <option value="3">Samuel the Merciless</option>
                         </select>
                         -->
-                        <input type="text" name="user" class="form-control" id="character" value="${payloadContent.user.name}">
+                        <input type="text" name="character" class="form-control" id="character" value="${payloadContent.user.name}">
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">

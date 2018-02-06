@@ -40,7 +40,7 @@ module.exports = function(app, setup) {
 		if (req.isAuthenticated()) {
 			var alt = false;
 			if (req.user.name != req.body.name) {
-				esi.characters.search.strict(req.body.name).then(function(results) {
+				esi.characters.search.strict(req.body.character).then(function(results) {
 						//This can be a user later
 						alt = {
 							name: req.body.name,
