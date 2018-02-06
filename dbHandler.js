@@ -6,7 +6,7 @@ const dbService = {
   connect: function(cb) {
     mongo.connect(setup.data.mongoDbURL, function(err, client) {
       if (err) {
-        mongo.close();
+        throw err;
         console.log("Database connection failure.");
       }
       dbService.db = client.db(setup.data.mongoDbName);
