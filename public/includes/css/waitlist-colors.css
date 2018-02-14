@@ -33,7 +33,11 @@
 	color:white!important;
 }
 
-.skills-failed, .skills-failed a{
-	background-color: #940707!important;
-	color:white!important;
+.skills-failed{
+	background-color:#dc3545!important;
+	color:#000000!important;
+}
+
+.skills-failed a{
+	color: #ffffff;
 }
