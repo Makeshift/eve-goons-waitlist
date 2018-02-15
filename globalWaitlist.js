@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const db = require('./dbhandler.js').db.collection('waitlist');
+const db = require('./dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
 
 module.exports = function(setup) {

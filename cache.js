@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const esi = require('eve-swagger');
-const db = require('./dbhandler.js').db.collection('cache');
+const db = require('./dbHandler.js').db.collection('cache');
 
 module.exports = function (setup) {
 	var module = {};

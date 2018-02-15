@@ -4,7 +4,7 @@ const setup = require('./setup.js');
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const cache = require('./cache.js')(setup);
-const db = require('./dbhandler.js').db.collection('users');
+const db = require('./dbHandler.js').db.collection('users');
 
 module.exports = function (setup) {
 	var module = {};
