@@ -84,7 +84,7 @@ module.exports = function(payloadContent, cb) {
                               <a href="/commander/${fleetid}/remove/${tableID}/"><button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button></a>
                             </td>
                             <td>
-                              <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.user.ship}" alt="${entry.user.ship}"></a>
+                              <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.ship}" alt="${entry.ship}">-->${entry.ship}</a>
                             </td>
                             <td><a href="#">${location.name}</a></td>
                             <td>00M 00H</td>
