@@ -1,5 +1,5 @@
 //Imports
-const database = require('./dBhandler.js');
+const database = require('./dbHandler.js');
 database.connect(function() {
     const db = database.db;
     const express = require('express');
