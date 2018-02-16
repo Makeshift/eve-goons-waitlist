@@ -2,7 +2,6 @@ var setup = require('../setup.js');
 var waitlist = require('../globalWaitlist.js')(setup);
 
 module.exports = function(payloadContent, cb) {
-  console.log(payloadContent);
 
 var inactive = "";
 if (payloadContent.fleets.length === 0) {

@@ -36,8 +36,6 @@ database.connect(function() {
             callbackURL: setup.oauth.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
-        	console.log("Users access token: " + accessToken);
-        	console.log("Users refresh token: " + refreshToken);
         	//Our user has logged in, let's get a unique ID for them (Their character ID, because why not)
         	customSSO.verifyReturnCharacterDetails(refreshToken, function(success, response, characterDetails) {
         		if (success) {

@@ -105,7 +105,6 @@ module.exports = function (setup) {
 	}
 
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
-		console.log(characterDetails);
 		module.getUserDataFromID(characterDetails.CharacterID, function(alliance, corporation) {
 			if (setup.permissions.alliances.includes(alliance.name)) {
 			console.log(`${characterDetails.CharacterName} is in alliance ${alliance.name}`)

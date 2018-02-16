@@ -125,28 +125,32 @@ app.get('/commander/', function (req, res) {
 app.post('/commander/', function(req, res) {
 	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 		users.getLocation(req.user, function(location) {
-			var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-			fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function(members) {
-				var fleetInfo = {
-					fc: req.user,
-					backseat: {},
-					type: req.body.type,
-					status: "Forming",
-					location: location.name,
-					members: members,
-					url: req.body.url,
-					id: fleetid,
-					comms: {name: setup.fleet.comms[0].name, url:setup.fleet.comms[0].url},
-					errors: 0
-				}
-				fleets.register(fleetInfo, function(success, errTxt) {
-					if (!success) {
-						res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
-					} else {
-						res.redirect(302, '/commander/')
+			var fleetid = req.body.url.split("fleets/")[1].split("/")[0] | 0;
+			if (fleetid !== 0) {
+				fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function(members) {
+					var fleetInfo = {
+						fc: req.user,
+						backseat: {},
+						type: req.body.type,
+						status: "Forming",
+						location: location.name,
+						members: members,
+						url: req.body.url,
+						id: fleetid,
+						comms: {name: setup.fleet.comms[0].name, url:setup.fleet.comms[0].url},
+						errors: 0
 					}
-				});
-			})	
+					fleets.register(fleetInfo, function(success, errTxt) {
+						if (!success) {
+							res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
+						} else {
+							res.redirect(302, '/commander/')
+						}
+					});
+				})
+			} else {
+				res.status(400).send("Fleet ID unable to be parsed. Did you click fleets -> *three buttons at the top left* -> Copy fleet URL?<br><br><a href='/commander/'>Go back</a>")
+			}
 		})
 					
 	} else {

@@ -1,6 +1,4 @@
 module.exports = function(payloadContent, cb) {
-  console.log(payloadContent);
-
 /*
 Content payload template:
 payload.content = {
