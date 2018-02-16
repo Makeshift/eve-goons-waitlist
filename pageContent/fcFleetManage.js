@@ -8,8 +8,8 @@ module.exports = function(payloadContent, cb) {
   var ships = [];
   var members = [];
   //TODO: UGH!
-  if (payloadcontent.fleet) {
-    if (payloadcontent.fleet.members) {
+  if (payloadContent.fleet) {
+    if (payloadContent.fleet.members) {
       var fleetLength = payloadContent.fleet.members.length || 0;
     } else {
       fleetLength = 0;
