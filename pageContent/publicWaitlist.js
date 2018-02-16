@@ -48,7 +48,7 @@ var fleets = "";
                       </tr>                      
                       <tr>
                         <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
+                        <td><a href="#">${payloadContent.fleets[i].location}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
@@ -60,7 +60,7 @@ var fleets = "";
               </div>          
     `
   }
-
+  
 waitlist.getUserPosition(payloadContent.user.characterID, function(position, found, name) {
   waitlist.getCharsOnWaitlist(payloadContent.user.characterID, function(charList) {
     //If they have a char in the waitlist AND they have no related chars, hide the "Join Waitlist" button
