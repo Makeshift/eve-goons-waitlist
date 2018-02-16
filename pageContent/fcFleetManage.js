@@ -47,6 +47,9 @@ module.exports = function(payloadContent, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
       var usersNeeded = usersOnWaitlist.length;
+      usersNeeded.sort(function(a, b) {
+        return a.signupTime - b.signupTime;
+      })
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {
         //TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background and grabbed from the DB
@@ -66,6 +69,13 @@ module.exports = function(payloadContent, cb) {
             name = entry.alt.name;
             role = "Alt of: " + entry.user.name;
             removetext = "?alt=true"
+          }
+
+          var signuptime = Math.floor((Date.now() - entry.signupTime)/1000/60);
+          var signupHours = 0;
+          while (signuptime > 59) {
+            signuptime -= 60;
+            signupHours++;
           }
           waitlistHTML += `
           <tr class="${invited}">
@@ -98,7 +108,7 @@ module.exports = function(payloadContent, cb) {
                               <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.ship}" alt="${entry.ship}">-->${entry.ship}</a>
                             </td>
                             <td><a href="#">${location.name}</a></td>
-                            <td>00M 00H</td>
+                            <td>${signupHours}H ${signuptime}M</td>
                             <td>${entry.language}</td>
                             <td>${entry.onComms}</td>
                             <td>${entry.ingameChat}</td>
