@@ -47,7 +47,7 @@ module.exports = function(payloadContent, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
       var usersNeeded = usersOnWaitlist.length;
-      usersNeeded.sort(function(a, b) {
+      usersOnWaitlist.sort(function(a, b) {
         return a.signupTime - b.signupTime;
       })
       var count = 0;
