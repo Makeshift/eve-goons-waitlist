@@ -42,7 +42,11 @@ database.connect(function() {
         	customSSO.verifyReturnCharacterDetails(refreshToken, function(success, response, characterDetails) {
         		if (success) {
         			users.findOrCreateUser(users, refreshToken, characterDetails, function(user) {
-        				done(null, user);
+                        if (user === false) {
+                            done(false)
+                        } else {
+        				    done(null, user);
+                        }
         			})
         			
         		} else {

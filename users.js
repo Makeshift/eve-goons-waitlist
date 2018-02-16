@@ -86,23 +86,50 @@ module.exports = function (setup) {
 		})
 	}
 
+	module.getUserDataFromID = function(id, cb) {
+		esi.characters(id).info().then(function(data) {
+			var allianceID = data.alliance_id || 0;
+			var corporationID = data.corporation_id || 0;
+			esi.corporations.names(corporationID).then(function(corporation) {
+				if (allianceID !== 0) {
+					esi.alliances.names(allianceID).then(function(alliance) {
+						cb(alliance[0], corporation[0]);
+					})
+				} else {
+					cb(null, corporation[0])
+				}
+			})
+			
+		})
+		
+	}
+
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
-		var newUserTemplate = {
-			characterID: characterDetails.CharacterID,
-			name: characterDetails.CharacterName,
-			scopes: characterDetails.Scopes,
-			refreshToken: refreshToken,
-			avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
-			role: "Member",
-			roleNumeric: 0,
-			registrationDate: new Date(),
-			notes: "",
-			ships: [],
-			relatedChars: [],
-			statistics: { sites: {} },
-			notifications: [],
-			location: {lastCheck: 0}
-		}
+		console.log(characterDetails);
+		module.getUserAllianceFromID(characterDetails.characterID, function(alliance, corporation) {
+			if (setup.alliances.includes(alliance.name)) {
+				var newUserTemplate = {
+					characterID: characterDetails.CharacterID,
+					name: characterDetails.CharacterName,
+					scopes: characterDetails.Scopes,
+					alliance: alliance,
+					corporation: corporation,
+					refreshToken: refreshToken,
+					avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
+					role: "Member",
+					roleNumeric: 0,
+					registrationDate: new Date(),
+					notes: "",
+					ships: [],
+					relatedChars: [],
+					statistics: { sites: {} },
+					notifications: [],
+					location: {lastCheck: 0}
+				}
+			} else {
+				cb(false);
+			}
+		})
 		db.insert(newUserTemplate, function(err, result) {
 			if (err) console.log(err);
 			cb(newUserTemplate);
