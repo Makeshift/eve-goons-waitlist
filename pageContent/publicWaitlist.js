@@ -243,6 +243,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                         <hr/>
                         
                         <!-- Alt Waitlist Up -->
+                        <!-- Hidden for Now
                         <div class="col-xl-12 col-lg-12 col-sm-12" style="margin-top:10px">
                           <strong>Join the Waitlist</strong>                      
                             <table class="table table-responsive table-sm">
@@ -270,6 +271,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                           <button class="btn btn-sm btn-success float-right">Add all alts</button>
                           <button class="btn btn-sm btn-danger float-right">Remove all alts</button> 
                         </div>
+                        -->
                         <!-- End Alt Waitlist Up -->                    
                       </div>
                     </div>
