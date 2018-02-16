@@ -34,7 +34,7 @@ module.exports = function(payloadContent, cb) {
   	  	<td>${distribution[item.id]}</td>
     	`;
       if (i % 3 === 0) {
-        shiptable += `</td><td>`
+        shiptable += `</tr><tr>`
       }
       if (counter >= numOfShips) {
         contWaitlistGenerate(shiptable, fleetLength, payloadContent.fleet.id, cb);
