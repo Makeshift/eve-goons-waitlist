@@ -106,7 +106,7 @@ module.exports = function (setup) {
 
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		console.log(characterDetails);
-		module.getUserAllianceFromID(characterDetails.characterID, function(alliance, corporation) {
+		module.getUserDataFromID(characterDetails.characterID, function(alliance, corporation) {
 			if (setup.alliances.includes(alliance.name)) {
 				var newUserTemplate = {
 					characterID: characterDetails.CharacterID,
