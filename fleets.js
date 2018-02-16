@@ -160,7 +160,7 @@ Fleet object format:
 											module.checkForDuplicates();
 										})
 										members.forEach(function(member, i) {
-											if (member.role === "fleet_commander") {
+											if (member.role.includes("boss")) {
 												updateFleetCommander(member, fullDoc.id);
 											}
 											checkCache.push(member.ship_type_id);
