@@ -33,7 +33,7 @@ module.exports = function(payloadContent, cb) {
   	  	<td class="tw20per"><a href="#">${item.name || item || "CacheError"}</a>
   	  	<td>${distribution[item.id]}</td>
     	`;
-      if (i % 3 === 0) {
+      if (counter % 3 === 0) {
         shiptable += `</tr><tr>`
       }
       if (counter >= numOfShips) {
