@@ -107,7 +107,8 @@ module.exports = function (setup) {
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		console.log(characterDetails);
 		module.getUserDataFromID(characterDetails.characterID, function(alliance, corporation) {
-			if (setup.alliances.includes(alliance.name)) {
+			if (setup.permissions.alliances.includes(alliance.name)) {
+			console.log(`${characterDetails.CharacterName} is in alliance ${alliance.name}`)
 				var newUserTemplate = {
 					characterID: characterDetails.CharacterID,
 					name: characterDetails.CharacterName,
@@ -127,6 +128,7 @@ module.exports = function (setup) {
 					location: {lastCheck: 0}
 				}
 			} else {
+				console.log(`${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance.name})`)
 				cb(false);
 			}
 		})
