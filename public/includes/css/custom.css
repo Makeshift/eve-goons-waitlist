@@ -166,7 +166,7 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 }
 
 /* No Select */
-.noselect, .global-banner, .title, .number, form, img, nav, footer, table{
+.noselect, .global-banner, img, footer, nav{
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
      -khtml-user-select: none; /* Konqueror HTML */

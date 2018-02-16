@@ -6,7 +6,7 @@ module.exports = function(payloadContent, cb) {
 
 var inactive = "";
 if (payloadContent.fleets.length === 0) {
-  inactive = `<div role="alert" class="alert alert-primary global-banner-inactive">
+  inactive = `<div role="alert" class="alert alert-primary global-banner-inactive noselect">
             <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
           </div>`
 }
@@ -87,7 +87,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
         cb(`
         <!-- Page Content -->
         <div class="page-content">
-          <div class="page-header">
+          <div class="page-header noselect">
             <div class="container-fluid">
               <h2 class="h5 no-margin-bottom"><strong class="text-primary">THE</strong><strong>WAITLIST</strong></h2>
             </div>
@@ -100,12 +100,12 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
             </div>
           </section>
           <!-- Main Content -->
-          <section class="no-padding-top padding-bottom">
+          <section class="no-padding-top padding-bottom noselect">
             <div class="container-fluid">
               <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-12">
                   <!-- Waitlist Queue Panel -->
-                  <div class="statistic-block block">
+                  <div class="statistic-block block noselect">
                     <div class="title">                    
                       <strong>Queue Info</strong>
                     </div>
