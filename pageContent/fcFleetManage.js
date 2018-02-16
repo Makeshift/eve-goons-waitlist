@@ -7,7 +7,7 @@ module.exports = function(payloadContent, cb) {
 
   var ships = [];
   var members = [];
-  var fleetLength = payloadContent.fleet.members.length;
+  var fleetLength = payloadContent.fleet.members.length || 0;
   for (var i = 0; i < fleetLength; i++) {
   	ships.push(payloadContent.fleet.members[i].ship_type_id)
   }
