@@ -33,7 +33,9 @@ module.exports = function(payloadContent, cb) {
   	  	<td class="tw20per"><a href="#">${item.name || item || "CacheError"}</a>
   	  	<td>${distribution[item.id]}</td>
     	`;
-
+      if (i % 3 === 0) {
+        shiptable += `</td><td>`
+      }
       if (counter >= numOfShips) {
         contWaitlistGenerate(shiptable, fleetLength, payloadContent.fleet.id, cb);
       }
