@@ -92,7 +92,7 @@ module.exports = function (setup) {
 			name: characterDetails.CharacterName,
 			scopes: characterDetails.Scopes,
 			refreshToken: refreshToken,
-			avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
+			avatar: "https://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
 			role: "Member",
 			roleNumeric: 0,
 			registrationDate: new Date(),
