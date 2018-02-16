@@ -17,7 +17,7 @@ module.exports = function(app, passport, setup) {
 	                                      failureRedirect: '/failedLoginCallback' }));
 	//Some error handling endpoints
 	app.get('/failedLoginCallback', function(req, res) {
-		res.send("We tried to get a new token for you but we failed at the callback stage. This indicates an issue with the SSO service.")
+		res.send("We tried to get a new token for you but we failed at the callback stage. This indicates that there's either an issue with the SSO service, or your character is not authorized to use this application.<br><br>You may be trying to login with the wrong character. Click <a href='/'>here</a> to go back and try to login with a character in a whitelisted alliance.")
 	});
 	app.get('/failedLoginAuth', function(req, res) {
 		res.send("You failed to authorize at the login stage. This means your session has probably expired and you need to log in again.")
