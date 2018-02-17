@@ -2,7 +2,6 @@ var setup = require('../setup.js');
 var waitlist = require('../globalWaitlist.js')(setup);
 
 module.exports = function(payloadContent, cb) {
-  console.log(payloadContent);
 
 var inactive = "";
 if (payloadContent.fleets.length === 0) {
@@ -140,7 +139,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                           <option value="3">Samuel the Merciless</option>
                         </select>
                         -->
-                        <input type="text" name="user" class="form-control" id="character" value="${payloadContent.user.name}">
+                        <input type="text" name="name" class="form-control" id="character" value="${payloadContent.user.name}">
                       </div>
                       <!-- Select Language -->
                       <div class="form-group">

@@ -4,7 +4,7 @@ const setup = require('./setup.js');
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const cache = require('./cache.js')(setup);
-const db = require('./dbhandler.js').db.collection('users');
+const db = require('./dbHandler.js').db.collection('users');
 
 module.exports = function (setup) {
 	var module = {};
@@ -86,26 +86,54 @@ module.exports = function (setup) {
 		})
 	}
 
+	module.getUserDataFromID = function(id, cb) {
+		esi.characters(id).info().then(function(data) {
+			var allianceID = data.alliance_id || 0;
+			var corporationID = data.corporation_id || 0;
+			esi.corporations.names(corporationID).then(function(corporation) {
+				if (allianceID !== 0) {
+					esi.alliances.names(allianceID).then(function(alliance) {
+						cb(alliance[0], corporation[0]);
+					})
+				} else {
+					cb(null, corporation[0])
+				}
+			})
+			
+		})
+		
+	}
+
 	generateNewUser = function(refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
-		var newUserTemplate = {
-			characterID: characterDetails.CharacterID,
-			name: characterDetails.CharacterName,
-			scopes: characterDetails.Scopes,
-			refreshToken: refreshToken,
-			avatar: "https://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
-			role: "Member",
-			roleNumeric: 0,
-			registrationDate: new Date(),
-			notes: "",
-			ships: [],
-			relatedChars: [],
-			statistics: { sites: {} },
-			notifications: [],
-			location: {lastCheck: 0}
-		}
-		db.insert(newUserTemplate, function(err, result) {
-			if (err) console.log(err);
-			cb(newUserTemplate);
+		module.getUserDataFromID(characterDetails.CharacterID, function(alliance, corporation) {
+			if (setup.permissions.alliances.includes(alliance.name)) {
+			console.log(`${characterDetails.CharacterName} is in alliance ${alliance.name}`)
+				var newUserTemplate = {
+					characterID: characterDetails.CharacterID,
+					name: characterDetails.CharacterName,
+					scopes: characterDetails.Scopes,
+					alliance: alliance,
+					corporation: corporation,
+					refreshToken: refreshToken,
+					avatar: "https://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
+					role: "Member",
+					roleNumeric: 0,
+					registrationDate: new Date(),
+					notes: "",
+					ships: [],
+					relatedChars: [],
+					statistics: { sites: {} },
+					notifications: [],
+					location: {lastCheck: 0}
+				}
+				db.insert(newUserTemplate, function(err, result) {
+					if (err) console.log(err);
+					cb(newUserTemplate);
+				})
+			} else {
+				console.log(`${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance.name})`)
+				cb(false);
+			}
 		})
 	};
 

@@ -5,7 +5,7 @@ const refresh = require('passport-oauth2-refresh');
 const setup = require('./setup.js');
 const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
-const db = require('./dbhandler.js').db.collection('fleets');
+const db = require('./dbHandler.js').db.collection('fleets');
 var waitlist = require('./globalWaitlist.js')(setup);
 
 module.exports = function (setup) {
@@ -160,7 +160,7 @@ Fleet object format:
 											module.checkForDuplicates();
 										})
 										members.forEach(function(member, i) {
-											if (member.role === "fleet_commander") {
+											if (member.role.includes("boss")) {
 												updateFleetCommander(member, fullDoc.id);
 											}
 											checkCache.push(member.ship_type_id);
