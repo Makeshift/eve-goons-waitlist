@@ -115,7 +115,7 @@ module.exports = function (setup) {
 					alliance: alliance,
 					corporation: corporation,
 					refreshToken: refreshToken,
-					avatar: "http://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
+					avatar: "https://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
 					role: "Member",
 					roleNumeric: 0,
 					registrationDate: new Date(),
@@ -134,7 +134,6 @@ module.exports = function (setup) {
 				console.log(`${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance.name})`)
 				cb(false);
 			}
-
 		})
 	};
 

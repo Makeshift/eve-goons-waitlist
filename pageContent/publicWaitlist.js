@@ -5,7 +5,7 @@ module.exports = function(payloadContent, cb) {
 
 var inactive = "";
 if (payloadContent.fleets.length === 0) {
-  inactive = `<div role="alert" class="alert alert-primary global-banner-inactive">
+  inactive = `<div role="alert" class="alert alert-primary global-banner-inactive noselect">
             <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
           </div>`
 }
@@ -47,7 +47,7 @@ var fleets = "";
                       </tr>                      
                       <tr>
                         <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location.name}</a></td>
+                        <td><a href="#">${payloadContent.fleets[i].location}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
@@ -59,7 +59,7 @@ var fleets = "";
               </div>          
     `
   }
-
+  
 waitlist.getUserPosition(payloadContent.user.characterID, function(position, found, name) {
   waitlist.getCharsOnWaitlist(payloadContent.user.characterID, function(charList) {
     //If they have a char in the waitlist AND they have no related chars, hide the "Join Waitlist" button
@@ -86,7 +86,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
         cb(`
         <!-- Page Content -->
         <div class="page-content">
-          <div class="page-header">
+          <div class="page-header noselect">
             <div class="container-fluid">
               <h2 class="h5 no-margin-bottom"><strong class="text-primary">THE</strong><strong>WAITLIST</strong></h2>
             </div>
@@ -99,12 +99,12 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
             </div>
           </section>
           <!-- Main Content -->
-          <section class="no-padding-top padding-bottom">
+          <section class="no-padding-top padding-bottom noselect">
             <div class="container-fluid">
               <div class="row">
                 <div class="col-lg-4 col-md-6 col-sm-12">
                   <!-- Waitlist Queue Panel -->
-                  <div class="statistic-block block">
+                  <div class="statistic-block block noselect">
                     <div class="title">                    
                       <strong>Queue Info</strong>
                     </div>
@@ -146,7 +146,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                         <label for="lan"><div class="d-inline" data-toggle="tooltip" title="Select English if you can understand FC instructions. If your English skills are poor, please select your primary language."><i class="fas fa-info-circle"></i></div>  Language:</label>
                         <select name="language" class="form-control" id="lan">
                           <option value="">Choose</option>
-                          <option value="English">English</option>
+                          <option value="English" selected>English</option>
                           <option value="Chinese">Chinese</option>
                           <option value="German">German</option>
                           <option value="French">French</option>
