@@ -110,6 +110,30 @@ function header(headerPayload, cb) {
 
 //TODO: Dynamically select which page we're on for selection
 function sidebar(sidebarPayload, cb) {
+  //Only show the FC nav for the correct people
+  var fcnav = "";
+  if(sidebarPayload.user.roleNumeric > 1) {
+    fcnav += `
+    <span class="heading">Fleet Commander</span>
+    <ul class="list-unstyled">
+      <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander">
+        <span class="fa-layers fa-fw">
+          <i class="fas fa-hourglass-half"></i>
+          <i class="fas fa-lock-alt" data-fa-transform="shrink-6 down-2 right-4" style="color:#D6D8D9"></i>
+        </span>
+        Fleet Management</a>
+      </li>          
+      <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
+      <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
+        <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
+        <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
+          <strike><li><a href="#">Ban List</a></strike></li>
+          <strike><li><a href="#">FC Management</a></strike></li>
+          <strike><li><a href="#">White List</a></strike></li>
+        </ul>
+      </li>
+    </ul>`
+  }
 
   cb(`
     <!-- Nav - Sidebar -->
@@ -144,25 +168,7 @@ function sidebar(sidebarPayload, cb) {
           </li>
           <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-link"></i> Incursion Forums</a></li>
         </ul>
-        <span class="heading">Fleet Commander</span>
-        <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander">
-            <span class="fa-layers fa-fw">
-              <i class="fas fa-hourglass-half"></i>
-              <i class="fas fa-lock-alt" data-fa-transform="shrink-6 down-2 right-4" style="color:#D6D8D9"></i>
-            </span>
-            Fleet Management</a>
-          </li>          
-          <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
-          <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-            <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
-            <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
-              <strike><li><a href="#">Ban List</a></strike></li>
-              <strike><li><a href="#">FC Management</a></strike></li>
-              <strike><li><a href="#">White List</a></strike></li>
-            </ul>
-          </li>
-        </ul>
+          ${fcnav}
         <hr>
         <ul class="list-unstyled">
         <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
