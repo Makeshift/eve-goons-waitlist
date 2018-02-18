@@ -14,7 +14,7 @@ if (payloadContent.fleets.length === 0) {
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
     fleets += `
-              <div class="col-md-12"> 
+              <div class="col-lg-6 col-md-6"> 
                 <div class="statistic-block block">
                   <div class="title">
                     <strong>Fleet Info</strong>
@@ -292,7 +292,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                 <!-- End Waitlist Panel -->
                 
                 <!-- Fleet Info -->
-                <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="col-lg-8 col-md-6 col-sm-12">
                   <div class="row">
                     <!-- Fleet Info Table -->		  
                     ${fleets}
