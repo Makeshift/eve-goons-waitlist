@@ -159,6 +159,7 @@ Fleet object format:
 											if (err) console.log(err);
 											module.checkForDuplicates();
 										})
+										//Won't work because we can't hit the endpoint anymore, oops
 										members.forEach(function(member, i) {
 											if (member.role.includes("boss")) {
 												updateFleetCommander(member, fullDoc.id);

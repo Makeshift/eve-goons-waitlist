@@ -47,13 +47,11 @@ module.exports = function(payloadContent, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
       var usersNeeded = usersOnWaitlist.length;
-      usersOnWaitlist.sort(function(a, b) {
-        return a.signupTime - b.signupTime;
-      })
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {
         //TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background and grabbed from the DB
-        users.getLocation(usersOnWaitlist[i].user, function(location, entry) {
+        users.getLocation(usersOnWaitlist[i].user, function(){}); //Stupid hack because things were coming back in the wrong order, ugh
+        entry = usersOnWaitlist[i];
           count++;
           var characterID = entry.user.characterID;
           var tableID = entry._id;
@@ -107,7 +105,7 @@ module.exports = function(payloadContent, cb) {
                             <td>
                               <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.ship}" alt="${entry.ship}">-->${entry.ship}</a>
                             </td>
-                            <td><a href="#">${location.name}</a></td>
+                            <td><a href="#">${"Unknown"}</a></td>
                             <td>${signupHours}H ${signuptime}M</td>
                             <td>${entry.language}</td>
                             <td>${entry.onComms}</td>
@@ -117,7 +115,6 @@ module.exports = function(payloadContent, cb) {
           if (count >= usersNeeded) {
             genPage(waitlistHTML, usersNeeded, fleetLength, cb);
           }
-        }, usersOnWaitlist[i]);
       }
       if (usersNeeded === 0) {
         genPage("", usersNeeded, fleetLength, cb)

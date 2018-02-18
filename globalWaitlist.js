@@ -7,7 +7,7 @@ module.exports = function(setup) {
     var module = {};
 
     module.get = function(cb) {
-        db.find({}).toArray(function(err, docs) {
+        db.find({}).sort({"signupTime": -1}).toArray(function(err, docs) {
             if (err) console.log(err);
             cb(docs);
         })
