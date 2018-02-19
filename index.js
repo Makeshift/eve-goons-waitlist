@@ -1,4 +1,16 @@
-//Imports
+// mandatory
+const fs = require('fs');
+const path = require('path');
+if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
+	throw "You need to create a setup.js file. Refer to the readme."
+}
+
+// setup logging
+const log_init = require('./logger.js');
+const winston = require('winston');
+const logger = winston.loggers.get('core');
+logger.info('logging started');
+
 const database = require('./dbHandler.js');
 database.connect(function() {
     const db = database.db;
@@ -11,14 +23,11 @@ database.connect(function() {
     const request = require('request');
     const url = require('url');
     const session = require('express-session');
-    const fs = require('fs');
-    const path = require('path');
+    
+    
     const mongoStore = require('connect-mongo')(session);
 
     //Custom imports
-    if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
-        throw "You need to create a setup.js file. Refer to the readme."
-    }
     const setup = require('./setup.js');
     const users = require('./users.js')(setup);
     const customSSO = require('./customSSO.js')(refresh, setup, request, url);
