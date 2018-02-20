@@ -1,5 +1,15 @@
-//Imports
+
+// mandatory setup.js
+const fs = require('fs');
+const path = require('path');
+if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
+	throw "You need to create a setup.js file. Refer to the readme."
+}
+
+const setup = require('./setup.js');
+const log = require('./logger.js');
 const database = require('./dbHandler.js');
+
 database.connect(function() {
     const db = database.db;
     const express = require('express');
@@ -11,15 +21,12 @@ database.connect(function() {
     const request = require('request');
     const url = require('url');
     const session = require('express-session');
-    const fs = require('fs');
-    const path = require('path');
+    
+    
     const mongoStore = require('connect-mongo')(session);
 
     //Custom imports
-    if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
-        throw "You need to create a setup.js file. Refer to the readme."
-    }
-    const setup = require('./setup.js');
+    
     const users = require('./users.js')(setup);
     const customSSO = require('./customSSO.js')(refresh, setup, request, url);
     const fleets = require('./fleets.js')(setup);
@@ -48,7 +55,7 @@ database.connect(function() {
         			})
         			
         		} else {
-        			console.log("Character ID request failed for token " + refreshToken);
+					log.info(`Character ID request failed for token ${refreshToken}`);
         			done(success);
         		}
         	});
@@ -82,6 +89,6 @@ database.connect(function() {
 
     //Configure Express webserver
     app.listen(setup.settings.port, function listening() {
-        console.log('Express online and accepting connections');
+		log.info('Express online and accepting connections');
     });
 });
