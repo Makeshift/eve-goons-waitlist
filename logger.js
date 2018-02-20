@@ -1,10 +1,9 @@
 ﻿
-
 const path = require('path');
-
 const setup = require('./setup.js');
 const winston = require('winston');
 const { combine, timestamp, printf } = winston.format;
+var colors = require('colors/safe');
 
 // init
 (function () {
@@ -27,22 +26,39 @@ const { combine, timestamp, printf } = winston.format;
 		return `${info.timestamp} [${info.level}] ${info.message} ${JSON.stringify(extra)}`;
 	};
 
-	const myFormat = printf(info => {
-		if (Object.keys(info).length == 3) {
-			return simpleFormat(info);
+	const myColorize = (info) => {
+		// @colors/safe https://www.npmjs.com/package/colors
+		switch (info.level) {
+			case 'warn': info.message = colors.yellow(info.message);
+				break;
+			case 'error': info.message = colors.bgRed(info.message);
+				break;
+			case 'debug': info.message = colors.gray(info.message);
+				break;
 		}
-		else {
-			return extendedFormat(info);
-		}
-	});
+	};
+
+	const myFormat = (colorize) => {
+		return printf(info => {
+			if (colorize) {
+				myColorize(info);
+			}
+
+			if (Object.keys(info).length == 3) {
+				return simpleFormat(info);
+			}
+			else {
+				return extendedFormat(info);
+			}
+		});
+	};
 
 	winston.loggers.add('core', {
-		format: combine(timestamp(), myFormat),
 		transports: [
-			new winston.transports.Console(),
-			new winston.transports.File({ filename: path.normalize(dir + '/log.txt') })
+			new winston.transports.Console({ level: 'debug', format: combine(timestamp(), myFormat(true)), }),
+			new winston.transports.File({ level: 'debug', filename: path.normalize(dir + '/log.txt'), format: combine(timestamp(), myFormat(false)), })
 		],
-		// app crashes are logged to separated file
+		// app-crashes are logged to separated file
 		exceptionHandlers: [
 			new winston.transports.File({ filename: path.normalize(dir + '/exceptions.txt') })
 		],
@@ -52,13 +68,27 @@ const { combine, timestamp, printf } = winston.format;
 
 })();
 
+const logger = winston.loggers.get('core');
+
 // export
 module.exports = {
 
 	// @ES6 rest parameters: http://exploringjs.com/es6/ch_core-features.html#sec_from-arguments-to-rest
 	info: function (...args) {
 		// @ES6 spread operator http://exploringjs.com/es6/ch_core-features.html#sec_from-apply-to-spread
-		winston.loggers.get('core').info(...args);
+		logger.info(...args);
+	},
+
+	debug: function (...args) {
+		logger.debug(...args);
+	},
+
+	warn: function(...args) {
+		logger.warn(...args);
+	},
+	
+	error: function (...args) {
+		logger.error(...args);
 	},
 
 };
