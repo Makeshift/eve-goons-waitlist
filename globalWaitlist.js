@@ -2,20 +2,21 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
+const log = require('./logger.js');
 
 module.exports = function(setup) {
     var module = {};
 
     module.get = function(cb) {
         db.find({}).sort({"signupTime": 1}).toArray(function(err, docs) {
-            if (err) console.log(err);
+			if (err) log.error("get: Error for db.find", { err });
             cb(docs);
         })
     }
 
     module.getSingleFromTableID = function(id, cb) {
         db.findOne({'_id': ObjectId(id)}, function(err, result) {
-            if (err) console.log(err);
+			if (err) log.error("getSingleFromTableID: Error for db.findOne", { err, '_id': ObjectId(id) });
             if (typeof cb === "function") cb(result);
         })
     }
@@ -24,7 +25,7 @@ module.exports = function(setup) {
     	module.checkIfUserIsIn(user.name, function(status) {
     		if (!status) {
                 db.insert(user, function(err, doc) {
-                    if (err) console.log(err);
+					if (err) log.error("addToWaitlist: Error for db.insert", { err, 'user': user.name });
                     cb(true);
                 })
 		   	} else {
@@ -35,7 +36,7 @@ module.exports = function(setup) {
 
     module.setAsInvited = function(tableID, cb) {
         db.updateOne({'_id': ObjectId(tableID)}, { $set: {"invited": true}}, function(err, result) {
-            if (err) console.log(err);
+			if (err) log.error("setAsInvited: Error for db.updateOne", { err, '_id': ObjectId(tableID) });
             if (typeof cb === "function") cb();
         })
         
@@ -43,7 +44,7 @@ module.exports = function(setup) {
 
     module.checkIfUserIsIn = function(name, cb) {
             db.findOne({ "name": name}, function(err, doc) {
-                if (err) console.log(err);
+				if (err) log.error("checkIfUserIsIn: Error for db.findOne", { err, 'user': name });
                 if (doc === null) {
                     cb(false)
                 } else {
@@ -53,15 +54,16 @@ module.exports = function(setup) {
     }
 
     module.remove = function(tableID, cb) {
-        console.log("Deleting ID from waitlist: " + tableID);
+		log.debug(`Deleting ID from waitlist: ${tableID}`);
     	db.deleteOne({ '_id': ObjectId(tableID) }, function(err, result) {
-            if (err) console.log(err);
+			if (err) log.error("remove: Error for db.deleteOne", { err, '_id': ObjectId(tableID) });
             if (typeof cb === "function") cb();
         })
     }
 
     module.getUserPosition = function(characterID, cb) {
-        db.find({}).sort({ signupTime: 1 }).toArray(function(err, docs) {
+		db.find({}).sort({ signupTime: 1 }).toArray(function (err, docs) {
+			if (err) log.error("getUserPosition: Error for db.find.sort.toArray", { err, characterID });
             var characterPositions = [];
             for (var i = 0; i < docs.length; i++) {
                 if (docs[i].user.characterID == characterID) {
@@ -78,7 +80,8 @@ module.exports = function(setup) {
     }
 
     module.getCharsOnWaitlist = function(characterID, cb) {
-        db.find({"user.characterID": characterID}).toArray(function(err, chars) {
+		db.find({ "user.characterID": characterID }).toArray(function (err, chars) {
+			if (err) log.error("getCharsOnWaitlist: Error for db.find.toArray", { err, characterID });
             var charNames = [];
             for (var i = 0; i < chars.length; i++) {
                 if (chars[i].alt) {
