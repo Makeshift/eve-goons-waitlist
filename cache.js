@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const esi = require('eve-swagger');
 const db = require('./dbHandler.js').db.collection('cache');
+const log = require('./logger.js');
 
 module.exports = function (setup) {
 	var module = {};
@@ -25,14 +26,17 @@ module.exports = function (setup) {
 
 	module.addToDb = function(data, cb) {
 		db.update({id: data.id}, data, { upsert: true }, function(err, result) {
-			if (err) console.log(err);
+			if (err) {
+				log.error("addToDb: Error for db.update", { err, id: data.id });
+				// TODO: should this continue?
+			}
 			if (typeof cb === "function") cb();
 		})
 	}
 	//Duplicate key errors are caused by trying to 'get' stuff too quickly. NEED to make getting a background process
 	module.get = function(id, cb) {
 			db.findOne({'id': id}, function(err, doc) {
-				if (err) console.log(err);
+				if (err) log.error("get: Error for db.findOne", { err, id });
 				if (doc === null) {
 					if (!cachetemp.includes(id)) {
 						cachetemp.push(id);
@@ -87,25 +91,25 @@ module.exports = function (setup) {
 		}
 		ids = newids;
 		db.find({ 'id': { $in: ids }}).toArray(function(err, docs) {
-			if (err) console.log(err);
+			if (err) log.error("massQuery: Error for db.find", { err, ids });
 			var fullquery = [];
 			for (var i = 0; i < docs.length; i++) {
 				fullquery.push(docs[i].id);
 			}
 			var newBulkSearch = uniq(diffArray(fullquery, uniq(ids)));
-			if (newBulkSearch.length > 0) {
-			esi.names(newBulkSearch).then(function(items) {
-				db.insertMany(items, function(err, result) {
-					if (err) console.log(err);
+			if (newBulkSearch.length == 0) return;
+
+			esi.names(newBulkSearch).then(function (items) {
+				db.insertMany(items, function (err, result) {
+					if (err) log.error("massQuery: Error for db.insertMany", { err, items });
 					if (typeof cb === "function") {
 						cb(items);
 					}
 					for (var i = 0; i < items.length; i++) {
-						module.removeFromCacheTemp(items[i].id)
+						module.removeFromCacheTemp(items[i].id);
 					}
-				})	
-			})
-		}
+				});
+			});
 		});
 	}
 

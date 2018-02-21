@@ -21,8 +21,6 @@ database.connect(function() {
     const request = require('request');
     const url = require('url');
     const session = require('express-session');
-    
-    
     const mongoStore = require('connect-mongo')(session);
 
     //Custom imports
