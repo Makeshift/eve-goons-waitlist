@@ -42,15 +42,15 @@ module.exports = function(app, setup) {
 			var alt = false;
 			if (req.user.name != req.body.name) {
 				esi.characters.search.strict(req.body.name).then(function(results) {
-						//This can be a user later
-						alt = {
-							name: req.body.name,
-							id: results[0],
-							avatar: "http://image.eveonline.com/Character/" + results[0] + "_128.jpg"
-						};
-						submitAddition();
+					//This can be a user later
+					alt = {
+						name: req.body.name,
+						id: results[0],
+						avatar: "http://image.eveonline.com/Character/" + results[0] + "_128.jpg"
+					};
+					submitAddition();
 				}).catch(function (err) {
-					log.error("routes.post: Error", { err });
+					log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
 					res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
 				})
 			} else {

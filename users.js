@@ -80,7 +80,9 @@ module.exports = function (setup) {
 							if (err) log.error("getLocation: Error for db.updateOne", { err, 'characterID': user.characterID, location });
 						});
 					})
-				})
+				}).catch(err => {
+					log.error("users.getLocation: Error for esi.characters", { err, characterID: user.characterID });
+				});
 			})
 		})
 	}
@@ -93,13 +95,18 @@ module.exports = function (setup) {
 				if (allianceID !== 0) {
 					esi.alliances.names(allianceID).then(function(alliance) {
 						cb(alliance[0], corporation[0]);
-					})
+					}).catch(err => {
+						log.error("users.getUserDataFromID: Error for esi.alliances.names", { err, userId: id, allianceID });
+					});
 				} else {
 					cb(null, corporation[0])
 				}
-			})
-			
-		})
+			}).catch(err => {
+				log.error("users.getUserDataFromID: Error for esi.corporations.names", { err, userId: id, corporationID });
+			});
+		}).catch(err => {
+			log.error("users.getUserDataFromID: Error for esi.characters.info", { err, id });
+		});
 		
 	}
 

@@ -15,7 +15,9 @@ module.exports = function (setup) {
 			esi.names(id).then(function(item) {
 				cb(item[0]);
 				module.removeFromCacheTemp(id);
-			})
+			}).catch(err => {
+				log.error("cache.query: Error for esi.names", { err, id });
+			});
 	}
 
 	module.removeFromCacheTemp = function(id) {
@@ -101,7 +103,7 @@ module.exports = function (setup) {
 
 			esi.names(newBulkSearch).then(function (items) {
 				db.insertMany(items, function (err, result) {
-					if (err) log.error("massQuery: Error for db.insertMany", { err, items });
+					if (err) log.error("cache.massQuery: Error for db.insertMany", { err, items });
 					if (typeof cb === "function") {
 						cb(items);
 					}
@@ -109,6 +111,8 @@ module.exports = function (setup) {
 						module.removeFromCacheTemp(items[i].id);
 					}
 				});
+			}).catch(err => {
+				log.error("cache.query: Error for esi.names", { err, newBulkSearch });
 			});
 		});
 	}
