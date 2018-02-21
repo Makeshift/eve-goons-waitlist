@@ -115,7 +115,6 @@ module.exports = function (setup) {
 					alliance: alliance,
 					corporation: corporation,
 					refreshToken: refreshToken,
-					avatar: "https://image.eveonline.com/Character/" + characterDetails.CharacterID + "_128.jpg",
 					role: "Member",
 					roleNumeric: 0,
 					registrationDate: new Date(),
