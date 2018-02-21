@@ -51,9 +51,8 @@ var fleets = "";
                 <form action="/commander" method="POST" role="form">
                   <div class="vertical-input-group">
                     <div class="input-group">
-                      <!--<span class="input-group-addon" data-toggle="tooltip" title="The pilot must log in at least once before you can add them to the team."><i class="fas fa-info-circle"></i></span>-->
                       <span class="input-group-addon">Fleet Boss: ${payloadContent.user.name}</span>
-                      <input type="text" name="url" class="form-control" autocomplete="off" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus/>
+                      <input type="text" name="url" class="form-control" autocomplete="off" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus required/>
                       <select name="type" class="form-control dropdown">
                         <option value="Vanguards">Vanguards</option>
                         <option value="Assaults">Assaults</option>
