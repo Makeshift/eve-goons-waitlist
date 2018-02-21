@@ -18,7 +18,7 @@ var colors = require('colors/safe');
 
 	// prints serialized parameters
 	//  log.info("text", {a: 10}); -> `[info] text {"a":10}`
-	
+
 	const extendedFormat = (info) => {
 		var extra = {};
 		for (var it in info) {
@@ -95,10 +95,10 @@ module.exports = {
 		logger.debug(...args);
 	},
 
-	warn: function(...args) {
+	warn: function (...args) {
 		logger.warn(...args);
 	},
-	
+
 	error: function (...args) {
 		logger.error(...args);
 	},

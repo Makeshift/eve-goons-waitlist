@@ -1,46 +1,46 @@
 const setup = require('./setup.js');
 const path = require('path');
 module.exports = {
-    header: header,
-    footer: footer,
-    sidebar: sidebar,
-    generateTemplate: generateTemplate,
-    pageGenerate: pageGenerate
+	header: header,
+	footer: footer,
+	sidebar: sidebar,
+	generateTemplate: generateTemplate,
+	pageGenerate: pageGenerate
 }
 
 function pageGenerate(payload, cb) {
-  generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)), function(generatedPage) {
-    cb(generatedPage);
-  })
+	generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)), function (generatedPage) {
+		cb(generatedPage);
+	})
 }
 
 //TODO: Undecided if I like this system.
 function generateTemplate(payload, content, cb) {
-  header(payload.header, function(header) {
-    sidebar(payload.sidebar, function(sidebar) {
-      content(payload.content, function(content) {
-        footer(null, function(footer) {
-          cb(header + sidebar + content + footer);
-        })
-      })
-    })
-  })
+	header(payload.header, function (header) {
+		sidebar(payload.sidebar, function (sidebar) {
+			content(payload.content, function (content) {
+				footer(null, function (footer) {
+					cb(header + sidebar + content + footer);
+				})
+			})
+		})
+	})
 }
 
 function header(headerPayload, cb) {
-  var notifications = "";
-  for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
-    notifications += `<a href="#" class="dropdown-item">
+	var notifications = "";
+	for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
+		notifications += `<a href="#" class="dropdown-item">
     <div class="text d-flex justify-content-between"><strong>${headerPayload.user.notifications[i].text}</strong><br>${headerPayload.user.notifications[i].time}</div></a>`
-  }
+	}
 
-  var notificationBadge = "";
-  var noOfNotifications = headerPayload.user.notifications.length
-  if (noOfNotifications > 0) {
-    notificationBadge = `<span class="badge dashbg-3">!</span>`;
-  }
+	var notificationBadge = "";
+	var noOfNotifications = headerPayload.user.notifications.length
+	if (noOfNotifications > 0) {
+		notificationBadge = `<span class="badge dashbg-3">!</span>`;
+	}
 
-    cb(`
+	cb(`
   <!DOCTYPE html>
 <html>
   <head>
@@ -110,10 +110,10 @@ function header(headerPayload, cb) {
 
 //TODO: Dynamically select which page we're on for selection
 function sidebar(sidebarPayload, cb) {
-  //Only show the FC nav for the correct people
-  var fcnav = "";
-  if(sidebarPayload.user.roleNumeric > 1) {
-    fcnav += `
+	//Only show the FC nav for the correct people
+	var fcnav = "";
+	if (sidebarPayload.user.roleNumeric > 1) {
+		fcnav += `
     <span class="heading">Fleet Commander</span>
     <ul class="list-unstyled">
       <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander">
@@ -133,9 +133,9 @@ function sidebar(sidebarPayload, cb) {
         </ul>
       </li>
     </ul>`
-  }
+	}
 
-  cb(`
+	cb(`
     <!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
       <nav id="sidebar">
@@ -178,7 +178,7 @@ function sidebar(sidebarPayload, cb) {
 }
 
 function footer(footerPayload, cb) {
-    cb(`
+	cb(`
             <!-- Legal Notices  Modal -->
             <div role="dialog" tabindex="-1" class="modal fade" id="legal">
               <div class="modal-dialog" role="document">
