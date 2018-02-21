@@ -132,6 +132,11 @@ module.exports = function (app, setup) {
 					res.status(400).send("Fleet ID unable to be parsed. Did you click fleets -> *three buttons at the top left* -> Copy fleet URL?<br><br><a href='/commander/'>Go back</a>")
 				}
 				fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function (members) {
+					if (members===null) {
+						log.warn('routes.post /commander/, empty members. Cannot register fleet', { fleetid, characterID: req.user.characterID });
+						res.status(409).send("Empty fleet or other error" + "<br><br><a href='/commander'>Go back</a>")
+						return;
+					}
 					var fleetInfo = {
 						fc: req.user,
 						backseat: {},
