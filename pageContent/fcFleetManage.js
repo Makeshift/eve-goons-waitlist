@@ -109,9 +109,6 @@ module.exports = function(payloadContent, cb) {
                             </td>
                             <td><a href="#">${location.name}</a></td>
                             <td>${signupHours}H ${signuptime}M</td>
-                            <td>${entry.language}</td>
-                            <td>${entry.onComms}</td>
-                            <td>${entry.ingameChat}</td>
                           </tr>
           `;
           if (count >= usersNeeded) {
@@ -313,9 +310,6 @@ module.exports = function(payloadContent, cb) {
                           <th class="tw80">Fits</th>
                           <th>System</th>
                           <th>Wait Time</th>
-                          <th>Language</th>
-                          <th>On Comms?</th>
-                          <th>Ingame Channel?</th>
                         </tr>
                       </thead>
                       <tbody>

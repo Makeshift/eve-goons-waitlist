@@ -128,19 +128,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                           -->
                           <input type="text" name="name" class="form-control" id="character" value="${payloadContent.user.name}">
                         </div>
-                        <!-- Select Language -->
-                        <div class="form-group">
-                          <label for="lan"><div class="d-inline" data-toggle="tooltip" title="Select English if you can understand FC instructions. If your English skills are poor, please select your primary language."><i class="fas fa-info-circle"></i></div>  Language:</label>
-                          <select name="language" class="form-control" id="lan">
-                            <option value="">Choose</option>
-                            <option value="English" selected>English</option>
-                            <option value="Chinese">Chinese</option>
-                            <option value="German">German</option>
-                            <option value="French">French</option>
-                            <option value="Deaf">Deaf (Need Relay)</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
+                        
                         <!-- Yes/No Options -->
                         <ul class="list-unstyled">
                           <!--<li>
@@ -153,29 +141,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                               <input class="form-check-input" type="radio" name="translator" value="false"/> No
                               </label>
                             </div>
-                          </li>-->
-                          <li>
-                            <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
-                            <div class="form-check">
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" id="ingame" name="ingame" value="true" required/> Yes
-                              </label>
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" value="false" name="ingame"/> No
-                              </label>
-                            </div>
-                          </li>
-                          <li>
-                            <label for="coms">Are you on comms?</label>
-                            <div class="form-check">
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" id="comms" name="oncomms" value="true" required/> Yes
-                              </label>
-                              <label class="form-check-label">
-                              <input class="form-check-input" type="radio" value="false" name="oncomms"/> No
-                              </label>
-                            </div>
-                          </li>
+                          </li>-->                          
                         </ul>
                         <!-- Select Fits -->
                         <div id="fits">
@@ -220,6 +186,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                             </div>
                           </div>
                           <!-- Action Buttons -->
+                          <span class="font-italic mb-2"><i class="fas fa-exclamation-triangle"></i> Please pay attention to our in game channel 'imperium.incursions' and be on mumble while you wait for an invite to fleet!</span>
                           ${joinWaitlist}
                         </form>
                         <div class="row">
