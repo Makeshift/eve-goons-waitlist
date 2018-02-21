@@ -35,8 +35,8 @@ module.exports = function (setup) {
 			} else {
 				//We didn't find the user, create them as a master account
 				log.info(`Creating a new user for ${characterDetails.CharacterName}.`);
-				generateNewUser(refreshToken, characterDetails, null, null, function (userProfile) {
-					cb(userProfile);
+				generateNewUser(refreshToken, characterDetails, null, null, function (userProfile, err) {
+					cb(userProfile, err);
 				});
 			}
 		});
@@ -138,7 +138,7 @@ module.exports = function (setup) {
 				})
 			} else {
 				log.warn(`${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance ? alliance.name : 'null'})`)
-				cb(false);
+				cb(false, `${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance ? alliance.name : 'null'})`);
 			}
 		})
 	};

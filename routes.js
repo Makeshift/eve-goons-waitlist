@@ -14,6 +14,10 @@ module.exports = function (app, setup) {
 		if (req.isAuthenticated()) {
 			//Grab all fleets
 			fleets.getFCPageList(function (fleets) {
+				if (!fleets) {
+					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
 					template: "publicWaitlist",
 					sidebar: {
@@ -99,6 +103,10 @@ module.exports = function (app, setup) {
 	app.get('/commander/', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 			fleets.getFCPageList(function (fleets) {
+				if (!fleets) {
+					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
 					template: "fcFleetList",
 					sidebar: {
@@ -172,6 +180,10 @@ module.exports = function (app, setup) {
 	app.get('/commander/:fleetid/', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
 			fleets.get(req.params.fleetid, function (fleet) {
+				if (!fleet) {
+					res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
 					template: "fcFleetManage",
 					sidebar: {

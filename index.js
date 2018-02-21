@@ -34,24 +34,23 @@ database.connect(function () {
 
 	//Configure Passport's oAuth
 	var oauthStrategy = new OAuth2Strategy({
-		authorizationURL: `https://${setup.oauth.baseSSOUrl}/oauth/authorize`,
-		tokenURL: `https://${setup.oauth.baseSSOUrl}/oauth/token`,
-		clientID: setup.oauth.clientID,
-		clientSecret: setup.oauth.secretKey,
-		callbackURL: setup.oauth.callbackURL
-	},
+			authorizationURL: `https://${setup.oauth.baseSSOUrl}/oauth/authorize`,
+			tokenURL: `https://${setup.oauth.baseSSOUrl}/oauth/token`,
+			clientID: setup.oauth.clientID,
+			clientSecret: setup.oauth.secretKey,
+			callbackURL: setup.oauth.callbackURL
+		},
 		function (accessToken, refreshToken, profile, done) {
 			//Our user has logged in, let's get a unique ID for them (Their character ID, because why not)
 			customSSO.verifyReturnCharacterDetails(refreshToken, function (success, response, characterDetails) {
 				if (success) {
-					users.findOrCreateUser(users, refreshToken, characterDetails, function (user) {
+					users.findOrCreateUser(users, refreshToken, characterDetails, function (user, err) {
 						if (user === false) {
-							done(false)
+							done(err);
 						} else {
 							done(null, user);
 						}
 					})
-
 				} else {
 					log.info(`Character ID request failed for token ${refreshToken}`);
 					done(success);

@@ -99,6 +99,11 @@ module.exports = function (setup) {
 	}
 
 	module.delete = function (id, cb) {
+		if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
+			log.debug("Special dev fleet, not deleting", { id });
+			if (typeof cb === "function") cb();
+			return;
+		}
 		db.deleteOne({ 'id': id }, function (err, result) {
 			if (err) log.error("fleet.delete: Error for db.deleteOne", { err, id });
 			if (typeof cb === "function") cb();
@@ -157,7 +162,7 @@ module.exports = function (setup) {
 	module.timers = function () {
 		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
 		//TODO: Error checking doesn't work due to how ESI module handles errors
-		setTimeout(lookup, 10000)
+		setTimeout(lookup, 10*1000)
 
 		function lookup() {
 			var checkCache = [];
