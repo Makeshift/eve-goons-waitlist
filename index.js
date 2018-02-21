@@ -10,83 +10,82 @@ const setup = require('./setup.js');
 const log = require('./logger.js');
 const database = require('./dbHandler.js');
 
-database.connect(function() {
-    const db = database.db;
-    const express = require('express');
-    const passport = require('passport');
-    const app = express();
-    const OAuth2Strategy = require('passport-oauth2');
-    const refresh = require('passport-oauth2-refresh');
-    const bodyParser = require('body-parser');
-    const request = require('request');
-    const url = require('url');
-    const session = require('express-session');
-    const mongoStore = require('connect-mongo')(session);
+database.connect(function () {
+	const db = database.db;
+	const express = require('express');
+	const passport = require('passport');
+	const app = express();
+	const OAuth2Strategy = require('passport-oauth2');
+	const refresh = require('passport-oauth2-refresh');
+	const bodyParser = require('body-parser');
+	const request = require('request');
+	const url = require('url');
+	const session = require('express-session');
+	const mongoStore = require('connect-mongo')(session);
 
-    //Custom imports
-    
-    const users = require('./users.js')(setup);
-    const customSSO = require('./customSSO.js')(refresh, setup, request, url);
-    const fleets = require('./fleets.js')(setup);
+	//Custom imports
 
-    //Start timers
-    fleets.timers();
+	const users = require('./users.js')(setup);
+	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
+	const fleets = require('./fleets.js')(setup);
 
-    //Configure Passport's oAuth
-    var oauthStrategy = new OAuth2Strategy({
-            authorizationURL: `https://${setup.oauth.baseSSOUrl}/oauth/authorize`,
-            tokenURL: `https://${setup.oauth.baseSSOUrl}/oauth/token`,
-            clientID: setup.oauth.clientID,
-            clientSecret: setup.oauth.secretKey,
-            callbackURL: setup.oauth.callbackURL
-        },
-        function(accessToken, refreshToken, profile, done) {
-        	//Our user has logged in, let's get a unique ID for them (Their character ID, because why not)
-        	customSSO.verifyReturnCharacterDetails(refreshToken, function(success, response, characterDetails) {
-        		if (success) {
-        			users.findOrCreateUser(users, refreshToken, characterDetails, function(user) {
-                        if (user === false) {
-                            done(false)
-                        } else {
-        				    done(null, user);
-                        }
-        			})
-        			
-        		} else {
+	//Start timers
+	fleets.timers();
+
+	//Configure Passport's oAuth
+	var oauthStrategy = new OAuth2Strategy({
+			authorizationURL: `https://${setup.oauth.baseSSOUrl}/oauth/authorize`,
+			tokenURL: `https://${setup.oauth.baseSSOUrl}/oauth/token`,
+			clientID: setup.oauth.clientID,
+			clientSecret: setup.oauth.secretKey,
+			callbackURL: setup.oauth.callbackURL
+		},
+		function (accessToken, refreshToken, profile, done) {
+			//Our user has logged in, let's get a unique ID for them (Their character ID, because why not)
+			customSSO.verifyReturnCharacterDetails(refreshToken, function (success, response, characterDetails) {
+				if (success) {
+					users.findOrCreateUser(users, refreshToken, characterDetails, function (user, err) {
+						if (user === false) {
+							done(err);
+						} else {
+							done(null, user);
+						}
+					})
+				} else {
 					log.info(`Character ID request failed for token ${refreshToken}`);
-        			done(success);
-        		}
-        	});
-        });
+					done(success);
+				}
+			});
+		});
 
-    passport.serializeUser(function(user, done) {
-      done(null, user);
-    });
+	passport.serializeUser(function (user, done) {
+		done(null, user);
+	});
 
-    passport.deserializeUser(function(user, done) {
-      done(null, user);
-    });
+	passport.deserializeUser(function (user, done) {
+		done(null, user);
+	});
 
-    //Extend some stuff
-    passport.use('provider', oauthStrategy);
-    refresh.use('provider', oauthStrategy);
-    app.use(session({
-        store: new mongoStore({ db: database.db}),
-        secret: setup.data.sessionSecret,
-        cookie: { maxAge: 604800*1000 } //Week long cookies for week long incursions!
-    }))
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.use( bodyParser.urlencoded({ extended: true }) );
-    app.use('/includes', express.static('public/includes'));
-    app.use(users.updateUserSession); //Force the session to update from DB on every page load because sessions are not the source of truth here!
+	//Extend some stuff
+	passport.use('provider', oauthStrategy);
+	refresh.use('provider', oauthStrategy);
+	app.use(session({
+		store: new mongoStore({ db: database.db }),
+		secret: setup.data.sessionSecret,
+		cookie: { maxAge: 604800 * 1000 } //Week long cookies for week long incursions!
+	}))
+	app.use(passport.initialize());
+	app.use(passport.session());
+	app.use(bodyParser.urlencoded({ extended: true }));
+	app.use('/includes', express.static('public/includes'));
+	app.use(users.updateUserSession); //Force the session to update from DB on every page load because sessions are not the source of truth here!
 
-    //Routes
-    require('./oAuthRoutes.js')(app, passport, setup);
-    require('./routes.js')(app, setup);
+	//Routes
+	require('./oAuthRoutes.js')(app, passport, setup);
+	require('./routes.js')(app, setup);
 
-    //Configure Express webserver
-    app.listen(setup.settings.port, function listening() {
+	//Configure Express webserver
+	app.listen(setup.settings.port, function listening() {
 		log.info('Express online and accepting connections');
-    });
+	});
 });

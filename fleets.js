@@ -13,27 +13,27 @@ module.exports = function (setup) {
 	var module = {};
 	module.list = [];
 
-/*
-Fleet object format:
+	/*
+	Fleet object format:
+	
+	{
+		fc: user object,
+		backseat: user object,
+		type: "hq",
+		status: "text",
+		location: {
+			id: id,
+			name: "Jita"
+		},
+		members: [user objects],
+		size: members.length,
+		url: "hhttps://esi.tech.ccp.is..."
+	}
+	
+	*/
 
-{
-	fc: user object,
-	backseat: user object,
-	type: "hq",
-	status: "text",
-	location: {
-		id: id,
-		name: "Jita"
-	},
-	members: [user objects],
-	size: members.length,
-	url: "hhttps://esi.tech.ccp.is..."
-}
-
-*/
-
-	module.get = function(id, cb) {
-		db.findOne({'id': id}, function(err, doc) {
+	module.get = function (id, cb) {
+		db.findOne({ 'id': id }, function (err, doc) {
 			if (err) log.error("fleets.get: Error for db.findOne", { err, id });
 			if (doc === null) {
 				cb(null, false)
@@ -44,18 +44,18 @@ Fleet object format:
 		});
 	}
 
-	module.getMembers = function(characterID, refreshToken, fleetid, fullDoc, cb) {
-		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
+	module.getMembers = function (characterID, refreshToken, fleetid, fullDoc, cb) {
+		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("fleets.getMembers: Error for requestNewAccessToken", { err, characterID });
 				// TODO: is it good to throw?
 				throw err;
 			}
 			users.updateRefreshToken(characterID, newRefreshToken);
-			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function(members) {
+			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function (members) {
 				cb(members, fleetid, fullDoc)
-			}).catch(function(err) {
-				log.error("fleets.getMembers: Error foresi.characters ", { err, characterID, fleetid });
+			}).catch(function (err) {
+				log.error("fleets.getMembers: Error for esi.characters ", { err, characterID, fleetid });
 				if (typeof cb === "function") {
 					cb(null, fleetid, fullDoc);
 				}
@@ -63,25 +63,25 @@ Fleet object format:
 		});
 	}
 
-	module.invite = function(fcid, refreshToken, fleetid, inviteeid, cb) {
-		refresh.requestNewAccessToken('provider', refreshToken, function(err, accessToken, newRefreshToken) {
+	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
+		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				// TODO: is it good to throw?
 				throw err;
 			}
 			users.updateRefreshToken(fcid, newRefreshToken);
-			esi.characters(fcid, accessToken).fleet(fleetid).invite({"character_id": inviteeid, "role": "squad_member"});
+			esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" });
 			if (typeof cb === "function") {
 				cb();
 			}
 		})
 	}
 
-	module.register = function(data, cb) {
-		module.get(data.id, function(fleets, fleetCheck) {
+	module.register = function (data, cb) {
+		module.get(data.id, function (fleets, fleetCheck) {
 			if (!fleetCheck) {
-				db.insert(data, function(err, result) {
+				db.insert(data, function (err, result) {
 					if (err) log.error("fleet.register: Error for db.insert", { err, id: data.id });
 					cb(true);
 				});
@@ -91,22 +91,27 @@ Fleet object format:
 		});
 	}
 
-	module.getFCPageList = function(cb) {
-		db.find({}).toArray(function(err, docs) {
+	module.getFCPageList = function (cb) {
+		db.find({}).toArray(function (err, docs) {
 			if (err) log.error("fleet.getFCPageList: Error for db.find", { err });
 			cb(docs);
 		})
 	}
 
-	module.delete = function(id, cb) {
-		db.deleteOne({ 'id': id }, function(err, result) {
+	module.delete = function (id, cb) {
+		if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
+			log.debug("Special dev fleet, not deleting", { id });
+			if (typeof cb === "function") cb();
+			return;
+		}
+		db.deleteOne({ 'id': id }, function (err, result) {
 			if (err) log.error("fleet.delete: Error for db.deleteOne", { err, id });
 			if (typeof cb === "function") cb();
 		})
 	}
 
-	module.checkForDuplicates = function() {
-		db.find({}).toArray(function(err, docs) {
+	module.checkForDuplicates = function () {
+		db.find({}).toArray(function (err, docs) {
 			if (err) log.error("fleet.checkForDuplicates: Error for db.find", { err });
 			var members = [];
 			//Concat didn't work here for some reason? Weird for loop madness instead
@@ -115,53 +120,53 @@ Fleet object format:
 					members.push(docs[i].members[x].character_id);
 				}
 			}
-			waitlist.get(function(onWaitlist) {
+			waitlist.get(function (onWaitlist) {
 				for (var i = 0; i < onWaitlist.length; i++) {
-						var charID = onWaitlist[i].user.characterID;
-						var charName = onWaitlist[i].user.name;
-						if (onWaitlist[i].alt) {
-							charID = onWaitlist[i].alt.id;
-							charName = onWaitlist[i].alt.name;
-						}
-						if (members.includes(charID)) {
-							log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
-							waitlist.remove(onWaitlist[i]._id);
-						}
+					var charID = onWaitlist[i].user.characterID;
+					var charName = onWaitlist[i].user.name;
+					if (onWaitlist[i].alt) {
+						charID = onWaitlist[i].alt.id;
+						charName = onWaitlist[i].alt.name;
+					}
+					if (members.includes(charID)) {
+						log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
+						waitlist.remove(onWaitlist[i]._id);
+					}
 				}
 			})
 		})
 	}
 
-	module.updateComms = function(fleetid, comms, cb) {
-		db.updateOne({'id': fleetid}, {$set: {comms: comms}}, function(err, result) {
+	module.updateComms = function (fleetid, comms, cb) {
+		db.updateOne({ 'id': fleetid }, { $set: { comms: comms } }, function (err, result) {
 			if (err) log.error("fleet.updateComms: Error for db.updateOne", { err, fleetid });
 			if (typeof cb === "function") cb();
 		});
 	}
 
-	module.updateType = function(fleetid, type, cb) {
-		db.updateOne({'id': fleetid}, {$set: {type: type}}, function(err, result) {
+	module.updateType = function (fleetid, type, cb) {
+		db.updateOne({ 'id': fleetid }, { $set: { type: type } }, function (err, result) {
 			if (err) log.error("fleet.updateType: Error for db.updateOne", { err, fleetid });
 			if (typeof cb === "function") cb();
 		})
 	}
 
-	module.updateStatus = function(fleetid, status, cb) {
-		db.updateOne({'id': fleetid}, {$set: {status: status}}, function(err, result) {
+	module.updateStatus = function (fleetid, status, cb) {
+		db.updateOne({ 'id': fleetid }, { $set: { status: status } }, function (err, result) {
 			if (err) log.error("fleet.updateStatus: Error for db.updateOne", { err, fleetid });
 			if (typeof cb === "function") cb();
 		})
 	}
 
 
-	module.timers = function() {	
+	module.timers = function () {
 		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
 		//TODO: Error checking doesn't work due to how ESI module handles errors
-		setTimeout(lookup, 10000)
+		setTimeout(lookup, 10*1000)
 
 		function lookup() {
 			var checkCache = [];
-			db.find().forEach(function(doc) {
+			db.find().forEach(function (doc) {
 				module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function (members, fleetid, fullDoc) {
 					if (members == null) {
 						fleetHasErrored();

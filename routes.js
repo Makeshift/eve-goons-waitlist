@@ -9,11 +9,15 @@ var cache = require('./cache.js')(setup);
 var waitlist = require('./globalWaitlist.js')(setup);
 const log = require('./logger.js');
 
-module.exports = function(app, setup) {
-	app.get('/', function(req, res) {
+module.exports = function (app, setup) {
+	app.get('/', function (req, res) {
 		if (req.isAuthenticated()) {
 			//Grab all fleets
-			fleets.getFCPageList(function(fleets) {
+			fleets.getFCPageList(function (fleets) {
+				if (!fleets) {
+					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
 					template: "publicWaitlist",
 					sidebar: {
@@ -24,11 +28,11 @@ module.exports = function(app, setup) {
 						user: req.user
 					},
 					content: {
-					 user: req.user,
-					 fleets: fleets
-				  }
+						user: req.user,
+						fleets: fleets
+					}
 				}
-				template.pageGenerate(page, function(generatedPage) {
+				template.pageGenerate(page, function (generatedPage) {
 					res.send(generatedPage);
 				})
 			});
@@ -37,20 +41,20 @@ module.exports = function(app, setup) {
 		}
 	});
 
-	app.post('/', function(req, res) {
+	app.post('/', function (req, res) {
 		if (req.isAuthenticated()) {
 			var alt = false;
 			if (req.user.name != req.body.name) {
-				esi.characters.search.strict(req.body.name).then(function(results) {
-						//This can be a user later
-						alt = {
-							name: req.body.name,
-							id: results[0],
-							avatar: "http://image.eveonline.com/Character/" + results[0] + "_128.jpg"
-						};
-						submitAddition();
+				esi.characters.search.strict(req.body.name).then(function (results) {
+					//This can be a user later
+					alt = {
+						name: req.body.name,
+						id: results[0],
+						avatar: "http://image.eveonline.com/Character/" + results[0] + "_128.jpg"
+					};
+					submitAddition();
 				}).catch(function (err) {
-					log.error("routes.post: Error", { err });
+					log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
 					res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
 				})
 			} else {
@@ -68,22 +72,22 @@ module.exports = function(app, setup) {
 					language: req.body.language,
 					signupTime: Date.now()
 				}
-				waitlist.addToWaitlist(userAdd, function() {
+				waitlist.addToWaitlist(userAdd, function () {
 					res.redirect(`/?info=Character ${req.body.name} added to waitlist.`);
 				});
 			}
 		}
 	});
 
-	app.get('/remove', function(req, res) {
+	app.get('/remove', function (req, res) {
 		if (req.isAuthenticated()) {
-			waitlist.remove(req.user.characterID, function() {
+			waitlist.remove(req.user.characterID, function () {
 				res.redirect('/')
 			})
 		}
 	})
 
-	app.get('/logout', function(req, res) {
+	app.get('/logout', function (req, res) {
 		req.logout();
 		res.redirect('/');
 	});
@@ -98,7 +102,11 @@ module.exports = function(app, setup) {
 
 	app.get('/commander/', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.getFCPageList(function(fleets) {
+			fleets.getFCPageList(function (fleets) {
+				if (!fleets) {
+					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
 					template: "fcFleetList",
 					sidebar: {
@@ -109,11 +117,11 @@ module.exports = function(app, setup) {
 						user: req.user
 					},
 					content: {
-					 user: req.user,
-					 fleets: fleets
-				  }
+						user: req.user,
+						fleets: fleets
+					}
 				}
-				template.pageGenerate(page, function(generatedPage) {
+				template.pageGenerate(page, function (generatedPage) {
 					res.send(generatedPage);
 				})
 			})
@@ -123,95 +131,109 @@ module.exports = function(app, setup) {
 	});
 
 
-	app.post('/commander/', function(req, res) {
+	app.post('/commander/', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			users.getLocation(req.user, function(location) {
+			users.getLocation(req.user, function (location) {
+				var fleetid = 0;
 				try {
-				var fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-				} catch (e) {
+					fleetid = req.body.url.split("fleets/")[1].split("/")[0];
+				} catch (e) { }
+
+				if (!fleetid) {
 					res.status(400).send("Fleet ID unable to be parsed. Did you click fleets -> *three buttons at the top left* -> Copy fleet URL?<br><br><a href='/commander/'>Go back</a>")
+					return;
 				}
-					fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function(members) {
-						var fleetInfo = {
-							fc: req.user,
-							backseat: {},
-							type: req.body.type,
-							status: "Forming",
-							location: location.name,
-							members: members,
-							url: req.body.url,
-							id: fleetid,
-							comms: {name: setup.fleet.comms[0].name, url:setup.fleet.comms[0].url},
-							errors: 0
+
+				fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function (members) {
+					if (members===null) {
+						log.warn('routes.post /commander/, empty members. Cannot register fleet', { fleetid, characterID: req.user.characterID });
+						res.status(409).send("Empty fleet or other error" + "<br><br><a href='/commander'>Go back</a>")
+						return;
+					}
+					var fleetInfo = {
+						fc: req.user,
+						backseat: {},
+						type: req.body.type,
+						status: "Forming",
+						location: location.name,
+						members: members,
+						url: req.body.url,
+						id: fleetid,
+						comms: { name: setup.fleet.comms[0].name, url: setup.fleet.comms[0].url },
+						errors: 0
+					}
+					fleets.register(fleetInfo, function (success, errTxt) {
+						if (!success) {
+							res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
+						} else {
+							res.redirect(302, '/commander/')
 						}
-						fleets.register(fleetInfo, function(success, errTxt) {
-							if (!success) {
-								res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
-							} else {
-								res.redirect(302, '/commander/')
-							}
-						});
-					})
+					});
+				})
 			})
-					
+
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
 	});
 
-	app.get('/commander/:fleetid/', function(req, res) {
+	app.get('/commander/:fleetid/', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.get(req.params.fleetid, function(fleet) {
+			fleets.get(req.params.fleetid, function (fleet) {
+				if (!fleet) {
+					res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
+					return;
+				}
 				var page = {
-							template: "fcFleetManage",
-							sidebar: {
-								selected: 5,
-								user: req.user
-							},
-							header: {
-								user: req.user
-							},
-							content: {
-							 user: req.user,
-							 fleet: fleet
-						  }
-						}
-						template.pageGenerate(page, function(generatedPage) {
-							res.send(generatedPage);
-						})
-					})
+					template: "fcFleetManage",
+					sidebar: {
+						selected: 5,
+						user: req.user
+					},
+					header: {
+						user: req.user
+					},
+					content: {
+						user: req.user,
+						fleet: fleet
+					}
+				}
+				template.pageGenerate(page, function (generatedPage) {
+					res.send(generatedPage);
+				})
+			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
 	});
 
-	app.get('/commander/:fleetid/invite/:characterID/:tableID', function(req, res) {
+	app.get('/commander/:fleetid/invite/:characterID/:tableID', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.get(req.params.fleetid, function(fleet) {
-				fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function() {
-					res.redirect(302, '/commander/'+req.params.fleetid);
+			fleets.get(req.params.fleetid, function (fleet) {
+				fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function () {
+					res.redirect(302, '/commander/' + req.params.fleetid);
 				});
 				waitlist.setAsInvited(req.params.tableID);
 			})
-		
+
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
 	});
 
-	app.get('/commander/:fleetid/remove/:tableID', function(req, res) {
+	app.get('/commander/:fleetid/remove/:tableID', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			waitlist.remove(req.params.tableID, function() {
-				res.redirect(302, '/commander/'+req.params.fleetid);
+			waitlist.remove(req.params.tableID, function () {
+				res.redirect(302, '/commander/' + req.params.fleetid);
 			});
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
 	})
 
-	app.get('/commander/:fleetid/delete', function(req, res) {
+	app.get('/commander/:fleetid/delete', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.delete(req.params.fleetid, function() {
+			fleets.delete(req.params.fleetid, function () {
 				res.redirect('/commander/');
 			});
 		} else {
@@ -220,10 +242,10 @@ module.exports = function(app, setup) {
 
 	})
 	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/comms', function(req, res) {
+	app.post('/commander/:fleetid/update/comms', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateComms(req.params.fleetid, {name: req.body.name, url: req.body.url}, function() {
-				res.redirect('/commander/'+req.params.fleetid);
+			fleets.updateComms(req.params.fleetid, { name: req.body.name, url: req.body.url }, function () {
+				res.redirect('/commander/' + req.params.fleetid);
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -231,10 +253,10 @@ module.exports = function(app, setup) {
 	})
 
 	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/type', function(req, res) {
+	app.post('/commander/:fleetid/update/type', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateType(req.params.fleetid, req.body.type, function() {
-				res.redirect('/commander/'+req.params.fleetid);
+			fleets.updateType(req.params.fleetid, req.body.type, function () {
+				res.redirect('/commander/' + req.params.fleetid);
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -242,10 +264,10 @@ module.exports = function(app, setup) {
 	})
 
 	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/status', function(req, res) {
+	app.post('/commander/:fleetid/update/status', function (req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateStatus(req.params.fleetid, req.body.status, function() {
-				res.redirect('/commander/'+req.params.fleetid);
+			fleets.updateStatus(req.params.fleetid, req.body.status, function () {
+				res.redirect('/commander/' + req.params.fleetid);
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");

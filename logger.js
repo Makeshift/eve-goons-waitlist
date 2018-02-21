@@ -18,11 +18,13 @@ var colors = require('colors/safe');
 
 	// prints serialized parameters
 	//  log.info("text", {a: 10}); -> `[info] text {"a":10}`
-	
+
 	const extendedFormat = (info) => {
 		var extra = {};
 		for (var it in info) {
-			if (it !== 'timestamp' && it !== 'level' && it !== 'message')
+			if (it !== 'timestamp' && it !== 'level' && it !== 'message'
+					// additional black-listed attributes
+					&& it !== 'jse_shortmsg' && it !== 'jse_cause')
 				extra[it] = info[it];
 		}
 		var json = JSON.stringify(extra);
@@ -95,10 +97,10 @@ module.exports = {
 		logger.debug(...args);
 	},
 
-	warn: function(...args) {
+	warn: function (...args) {
 		logger.warn(...args);
 	},
-	
+
 	error: function (...args) {
 		logger.error(...args);
 	},

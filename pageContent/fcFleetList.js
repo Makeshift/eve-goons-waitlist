@@ -19,7 +19,9 @@ Fleet object format:
 */
 
 var fleets = "";
-  for (var i = 0; i < payloadContent.fleets.length; i++) {
+for (var i = 0; i < payloadContent.fleets.length; i++) {
+	if (!payloadContent.fleets[i].members) continue;
+
   	fleets += `
     <tr>
       <td><img src="${payloadContent.fleets[i].fc.avatar}" alt="FCs Avatar" height=30%></td>
