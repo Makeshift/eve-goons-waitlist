@@ -55,7 +55,7 @@ module.exports = function (setup) {
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function (members) {
 				cb(members, fleetid, fullDoc)
 			}).catch(function (err) {
-				log.error("fleets.getMembers: Error foresi.characters ", { err, characterID, fleetid });
+				log.error("fleets.getMembers: Error for esi.characters ", { err, characterID, fleetid });
 				if (typeof cb === "function") {
 					cb(null, fleetid, fullDoc);
 				}
