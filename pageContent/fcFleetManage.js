@@ -80,7 +80,7 @@ module.exports = function(payloadContent, cb) {
           waitlistHTML += `
           <tr class="${invited}">
                             <td>
-                              <img src="http://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
+                              <img src="https://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
                             </td>
                             <td>
                               <a href="#">${name}</a>
