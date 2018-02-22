@@ -67,9 +67,6 @@ module.exports = function (app, setup) {
 					alt: alt,
 					user: req.user,
 					ship: req.body.ship,
-					ingameChat: req.body.ingame,
-					onComms: req.body.oncomms,
-					language: req.body.language,
 					signupTime: Date.now()
 				}
 				waitlist.addToWaitlist(userAdd, function () {
