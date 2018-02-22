@@ -24,7 +24,7 @@ for (var i = 0; i < payloadContent.fleets.length; i++) {
 
   	fleets += `
     <tr>
-      <td><img src="${payloadContent.fleets[i].fc.avatar}" alt="FCs Avatar" height=30%></td>
+      <td><img src="https://image.eveonline.com/Character/${payloadContent.fleets[i].fc.characterID}_32.jpg" alt="FCs Avatar"></td>
       <td><a href="#">${payloadContent.fleets[i].fc.name}</a></td>
       <td><a href="#">${payloadContent.fleets[i].backseat.name || "None"}</a>
       <td>${payloadContent.fleets[i].type}</td>
