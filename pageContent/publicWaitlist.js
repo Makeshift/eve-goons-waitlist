@@ -65,13 +65,13 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
     //If they have a char in the waitlist AND they have no related chars, hide the "Join Waitlist" button
     var joinWaitlist = `<button class="btn btn-success btn-block" type="submit"><i class="fa fa-check"></i> Join the Waitlist</button>`;
     var leaveWaitlist = `<button class="btn btn-danger btn-block" onclick="location.href='/remove';"><i class="fas fa-exclamation-triangle"></i> Leave the Waitlist</button>`;
-    if (found && payloadContent.user.relatedChars.length === 0) {
+    /*if (found && payloadContent.user.relatedChars.length === 0) {
       joinWaitlist = "";
     }
     //If they have no char in the waitlist, hide the leave waitlist button
     if (!found) {
       leaveWaitlist = "";
-    }
+    }*/
     var usernames = `<option value="${payloadContent.user.name}" selected>${payloadContent.user.name}</option>`;
     //If the user's main character is already in the waitlist, hide them from the list
     if (name == payloadContent.user.name) {
