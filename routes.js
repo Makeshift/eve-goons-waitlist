@@ -78,7 +78,7 @@ module.exports = function (app, setup) {
 
 	app.get('/remove', function (req, res) {
 		if (req.isAuthenticated()) {
-			waitlist.remove(req.user.characterID, function () {
+			waitlist.selfRemove(req.user.characterID, function () {
 				res.redirect('/')
 			})
 		}
