@@ -83,7 +83,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
     }
 
     var queueinfo = "";
-    if(position.position !== '##'){
+    if(position.position !== '##' && payloadContent.fleets.length > 0){
       queueinfo += `
                     <!-- Waitlist Queue Panel -->
                     <div class="statistic-block block noselect">
@@ -145,7 +145,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                         </ul>
                         <!-- Select Fits -->
                         <div id="fits">
-                          <strong><div class="d-inline" data-toggle="tooltip" data-placement="top" title="This is a temporary system, type your ship type (Example: NYX)"><i class="fa fa-info-circle"></i></div> Select your fits </strong>
+                          <strong><div class="d-inline" data-toggle="tooltip" data-placement="top" title="This is a temporary system, type your ship type (Example: NYX)" required><i class="fa fa-info-circle"></i></div> Select your fits </strong>
                           <!--<ul class="list-unstyled">
                             <li>
                               <label for="ingame">Are you in our in-game channel? (imperium.incursions)</label>
