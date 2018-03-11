@@ -87,6 +87,7 @@ module.exports = function (setup) {
 						module.deleteUser(user.characterID)
 						cb({id: 0, name: "Unknown", lastCheck: Date.now()});
 					}
+					cb({id: 0, name: "Unknown", lastCheck: Date.now()})
 				} else {
 					module.updateRefreshToken(user.characterID, newRefreshToken);
 					esi.characters(user.characterID, accessToken).location().then(function (locationResult) {

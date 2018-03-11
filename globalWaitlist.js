@@ -65,7 +65,7 @@ module.exports = function (setup) {
 		log.debug(`User removed themselves from waitlist: ${characterID}`);
 		db.deleteOne({ 'user.characterID': characterID }, function(err, result) {
 			if (err) log.error("selfRemove: Error for db.deleteOne", { err, 'characterID': characterID });
-			if (typeof cb === "function") cb();
+			if (cb) cb();
 		})
 	}
 
