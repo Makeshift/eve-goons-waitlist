@@ -16,11 +16,16 @@ module.exports = function (setup) {
 			return;
 		}
 		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
-			req.session.passport.user = userData;
-			req.session.save(function (err) {
-				if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-				next();
-			})
+			if (!userdata) {
+				req.logout();
+				res.redirect('/');
+			} else {
+				req.session.passport.user = userData;
+				req.session.save(function (err) {
+					if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
+					next();
+				})
+			}
 		});
 	}
 
@@ -53,11 +58,19 @@ module.exports = function (setup) {
 		});
 	};
 
+	module.deleteUser = function(checkID, cb) {
+		db.deleteOne({'characterID': checkID}, function(err, results) {
+			log.info("A user has been deleted: " + checkID);
+			if (cb) cb();
+		})
+	}
+
 	module.updateRefreshToken = function (checkID, token) {
 		db.updateOne({ 'characterID': checkID }, { $set: { refreshToken: token } }, function (err, result) {
 			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': checkID });
 		})
 	}
+
 
 	module.getLocation = function (user, cb, passthrough) {
 		module.findAndReturnUser(user.characterID, function (newUser) {
@@ -66,23 +79,32 @@ module.exports = function (setup) {
 				return;
 			}
 			refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-				if (err) log.error("getLocation: Error for requestNewAccessToken", { err, characterID: user.characterID });
-				module.updateRefreshToken(user.characterID, newRefreshToken);
-				esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-					cache.get([locationResult.solar_system_id], function (locationName) {
-						var location = {
-							id: locationResult.solar_system_id,
-							name: locationName.name,
-							lastCheck: Date.now()
-						};
-						cb(location, passthrough);
-						db.updateOne({ 'characterID': user.characterID }, { $set: { location: location } }, function (err, result) {
-							if (err) log.error("getLocation: Error for db.updateOne", { err, 'characterID': user.characterID, location });
-						});
-					})
-				}).catch(err => {
-					log.error("users.getLocation: Error for esi.characters", { err, characterID: user.characterID });
-				});
+				if (err) {
+					log.error("getLocation: Error for requestNewAccessToken", { err, characterID: user.characterID });
+					if (err.data.error.includes("invalid_token")) {
+						log.error("requestNewAccessToken has failed due to invalid token, removing them from waitlist.");
+						waitlist.selfRemove(user.characterID);
+						module.deleteUser(user.characterID)
+						cb({id: 0, name: "Unknown", lastCheck: Date.now()});
+					}
+				} else {
+					module.updateRefreshToken(user.characterID, newRefreshToken);
+					esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
+						cache.get([locationResult.solar_system_id], function (locationName) {
+							var location = {
+								id: locationResult.solar_system_id,
+								name: locationName.name,
+								lastCheck: Date.now()
+							};
+							cb(location, passthrough);
+							db.updateOne({ 'characterID': user.characterID }, { $set: { location: location } }, function (err, result) {
+								if (err) log.error("getLocation: Error for db.updateOne", { err, 'characterID': user.characterID, location });
+							});
+						})
+					}).catch(err => {
+						log.error("users.getLocation: Error for esi.characters", { err, characterID: user.characterID });
+					});
+				}
 			})
 		})
 	}
