@@ -16,9 +16,10 @@ module.exports = function (setup) {
 			return;
 		}
 		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
-			if (!userdata) {
+			if (!userData) {
 				req.logout();
 				res.redirect('/');
+				next();
 			} else {
 				req.session.passport.user = userData;
 				req.session.save(function (err) {
