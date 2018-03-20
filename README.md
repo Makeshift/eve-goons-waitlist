@@ -7,7 +7,7 @@ The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet 
 * Install a MongoDB instance
 * Create a `setup.js` file using the template below.
 
-Setup.js:
+setup.js:
 ```
 exports.oauth = {
 	clientID: "YourDeveloperAppIDHere",
@@ -55,3 +55,13 @@ exports.permissions = {
 Many of the variables can be populated from here: https://developers.eveonline.com/
 
 * Run with `node index.js`.
+
+### Development with Docker
+
+Setup your [docker environment](https://docs.docker.com/machine/get-started/)  
+
+Create a 'data' directory in the root of the repository
+In your setup.js point mongoDbURL to `mongoDB://mongo:27017`  
+To run your image then execute: `docker-compose up`  
+To rebuild your image execute: `docker-compose build`  
+
