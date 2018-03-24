@@ -181,8 +181,26 @@ module.exports = function(payloadContent, cb) {
       }
     }
 
+    var updateFC = "";
+    updateFC += `<button class="btn btn-sm btn-block" id="updateFC">I\'m the FC</button>`;
+    updateFC += `<script>
+      document.getElementById("updateFC").addEventListener("click", function () {
+        post("/commander/${payloadContent.fleet.id}/update/commander", {status: "${fleetStatusList[i]}"});
+      });
+    </script>`
+
+    var updateBackseat = "";
+    updateBackseat += `<button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button>`
+    updateBackseat += `<script>
+    document.getElementById("updateBackseat").addEventListener("click", function () {
+      post("/commander/${payloadContent.fleet.id}/update/backseat", {status: "${fleetStatusList[i]}"});
+    });
+  </script>`
+
     cb(`
           <!-- Page Content -->
+
+
       <div class="page-content">
         <div class="page-header">
           <div class="container-fluid">
@@ -205,12 +223,12 @@ module.exports = function(payloadContent, cb) {
                       <tr>
                         <td>FC (Boss):</td>
                         <td><a href="#">${payloadContent.fleet.fc.name}</a></td>
-                        <td><button class="btn btn-sm btn-block">I'm the FC</button></td>
+                        <td>${updateFC}</td>
                       </tr>
                       <tr>
                         <td>Backseating FC:</td>
                         <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
-                        <td><button class="btn btn-sm btn-block">Todo</button></td>
+                        <td>${updateBackseat}</td>
                       </tr>
                       <tr>
                         <td>Fleet Status:</td>
