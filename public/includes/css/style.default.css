@@ -849,8 +849,8 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
     width: calc(100% - 80px);
   }
   nav#sidebar {
-    width: 80px;
-    margin-left: -80px;
+    width: 83px;
+    margin-left: -83px;
   }
   nav#sidebar .sidebar-header {
     padding: 10px;

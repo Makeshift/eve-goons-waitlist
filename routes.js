@@ -271,14 +271,27 @@ module.exports = function (app, setup) {
 		}
 	})
 
+//TODO: DO VALIDATION ON THIS ENDPOINT
+app.post('/commander/:fleetid/update/commander', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		fleets.updateFC(req.params.fleetid, req.user, function() {
+			res.redirect('/commander/'+req.params.fleetid);
+		});
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+})
 
-
-
-
-
-
-
-
+//TODO: DO VALIDATION ON THIS ENDPOINT
+app.post('/commander/:fleetid/update/backseat', function(req, res) {
+	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+		fleets.updateBackseat(req.params.fleetid, req.user, function() {
+			res.redirect('/commander/'+req.params.fleetid);
+		});
+	} else {
+		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+	}
+})
 
 
 }

@@ -136,9 +136,33 @@ module.exports = function (setup) {
 			})
 		})
 	}
+	
+	module.updateFC = function(fleetid, user, cb) {
+		db.updateOne({'id': fleetid}, {$set: {fc: user}}, function(err, result) {
+			if (err) console.log(err);
+			if (typeof cb === "function") cb();
+		});
+	}
 
-	module.updateComms = function (fleetid, comms, cb) {
-		db.updateOne({ 'id': fleetid }, { $set: { comms: comms } }, function (err, result) {
+	module.updateBackseat = function(fleetid, user, cb) {
+		
+		module.get(fleetid, function(fleet) {
+		  if (user.characterID !== fleet.backseat.characterID && user.characterID !== fleet.fc.characterID) {//user.id !== fleet.backseat.characterID && user.id !== fleet.fc.characterID
+			db.updateOne({'id': fleetid}, {$set: {backseat: user}}, function(err, result) {
+			  if (err) console.log(err);
+			  if (typeof cb === "function") cb();
+			});
+		  } else {
+			db.updateOne({'id': fleetid}, {$set: {backseat: {}}}, function(err, result) {
+			  if (err) console.log(err);
+			  if (typeof cb === "function") cb();
+			});
+		  }
+		})
+	}
+	
+	module.updateComms = function(fleetid, comms, cb) {
+		db.updateOne({'id': fleetid}, {$set: {comms: comms}}, function(err, result) {
 			if (err) log.error("fleet.updateComms: Error for db.updateOne", { err, fleetid });
 			if (typeof cb === "function") cb();
 		});

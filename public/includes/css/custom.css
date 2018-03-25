@@ -15,6 +15,13 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	margin-right: auto;
 }
 
+/* Button Overrides */
+.btn-sm{
+	height: 25px;
+    padding: 5px;
+    line-height: 13px;
+}
+
 /* White text on info buttons */
 .btn-info{
 	color: white;
