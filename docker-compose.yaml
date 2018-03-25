@@ -1,0 +1,16 @@
+version: "2"
+services:
+  mongo:
+    container_name: mongo
+    image: mvertes/alpine-mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
+  goon_waitlist:
+    container_name: waitlist
+    build: .
+    ports:
+      - "3000:3000"
+    links:
+      - mongo

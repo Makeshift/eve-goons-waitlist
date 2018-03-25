@@ -19,7 +19,9 @@ Fleet object format:
 */
 
 var fleets = "";
-  for (var i = 0; i < payloadContent.fleets.length; i++) {
+for (var i = 0; i < payloadContent.fleets.length; i++) {
+	if (!payloadContent.fleets[i].members) continue;
+
   	fleets += `
     <tr>
       <td><img src="https://image.eveonline.com/Character/${payloadContent.fleets[i].fc.characterID}_32.jpg" alt="FCs Avatar"></td>
