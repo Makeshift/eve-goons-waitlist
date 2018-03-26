@@ -139,7 +139,8 @@ module.exports = function (setup) {
 	
 	module.updateFC = function(fleetid, user, cb) {
 		db.updateOne({'id': fleetid}, {$set: {fc: user}}, function(err, result) {
-			if (err) console.log(err);
+			if (err) log.error("Error setting a new FC", err);
+			if (!err) log.debug("New FC set for fleet " + fleetid + ": " + user.name);
 			if (typeof cb === "function") cb();
 		});
 	}
@@ -149,12 +150,14 @@ module.exports = function (setup) {
 		module.get(fleetid, function(fleet) {
 		  if (user.characterID !== fleet.backseat.characterID && user.characterID !== fleet.fc.characterID) {//user.id !== fleet.backseat.characterID && user.id !== fleet.fc.characterID
 			db.updateOne({'id': fleetid}, {$set: {backseat: user}}, function(err, result) {
-			  if (err) console.log(err);
+			  if (err) log.error("Error setting a new backseat", err);
+			  if (!err) log.debug("New backseat set for fleet " + fleetid + ": " + user.name);
 			  if (typeof cb === "function") cb();
 			});
 		  } else {
 			db.updateOne({'id': fleetid}, {$set: {backseat: {}}}, function(err, result) {
-			  if (err) console.log(err);
+			  if (err) log.error("Error clearing the backseat", err);
+			  if (!err) log.debug("Backseat cleared for fleet " + fleetid + " by: " + user.name);
 			  if (typeof cb === "function") cb();
 			});
 		  }
