@@ -182,7 +182,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
                             </ul>-->
                             <div class="form-group">
                               <label for="ship">Ship Type: </labl>
-                              <input type="text" name="ship" class="form-control" id="ship">
+                              <input type="text" name="ship" class="form-control" id="ship" required>
                             </div>
                           </div>
                           <!-- Action Buttons -->
