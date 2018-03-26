@@ -5,9 +5,12 @@ sessions/
 # Logs
 logs
 *.log
+log.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+exceptions.txt
 
 # Runtime data
 pids
