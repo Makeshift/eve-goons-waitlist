@@ -166,5 +166,23 @@ module.exports = function (setup) {
 		})
 	};
 
+	//Return a list of all users with a permission higher than 0.
+	module.getFCList = function(cb) {
+		db.find( { roleNumeric: {$gt: 0}}).toArray(function (err, docs) {
+			if (err) log.error("fleet.getFCPageList: Error for db.find", { err });
+			cb(docs);
+		})
+	}
+
+	//Update a users permission and title.
+	module.updateUserPermission = function(characterID, permission, adminUser, cb) {
+		var rolesList = ["Member", "Trainee", "", "Fleet Commander", "", "Leadership"];
+
+		db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: parseInt(permission), role: rolesList[permission]} }, function (err, result) {
+			if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
+			if (!err) log.debug(adminUser + " changed the role of " + characterID + " to " + rolesList[permission]);
+		})
+	}
+	
 	return module;
 }

@@ -271,30 +271,77 @@ module.exports = function (app, setup) {
 		}
 	})
 
-//TODO: DO VALIDATION ON THIS ENDPOINT
-app.post('/commander/:fleetid/update/commander', function(req, res) {
-	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-		fleets.updateFC(req.params.fleetid, req.user, function() {
-			res.redirect('/commander/'+req.params.fleetid);
-		});
-	} else {
-		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-	}
+	//TODO: DO VALIDATION ON THIS ENDPOINT
+	app.post('/commander/:fleetid/update/commander', function(req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+			fleets.updateFC(req.params.fleetid, req.user, function() {
+				res.redirect('/commander/'+req.params.fleetid);
+			});
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+		}
 })
 
-//TODO: DO VALIDATION ON THIS ENDPOINT
-app.post('/commander/:fleetid/update/backseat', function(req, res) {
-	if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-		fleets.updateBackseat(req.params.fleetid, req.user, function() {
-			res.redirect('/commander/'+req.params.fleetid);
-		});
-	} else {
-		res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-	}
-})
+	//TODO: DO VALIDATION ON THIS ENDPOINT
+	app.post('/commander/:fleetid/update/backseat', function(req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+			fleets.updateBackseat(req.params.fleetid, req.user, function() {
+				res.redirect('/commander/'+req.params.fleetid);
+			});
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+		}
+	})
 
 
+	//TODO:
+	app.get('/admin/commanders', function (req, res) {	
+		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+			users.findAndReturnUser(parseInt(req.query.user), function(userProfile) {
+				users.getFCList(function (fcList) {
+					var page = {
+						template: "adminFC",
+						sidebar: {
+							selected: 7,
+							user: req.user
+						},
+						header: {
+							user: req.user
+						},
+						content: {
+							user: req.user,
+							fcs: fcList,
+							manageUser: userProfile
+						}
+					}
+					template.pageGenerate(page, function (generatedPage) {
+						res.send(generatedPage);
+					})
+				})
+			})
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
+		}
+	});
+
+	//TODO: Validate endpoint. Visual feedback if a permission cannot be set.
+	app.post('/admin/commanders/update', function(req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+			esi.characters.search(req.body.pilotName).then(function (results) {
+				users.updateUserPermission(results[0], req.body.permission, req.user.name, res)
+				{
+					res.redirect('/admin/commanders');
+				}
+			}).catch(function (err) {
+				log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
+				res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+			})
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
+		}
+	})
 }
+
 
 
 
