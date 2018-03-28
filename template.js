@@ -124,9 +124,9 @@ function sidebar(sidebarPayload, cb) {
         Fleet Management</a>
       </li>          
       <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>`
-  }
+  
 
-  if (sidebarPayload.user.roleNumeric >= 4) {
+    if (sidebarPayload.user.roleNumeric >= 4) {
       fcnav +=`
       <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
         <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
@@ -136,10 +136,10 @@ function sidebar(sidebarPayload, cb) {
           <strike><li><a href="#">White List</a></strike></li>
         </ul>
       </li>`
-  }
+    }
       fcnav+=`
     </ul>`
-	
+	}
 
 	cb(`
     <!-- Nav - Sidebar -->

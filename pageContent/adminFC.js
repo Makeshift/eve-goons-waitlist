@@ -44,10 +44,10 @@ module.exports = function(payloadContent, cb) {
               <label for="updatePermission">Update Permission</label>
               <select id="updatePermission" class="form-control" name="permission">
                 <optgroup label="FC Permissions">
-                  <option value="0" selected>Choose Rank</option>
-                  <option value="1">Trainee</option>
-                  <option value="3">Fleet Commander</option>
-                  <option value="5">Leadership</option>
+                  <option value="${payloadContent.manageUser.roleNumeric || ""}" selected>Choose Rank</option>
+                  <option value="1" required>Trainee</option>
+                  <option value="3" required>Fleet Commander</option>
+                  <option value="5" required>Leadership</option>
                 </optgroup>
                 <optgroup label="Demote to Pilot">
                   <option value="0">Remove FC Access</option>
