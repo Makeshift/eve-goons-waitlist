@@ -297,7 +297,7 @@ module.exports = function (app, setup) {
 	//TODO:
 	app.get('/admin/commanders', function (req, res) {	
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			users.findAndReturnUser(parseInt(req.query.user), function(userProfile) {
+			users.findAndReturnUser(Number(req.query.user), function(userProfile) {
 				users.getFCList(function (fcList) {
 					var page = {
 						template: "adminFC",
@@ -324,7 +324,7 @@ module.exports = function (app, setup) {
 		}
 	});
 
-	//TODO: Validate endpoint. Visual feedback if a permission cannot be set.
+	
 	app.post('/admin/commanders/update', function(req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
 			esi.characters.search(req.body.pilotName).then(function (results) {
