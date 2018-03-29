@@ -178,10 +178,15 @@ module.exports = function (setup) {
 	module.updateUserPermission = function(characterID, permission, adminUser, cb) {
 		var rolesList = ["Member", "Trainee", "", "Fleet Commander", "", "Leadership"];
 
-		db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: rolesList[permission]} }, function (err, result) {
-			if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
-			if (!err) log.debug(adminUser + " changed the role of " + characterID + " to " + rolesList[permission]);
-		})
+
+		//Stop a user from adjusting their own access.
+		if(characterID !== adminUser.characterID)
+		{
+			db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: rolesList[permission]} }, function (err, result) {
+				if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
+				if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + rolesList[permission]);
+			})
+		}
 	}
 	
 	return module;

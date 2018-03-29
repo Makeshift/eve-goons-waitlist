@@ -328,7 +328,7 @@ module.exports = function (app, setup) {
 	app.post('/admin/commanders/update', function(req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
 			esi.characters.search(req.body.pilotName).then(function (results) {
-				users.updateUserPermission(results[0], req.body.permission, req.user.name, res)
+				users.updateUserPermission(results[0], req.body.permission, req.user, res)
 				{
 					res.redirect('/admin/commanders');
 				}
