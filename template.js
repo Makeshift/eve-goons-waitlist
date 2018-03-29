@@ -112,7 +112,7 @@ function header(headerPayload, cb) {
 function sidebar(sidebarPayload, cb) {
 	//Only show the FC nav for the correct people
 	var fcnav = "";
-	if (sidebarPayload.user.roleNumeric > 1) {
+	if (sidebarPayload.user.roleNumeric >= 1) {
 		fcnav += `
     <span class="heading">Fleet Commander</span>
     <ul class="list-unstyled">
@@ -123,15 +123,21 @@ function sidebar(sidebarPayload, cb) {
         </span>
         Fleet Management</a>
       </li>          
-      <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
+      <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>`
+  
+
+    if (sidebarPayload.user.roleNumeric >= 4) {
+      fcnav +=`
       <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-        <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> <strike>Squad L <i class="fas fa-sort-down float-right"></i></a></strike>
+        <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
         <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
           <strike><li><a href="#">Ban List</a></strike></li>
-          <strike><li><a href="#">FC Management</a></strike></li>
+          <li><a href="/admin/commanders">FC Management</a></li>
           <strike><li><a href="#">White List</a></strike></li>
         </ul>
-      </li>
+      </li>`
+    }
+      fcnav+=`
     </ul>`
 	}
 
