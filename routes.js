@@ -294,11 +294,20 @@ module.exports = function (app, setup) {
 	})
 
 
-	//TODO:
 	app.get('/admin/commanders', function (req, res) {	
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			users.findAndReturnUser(Number(req.query.user), function(userProfile) {
-				users.getFCList(function (fcList) {
+    var userProfile = {};
+    if (typeof req.query.user != "undefined") {
+			users.findAndReturnUser(Number(req.query.user), function(profile) {
+        userProfile = profile;
+        genPage();
+      })
+    } else {
+      genPage();
+    }
+      
+      function genPage() {
+			users.getFCList(function (fcList) {
 					var page = {
 						template: "adminFC",
 						sidebar: {
@@ -318,7 +327,7 @@ module.exports = function (app, setup) {
 						res.send(generatedPage);
 					})
 				})
-			})
+			}
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
 		}
