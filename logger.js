@@ -65,7 +65,8 @@ const getWinstonTransports = () => {
   if(process.env.NODE_ENV !== 'production') {
     winstonTransports.push(new transports.Console({
       level: 'debug',
-      format: combine(timestamp(), myFormat(true))
+      format: combine(timestamp(), myFormat(true)),
+      handleExceptions: true
     }));
   }
 
@@ -74,7 +75,8 @@ const getWinstonTransports = () => {
     filename: `${getLogDirectory()}/eve-goons-waitlist.log`,
     format: combine(timestamp(), myFormat(false)),
     maxsize: 10000000,
-    maxFiles: 10
+    maxFiles: 10,
+    handleExceptions: true
   }));
 
   return winstonTransports;
@@ -84,7 +86,8 @@ const getWinstonExceptionTransports = () => {
   const winstonExceptionTranports = [];
   winstonExceptionTranports.push(new transports.File({
     filename: `${getLogDirectory()}/eve-goons-waitlist-exceptions.log`,
-    level: 'silly'
+    level: 'silly',
+    handleExceptions: true
   }));
   return winstonExceptionTranports;
 };
