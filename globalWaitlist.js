@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
-const log = require('./logger.js');
+const log = require('./logger.js')(module);
 
 module.exports = function (setup) {
 	var module = {};

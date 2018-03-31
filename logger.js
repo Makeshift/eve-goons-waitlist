@@ -1,108 +1,110 @@
-﻿
+﻿const { createLogger, transports, format } = require('winston');
+const { combine, timestamp, printf } = format;
 const path = require('path');
-const setup = require('./setup.js');
-const winston = require('winston');
-const { combine, timestamp, printf } = winston.format;
-var colors = require('colors/safe');
+const fs = require('fs');
+const colors = require('colors/safe');
 
-// init
-(function () {
+const LOG_DIRECTORY = process.env.LOG_DIRECTORY || 'logs/';
+const MAX_LOG_LENGTH = process.env.MAX_LOG_LENGTH || 4000;
 
-	const MAX_JSON_MSG_LEN = 4000;
-	const MAX_FILE_SIZE = 1024 * 1024 * 50;
-	const dir = setup.logging ? setup.logging.dir : __dirname;
+const simpleFormat = (info) => {
+  return `${info.timestamp} [${info.level}] ${info.message}`;
+};
 
-	const simpleFormat = (info) => {
-		return `${info.timestamp} [${info.level}] ${info.message}`;
-	};
+// prints serialized parameters
+//  log.info("text", {a: 10}); -> `[info] text {"a":10}`
+const extendedFormat = (info) => {
+  const extra = {};
+  for (let it in info) {
+    if (it !== 'timestamp' && it !== 'level' && it !== 'message'
+      // additional black-listed attributes
+      && it !== 'jse_shortmsg' && it !== 'jse_cause')
+      extra[it] = info[it];
+  }
+  let json = JSON.stringify(extra);
+  if (json.length > MAX_LOG_LENGTH) {
+    json = json.substr(0, MAX_LOG_LENGTH);
+  }
+  return `${info.timestamp} [${info.level}] ${info.message} ${json}`;
+};
 
-	// prints serialized parameters
-	//  log.info("text", {a: 10}); -> `[info] text {"a":10}`
+const myColorize = (info) => {
+  switch (info.level) {
+    case 'warn': info.message = colors.yellow(info.message);
+      break;
+    case 'error': info.message = colors.bgRed(info.message);
+      break;
+    case 'debug': info.message = colors.gray(info.message);
+      break;
+  }
+};
 
-	const extendedFormat = (info) => {
-		var extra = {};
-		for (var it in info) {
-			if (it !== 'timestamp' && it !== 'level' && it !== 'message'
-					// additional black-listed attributes
-					&& it !== 'jse_shortmsg' && it !== 'jse_cause')
-				extra[it] = info[it];
-		}
-		var json = JSON.stringify(extra);
-		if (json.length > MAX_JSON_MSG_LEN) json = json.substr(0, MAX_JSON_MSG_LEN);
-		return `${info.timestamp} [${info.level}] ${info.message} ${json}`;
-	};
+const myFormat = (colorize) => {
+  return printf(info => {
+    if (colorize) {
+      myColorize(info);
+    }
 
-	const myColorize = (info) => {
-		// @colors/safe https://www.npmjs.com/package/colors
-		switch (info.level) {
-			case 'warn': info.message = colors.yellow(info.message);
-				break;
-			case 'error': info.message = colors.bgRed(info.message);
-				break;
-			case 'debug': info.message = colors.gray(info.message);
-				break;
-		}
-	};
+    if (Object.keys(info).length === 3) {
+    return simpleFormat(info);
+  } else {
+    return extendedFormat(info);
+  }
+});
+};
 
-	const myFormat = (colorize) => {
-		return printf(info => {
-			if (colorize) {
-				myColorize(info);
-			}
+const getLogDirectory = () => {
+  const logDirectory = path.join(__dirname,LOG_DIRECTORY);
+  fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+  return logDirectory;
+};
 
-			if (Object.keys(info).length == 3) {
-				return simpleFormat(info);
-			}
-			else {
-				return extendedFormat(info);
-			}
-		});
-	};
+const getWinstonTransports = () => {
+  const winstonTransports = [];
 
-	winston.loggers.add('core', {
-		transports: [
-			new winston.transports.Console({
-				level: 'debug',
-				format: combine(timestamp(), myFormat(true)),
-			}),
-			new winston.transports.File({
-				level: 'debug',
-				filename: path.normalize(dir + '/log.txt'),
-				format: combine(timestamp(), myFormat(false)),
-				maxsize: MAX_FILE_SIZE
-			})
-		],
-		// app-crashes are logged to separated file
-		exceptionHandlers: [
-			new winston.transports.File({ filename: path.normalize(dir + '/exceptions.txt') })
-		],
-	});
+  if(process.env.NODE_ENV !== 'production') {
+    winstonTransports.push(new transports.Console({
+      level: 'debug',
+      format: combine(timestamp(), myFormat(true))
+    }));
+  }
 
-	winston.loggers.get('core').info("logging started");
+  winstonTransports.push(new transports.File({
+    level: 'debug',
+    filename: `${getLogDirectory()}/eve-goons-waitlist.log`,
+    format: combine(timestamp(), myFormat(false)),
+    maxsize: 10000000,
+    maxFiles: 10
+  }));
 
-})();
+  return winstonTransports;
+};
 
-const logger = winston.loggers.get('core');
+const getWinstonExceptionTransports = () => {
+  const winstonExceptionTranports = [];
+  winstonExceptionTranports.push(new transports.File({
+    filename: `${getLogDirectory()}/eve-goons-waitlist-exceptions.log`,
+    level: 'silly'
+  }));
+  return winstonExceptionTranports;
+};
 
-// export
-module.exports = {
+const getLabel = (filename) => {
+  const fragments = filename.split('/');
+  return `${fragments[fragments.length-2]}/${fragments.pop()}`;
+};
 
-	// @ES6 rest parameters: http://exploringjs.com/es6/ch_core-features.html#sec_from-arguments-to-rest
-	info: function (...args) {
-		// @ES6 spread operator http://exploringjs.com/es6/ch_core-features.html#sec_from-apply-to-spread
-		logger.info(...args);
-	},
+const logger = createLogger({
+  transports: getWinstonTransports(),
+  exceptionHandlers: getWinstonExceptionTransports()
+});
 
-	debug: function (...args) {
-		logger.debug(...args);
-	},
-
-	warn: function (...args) {
-		logger.warn(...args);
-	},
-
-	error: function (...args) {
-		logger.error(...args);
-	},
-
+module.exports = (module) => {
+  const filename = getLabel(module.filename);
+  return {
+    info: (msg, metadata) => logger.info(`[${filename}]: ${msg}`,metadata),
+    debug: (msg, metadata) => logger.debug(`[${filename}]: ${msg}`, metadata),
+    warn: (msg, metadata) => logger.warn(`[${filename}]: ${msg}`, metadata),
+    error: (msg, metadata) => logger.error(`[${filename}]: ${msg}`, metadata)
+}
 };

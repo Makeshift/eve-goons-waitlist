@@ -1,6 +1,6 @@
 const setup = require('./setup.js');
 const mongo = require('mongodb').MongoClient;
-const log = require('./logger.js');
+const log = require('./logger.js')(module);
 
 //Shamelessly stolen from stackoverflow because I loved this method of handling DB connections
 const dbService = {
