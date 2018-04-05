@@ -1,6 +1,6 @@
 const setup = require('./setup.js');
 const mongo = require('mongodb').MongoClient;
-const log = require('./logger.js');
+const log = require('./logger.js')(module);
 
 const MONGODB_URL = process.env.MONGODB_URL ||'mongodb://localhost:27017';
 

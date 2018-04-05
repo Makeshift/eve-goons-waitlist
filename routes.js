@@ -7,7 +7,7 @@ var esi = require('eve-swagger');
 var refresh = require('passport-oauth2-refresh');
 var cache = require('./cache.js')(setup);
 var waitlist = require('./globalWaitlist.js')(setup);
-const log = require('./logger.js');
+const log = require('./logger.js')(module);
 
 module.exports = function (app, setup) {
 	app.get('/', function (req, res) {

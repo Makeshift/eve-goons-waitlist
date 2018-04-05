@@ -7,7 +7,7 @@ if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
 }
 
 const setup = require('./setup.js');
-const log = require('./logger.js');
+const log = require('./logger.js')(module);
 const database = require('./dbHandler.js');
 
 //Apparently JS has a shit fit when it can't throw errors properly so uh, we need to make it throw errors properly
@@ -77,7 +77,9 @@ database.connect(function () {
 	app.use(session({
 		store: new mongoStore({ db: database.db }),
 		secret: setup.data.sessionSecret,
-		cookie: { maxAge: 604800 * 1000 } //Week long cookies for week long incursions!
+		cookie: { maxAge: 604800 * 1000 }, //Week long cookies for week long incursions!
+    resave: true,
+    saveUninitialized: true
 	}))
 	app.use(passport.initialize());
 	app.use(passport.session());

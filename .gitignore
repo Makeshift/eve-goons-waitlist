@@ -1,9 +1,10 @@
 setup.js
 data/
 sessions/
-*-lock*
 # Logs
-logs
+logs/
+.idea/
+*.iml
 *.log
 log.txt
 npm-debug.log*
