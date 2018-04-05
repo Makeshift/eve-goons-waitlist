@@ -1,5 +1,18 @@
 version: "2"
 services:
+  goon_waitlist:
+    container_name: waitlist
+    build: .
+    command: npm start
+    volumes:
+      - .:/opt/goon_waitlist/
+      - /opt/goon_waitlist/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    environment:
+      MONGODB_URL: mongodb://mongo
   mongo:
     container_name: mongo
     image: mvertes/alpine-mongo
@@ -7,10 +20,3 @@ services:
       - ./data:/data/db
     ports:
       - "27017:27017"
-  goon_waitlist:
-    container_name: waitlist
-    build: .
-    ports:
-      - "3000:3000"
-    links:
-      - mongo
