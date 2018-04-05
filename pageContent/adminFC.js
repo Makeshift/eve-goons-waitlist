@@ -1,7 +1,5 @@
 module.exports = function(payloadContent, cb) {
-    
-    var fcTable = "";
-    fcTable += `
+    var fcTable = `
     <table class="table table-striped table-hover table-sm">
       <thead>
         <tr>
@@ -12,24 +10,25 @@ module.exports = function(payloadContent, cb) {
           <th></th>
         </tr>
       </thead>
-      <tbody>`
+      <tbody>`;
 
       for(i = 0; i < payloadContent.fcs.length; i++){
+        console.log(payloadContent.fcs[i])
         fcTable += `
         <tr>
           <td><img src="http://image.eveonline.com/Character/${payloadContent.fcs[i].characterID}_32.jpg" alt="${payloadContent.fcs[i].name}s Avatar"></td>
           <td><a href="#">${payloadContent.fcs[i].name}</a></td>
-          <td>${payloadContent.fcs[i].alliance.name}</td>
+          <td>${payloadContent.fcs[i].alliance ? payloadContent.fcs[i].alliance.name : "No alliance in DB"}</td>
           <td>${payloadContent.fcs[i].role}</td>
           <td><a class="btn btn-sm btn-default" href="/admin/commanders/?user=${payloadContent.fcs[i].characterID}" style="color:black"><i class="fa fa-info-circle"></i> Manage</a></td>
-        </tr>`
+        </tr>`;
       }
 
       fcTable += `
           </tbody>
         </table>
-      </div>`
-    
+      </div>`;
+
     var managePilot ="";
     if(payloadContent.manageUser.name != null) {
       managePilot = `

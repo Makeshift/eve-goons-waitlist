@@ -10,6 +10,11 @@ const setup = require('./setup.js');
 const log = require('./logger.js');
 const database = require('./dbHandler.js');
 
+//Apparently JS has a shit fit when it can't throw errors properly so uh, we need to make it throw errors properly
+process.on('uncaughtException', function(exception) {
+	console.log(exception);
+})
+
 database.connect(function () {
 	const db = database.db;
 	const express = require('express');
