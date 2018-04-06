@@ -188,6 +188,35 @@ module.exports = function (setup) {
 			})
 		}
 	}
+
+	//Set a users destination
+	module.setDestination = function(user, systemID, cb) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("module.setDestination: Error for requestNewAccessToken", { err, user });
+				// TODO: is it good to throw?
+				throw err;
+			}
+			//users.updateRefreshToken(user.characterID, newRefreshToken);
+			esi.characters(user.characterID, accessToken).autopilot.destination(systemID);
+			log.debug("Setting "+user.name+"\'s destination to "+systemID);
+		})
+	}
+
+	//Open the info window of an alliance, corporation or pilot.
+	module.showInfo = function(user, targetID, cb) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("module.showInfo: Error for requestNewAccessToken", { err, user });
+				// TODO: is it good to throw?
+				throw err;
+			}
+			//users.updateRefreshToken(user.characterID, newRefreshToken);
+			esi.characters(user.characterID, accessToken).window.info(targetID);
+			log.debug("Opening "+targetID+"\'s information window for "+user.name);
+		})
+	}
+	
 	
 	return module;
 }

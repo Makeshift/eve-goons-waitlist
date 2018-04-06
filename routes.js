@@ -308,7 +308,6 @@ module.exports = function (app, setup) {
 			
 			function genPage() {
 				users.getFCList(function(fcList) {
-					console.log(fcList);
 					var page = {
 						template: "adminFC",
 						sidebar: {
@@ -326,7 +325,6 @@ module.exports = function (app, setup) {
 					}
 
 					template.pageGenerate(page, function(generatedPage) {
-						console.log("Pagenerated");
 						res.send(generatedPage)
 					})
 				});
@@ -351,6 +349,22 @@ module.exports = function (app, setup) {
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
 		}
+	})
+
+	//Set a users destination
+	app.get('/esi/ui/waypoint/:systemID', function(req, res) {
+		if (req.isAuthenticated() && req.query.systemID != null || req.params.systemID != "undefined") {
+			users.setDestination(req.user, req.params.systemID);
+		}
+		res.redirect('back');
+	})
+
+	//Open the info window of an alliance, corporation or pilot.
+	app.get('/esi/ui/info/:targetID', function(req, res) {
+		if (req.isAuthenticated && req.query.targetID != null || req.params.targetID != "undefined") {
+			users.showInfo(req.user, req.params.targetID);
+		}
+		res.redirect('back');
 	})
 }
 

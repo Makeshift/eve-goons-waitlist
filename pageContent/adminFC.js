@@ -17,8 +17,8 @@ module.exports = function(payloadContent, cb) {
         fcTable += `
         <tr>
           <td><img src="http://image.eveonline.com/Character/${payloadContent.fcs[i].characterID}_32.jpg" alt="${payloadContent.fcs[i].name}s Avatar"></td>
-          <td><a href="#">${payloadContent.fcs[i].name}</a></td>
-          <td>${payloadContent.fcs[i].alliance ? payloadContent.fcs[i].alliance.name : "No alliance in DB"}</td>
+          <td><a href="/esi/ui/info/${payloadContent.fcs[i].characterID}">${payloadContent.fcs[i].name}</a></td>
+          <td><a href="/esi/ui/info/${payloadContent.fcs[i].alliance.id}">${payloadContent.fcs[i].alliance ? payloadContent.fcs[i].alliance.name : "No alliance in DB"}</a></td>
           <td>${payloadContent.fcs[i].role}</td>
           <td><a class="btn btn-sm btn-default" href="/admin/commanders/?user=${payloadContent.fcs[i].characterID}" style="color:black"><i class="fa fa-info-circle"></i> Manage</a></td>
         </tr>`;
@@ -33,7 +33,7 @@ module.exports = function(payloadContent, cb) {
     if(payloadContent.manageUser.name != null) {
       managePilot = `
           <ul class="list-unstyled">
-            <li><a href="#">${payloadContent.manageUser.name || ""}</a></li>
+            <li><a href="/esi/ui/info/${payloadContent.manageUser.characterID}">${payloadContent.manageUser.name || ""}</a></li>
             <li>${payloadContent.manageUser.role || ""}</li>
             <li><strike>FCed for:</strike> </li>
           </ul>

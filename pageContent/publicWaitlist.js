@@ -23,11 +23,11 @@ var fleets = "";
                     <tbody>
                       <tr>
                         <td  class="tw60per">Fleet Commander:</td>
-                        <td><a href="#">${payloadContent.fleets[i].fc.name}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleets[i].fc.characterID}">${payloadContent.fleets[i].fc.name}</a></td>
                       </tr>
                       <tr>
                         <td>Secondary Fleet Commander:</td>
-                        <td><a href="#">${payloadContent.fleets[i].backseat.name || "None"}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleets[i].backseat.characterID || "undefined"}">${payloadContent.fleets[i].backseat.name || "None"}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Type:</td>
@@ -47,7 +47,7 @@ var fleets = "";
                       </tr>                      
                       <tr>
                         <td>Fleet Location:</td>
-                        <td><a href="#">${payloadContent.fleets[i].location}</a></td>
+                        <td><a href="/esi/ui/waypoint/${payloadContent.fleets[i].fc.location.id}">${payloadContent.fleets[i].location}</a></td>
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
