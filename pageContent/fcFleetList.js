@@ -25,11 +25,11 @@ for (var i = 0; i < payloadContent.fleets.length; i++) {
   	fleets += `
     <tr>
       <td><img src="https://image.eveonline.com/Character/${payloadContent.fleets[i].fc.characterID}_32.jpg" alt="FCs Avatar"></td>
-      <td><a href="#">${payloadContent.fleets[i].fc.name}</a></td>
-      <td><a href="#">${payloadContent.fleets[i].backseat.name || "None"}</a>
+      <td><a href="/esi/ui/info/${payloadContent.fleets[i].fc.characterID}">${payloadContent.fleets[i].fc.name}</a></td>
+      <td><a href="/esi/ui/info/${payloadContent.fleets[i].backseat.characterID || "undefined"}">${payloadContent.fleets[i].backseat.name || "None"}</a>
       <td>${payloadContent.fleets[i].type}</td>
       <td>${payloadContent.fleets[i].status}</td>
-      <td><a href="#">${payloadContent.fleets[i].location || "Unknown"}</a></td>
+      <td><a href="/esi/ui/waypoint/${payloadContent.fleets[i].fc.location.id}">${payloadContent.fleets[i].location || "Unknown"}</a></td>
       <td>${payloadContent.fleets[i].members.length}</td>
       <td><a href="/commander/${payloadContent.fleets[i].id}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
     </tr>

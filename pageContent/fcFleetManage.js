@@ -81,7 +81,7 @@ module.exports = function(payloadContent, cb) {
                               <img src="https://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
                             </td>
                             <td>
-                              <a href="#">${name}</a>
+                              <a href="/esi/ui/info/${characterID}">${name}</a>
                               <p>${role}</p>
                             </td>
                             <td>
@@ -219,12 +219,12 @@ module.exports = function(payloadContent, cb) {
                     <tbody>
                       <tr>
                         <td>FC (Boss):</td>
-                        <td><a href="#">${payloadContent.fleet.fc.name}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleet.fc.characterID}">${payloadContent.fleet.fc.name}</a></td>
                         <td>${updateFC}</td>
                       </tr>
                       <tr>
                         <td>Backseating FC:</td>
-                        <td><a href="#">${payloadContent.fleet.backseat.name || "None"}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleet.backseat.characterID || "undefined"}">${payloadContent.fleet.backseat.name || "None"}</a></td>
                         <td>${updateBackseat}</td>
                       </tr>
                       <tr>
@@ -265,7 +265,7 @@ module.exports = function(payloadContent, cb) {
                       </tr>
                       <tr>
                         <td>Fleet System:</td>
-                        <td colspan="2"><a href="#">${payloadContent.fleet.location}</a></td>
+                        <td colspan="2"><a href="/esi/ui/waypoint/${payloadContent.fleet.fc.location.id}">${payloadContent.fleet.location}</a></td>
                       </tr>
                       <tr>
                         <td colspan="3">
