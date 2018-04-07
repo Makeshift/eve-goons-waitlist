@@ -151,7 +151,7 @@ module.exports = function (app, setup) {
 						fc: req.user,
 						backseat: {},
 						type: req.body.type,
-						status: "Forming",
+						status: "Not Listed",
 						location: location.name,
 						members: members,
 						url: req.body.url,
@@ -293,7 +293,6 @@ module.exports = function (app, setup) {
 		}
 	})
 
-
 	app.get('/admin/commanders', function(req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
 			var userProfile = {};
@@ -337,7 +336,7 @@ module.exports = function (app, setup) {
 	
 	app.post('/admin/commanders/update', function(req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			esi.characters.search(req.body.pilotName).then(function (results) {
+			esi.characters.search.strict(req.body.pilotName).then(function (results) {
 				users.updateUserPermission(results[0], req.body.permission, req.user, res)
 				{
 					res.redirect('/admin/commanders');
@@ -353,7 +352,7 @@ module.exports = function (app, setup) {
 
 	//Set a users destination
 	app.get('/esi/ui/waypoint/:systemID', function(req, res) {
-		if (req.isAuthenticated() && req.query.systemID != null || req.params.systemID != "undefined") {
+		if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
 			users.setDestination(req.user, req.params.systemID);
 		}
 		res.redirect('back');
@@ -361,7 +360,7 @@ module.exports = function (app, setup) {
 
 	//Open the info window of an alliance, corporation or pilot.
 	app.get('/esi/ui/info/:targetID', function(req, res) {
-		if (req.isAuthenticated && req.query.targetID != null || req.params.targetID != "undefined") {
+		if (req.isAuthenticated && typeof req.params.targetID !== "undefined") {
 			users.showInfo(req.user, req.params.targetID);
 		}
 		res.redirect('back');

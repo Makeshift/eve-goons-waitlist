@@ -164,7 +164,7 @@ module.exports = function(payloadContent, cb) {
       }
     }
 
-    var fleetStatusList = ["Forming", "Running", "Docking Soon", "Short Break"];
+    var fleetStatusList = ["Not Listed","Forming", "Running", "Docking Soon", "Short Break"];
     var fleetStatus = "";
     for (var i = 0; i < fleetStatusList.length; i++) {
       if (payloadContent.fleet.status !== fleetStatusList[i]) {
@@ -194,16 +194,22 @@ module.exports = function(payloadContent, cb) {
     });
   </script>`
 
+    var notListedBanner = "";
+    if (payloadContent.fleet.status == "Not Listed") {
+      notListedBanner = `<div role="alert" class="alert alert-primary global-banner-inactive noselect">
+          <strong>This fleet is not listed:</strong> Pilots cannot see this fleet. If this is the only fleet pilots will be unable to join the waitlist!
+        </div>`
+    }
+
     cb(`
-          <!-- Page Content -->
-
-
+      <!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
           <div class="container-fluid">
             <h2 class="h5 no-margin-bottom">Fleet Management</h2>
           </div>
         </div>
+        ${notListedBanner}
         <section class="no-padding-top no-padding-bottom">
           <div class="container-fluid">
             <!-- Upper Fleet Panel -->

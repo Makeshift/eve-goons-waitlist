@@ -4,7 +4,12 @@ var waitlist = require('../globalWaitlist.js')(setup);
 module.exports = function(payloadContent, cb) {
 
 var inactive = "";
-if (payloadContent.fleets.length === 0) {
+var fleetCount = 0;
+for (var i = 0; i < payloadContent.fleets.length; i++)
+{
+  if (payloadContent.fleets[i].status != "Not Listed") fleetCount++;
+}
+if (fleetCount <= 0) {
   inactive = `<div role="alert" class="alert alert-primary global-banner-inactive noselect">
             <strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!
           </div>`
@@ -13,51 +18,53 @@ if (payloadContent.fleets.length === 0) {
 
 var fleets = "";
   for (var i = 0; i < payloadContent.fleets.length; i++) {
-    fleets += `
-              <div class="col-lg-6 col-md-12"> 
-                <div class="statistic-block block">
-                  <div class="title">
-                    <strong>Fleet Info</strong>
-                  </div>
-                  <table class="table table-striped table-sm noselect">
-                    <tbody>
-                      <tr>
-                        <td  class="tw60per">Fleet Commander:</td>
-                        <td><a href="/esi/ui/info/${payloadContent.fleets[i].fc.characterID}">${payloadContent.fleets[i].fc.name}</a></td>
-                      </tr>
-                      <tr>
-                        <td>Secondary Fleet Commander:</td>
-                        <td><a href="/esi/ui/info/${payloadContent.fleets[i].backseat.characterID || "undefined"}">${payloadContent.fleets[i].backseat.name || "None"}</a></td>
-                      </tr>
-                      <tr>
-                        <td>Fleet Type:</td>
-                        <td>${payloadContent.fleets[i].type}</td>
-                      </tr>
-                      <tr>
-                        <td>Fleet Doctrine:</td>
-                        <td>{MainFleet/ArseFleet}</td>
-                      </tr>                      
-                      <tr>
-                        <td>Fleet Status:</td>
-                        <td>${payloadContent.fleets[i].status}</td>
-                      </tr>
-                      <tr>
-                        <td>Fleet Size:</td>
-                        <td>${payloadContent.fleets[i].members.length}</td>
-                      </tr>                      
-                      <tr>
-                        <td>Fleet Location:</td>
-                        <td><a href="/esi/ui/waypoint/${payloadContent.fleets[i].fc.location.id}">${payloadContent.fleets[i].location}</a></td>
-                      </tr>
-                      <tr>
-                        <td>Fleet Comms:</td>
-                        <td><a href="${payloadContent.fleets[i].comms.url}">${payloadContent.fleets[i].comms.name}</a></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div> 
-              </div>          
-    `
+    if (payloadContent.fleets[i].status != "Not Listed") {
+      fleets += `
+                <div class="col-lg-6 col-md-12"> 
+                  <div class="statistic-block block">
+                    <div class="title">
+                      <strong>Fleet Info</strong>
+                    </div>
+                    <table class="table table-striped table-sm noselect">
+                      <tbody>
+                        <tr>
+                          <td  class="tw60per">Fleet Commander:</td>
+                          <td><a href="/esi/ui/info/${payloadContent.fleets[i].fc.characterID}">${payloadContent.fleets[i].fc.name}</a></td>
+                        </tr>
+                        <tr>
+                          <td>Secondary Fleet Commander:</td>
+                          <td><a href="/esi/ui/info/${payloadContent.fleets[i].backseat.characterID || "undefined"}">${payloadContent.fleets[i].backseat.name || "None"}</a></td>
+                        </tr>
+                        <tr>
+                          <td>Fleet Type:</td>
+                          <td>${payloadContent.fleets[i].type}</td>
+                        </tr>
+                        <tr>
+                          <td>Fleet Doctrine:</td>
+                          <td>{MainFleet/ArseFleet}</td>
+                        </tr>                      
+                        <tr>
+                          <td>Fleet Status:</td>
+                          <td>${payloadContent.fleets[i].status}</td>
+                        </tr>
+                        <tr>
+                          <td>Fleet Size:</td>
+                          <td>${payloadContent.fleets[i].members.length}</td>
+                        </tr>                      
+                        <tr>
+                          <td>Fleet Location:</td>
+                          <td><a href="/esi/ui/waypoint/${payloadContent.fleets[i].fc.location.id}">${payloadContent.fleets[i].location}</a></td>
+                        </tr>
+                        <tr>
+                          <td>Fleet Comms:</td>
+                          <td><a href="${payloadContent.fleets[i].comms.url}">${payloadContent.fleets[i].comms.name}</a></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div> 
+                </div>          
+      `
+    }
   }
   
 waitlist.getUserPosition(payloadContent.user.characterID, function(position, found, name) {
@@ -111,7 +118,7 @@ waitlist.getUserPosition(payloadContent.user.characterID, function(position, fou
     }
 
     var waitlistup = "";
-    if(payloadContent.fleets.length > 0){
+    if(fleetCount > 0){
       waitlistup += `
                     <div class="statistic-block block">
                       <!-- Select Character -->
