@@ -16,7 +16,7 @@ module.exports = function(payloadContent, cb) {
         console.log(payloadContent.fcs[i])
         fcTable += `
         <tr>
-          <td><img src="http://image.eveonline.com/Character/${payloadContent.fcs[i].characterID}_32.jpg" alt="${payloadContent.fcs[i].name}s Avatar"></td>
+          <td><img src="https://image.eveonline.com/Character/${payloadContent.fcs[i].characterID}_32.jpg" alt="${payloadContent.fcs[i].name}s Avatar"></td>
           <td><a href="/esi/ui/info/${payloadContent.fcs[i].characterID}">${payloadContent.fcs[i].name}</a></td>
           <td><a href="/esi/ui/info/${payloadContent.fcs[i].alliance.id}">${payloadContent.fcs[i].alliance ? payloadContent.fcs[i].alliance.name : "No alliance in DB"}</a></td>
           <td>${payloadContent.fcs[i].role}</td>
@@ -66,7 +66,7 @@ module.exports = function(payloadContent, cb) {
             </thead>
             <tbody>
               <tr>
-                <td><img src="http://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
+                <td><img src="https://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
                 <td><a href="#"><strike>Caitlin Viliana</strike></a></td>
                 <td><strike>Something Useful</strike></td>
               </tr>
@@ -91,7 +91,7 @@ module.exports = function(payloadContent, cb) {
               <!-- Add/View FCs -->
               <div class="col-md-8 col-sm-12">
                 <div class="statistic-block block">
-                  <button class="btn btn-default" data-toggle="modal" data-target="#addFC" accesskey="h"><i class="fas fa-user-plus"></i> Add FC</button>
+                  <button class="btn btn-default" data-toggle="modal" data-target="#addFC" accesskey="n"><i class="fas fa-user-plus"></i> Add FC</button>
                   <div class="progress-details d-flex align-items-end justify-content-between">
                     ${fcTable}  
                   </div>
@@ -121,8 +121,8 @@ module.exports = function(payloadContent, cb) {
                           </div>
 
                           <div class="form-group">
-                            <label for="name">Set permission:</label>
-                            <select class="form-control" name="permission">
+                            <label for="permission">Set permission:</label>
+                            <select id="permission" class="form-control" name="permission">
                               <option value="0" selected required>Choose Rank</option>
                               <option value="1">Trainee</option>
                               <option value="3">Fleet Commander</option>
@@ -135,6 +135,6 @@ module.exports = function(payloadContent, cb) {
                 </div>
             </div>
         </div>
-        <!-- New End FC Modal -->
+        <!-- End New FC Modal -->
       `)  
     }
