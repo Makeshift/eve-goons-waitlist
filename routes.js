@@ -352,7 +352,7 @@ module.exports = function (app, setup) {
 
 	//Set a users destination
 	app.get('/esi/ui/waypoint/:systemID', function(req, res) {
-		if (req.isAuthenticated() && req.params.systemID != "undefined") {
+		if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
 			users.setDestination(req.user, req.params.systemID);
 		}
 		res.redirect('back');
@@ -360,7 +360,7 @@ module.exports = function (app, setup) {
 
 	//Open the info window of an alliance, corporation or pilot.
 	app.get('/esi/ui/info/:targetID', function(req, res) {
-		if (req.isAuthenticated && req.params.targetID != "undefined") {
+		if (req.isAuthenticated && typeof req.params.targetID !== "undefined") {
 			users.showInfo(req.user, req.params.targetID);
 		}
 		res.redirect('back');
