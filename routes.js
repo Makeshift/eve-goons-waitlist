@@ -151,7 +151,7 @@ module.exports = function (app, setup) {
 						fc: req.user,
 						backseat: {},
 						type: req.body.type,
-						status: "Forming",
+						status: "Not Listed",
 						location: location.name,
 						members: members,
 						url: req.body.url,
