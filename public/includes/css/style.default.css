@@ -1516,6 +1516,10 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
   right: 0;
 }
 
+.banned {
+  background: url(../img/dead.jpg);
+}
+
 .login-page .container {
   min-height: 100vh;
   z-index: 1;

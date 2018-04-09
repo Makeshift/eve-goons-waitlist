@@ -131,7 +131,7 @@ function sidebar(sidebarPayload, cb) {
       <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
         <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
         <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
-          <strike><li><a href="#">Ban List</a></strike></li>
+          <li><a href="/admin/bans">Ban List</a></li>
           <li><a href="/admin/commanders">FC Management</a></li>
           <strike><li><a href="#">White List</a></strike></li>
         </ul>
