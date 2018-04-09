@@ -26,7 +26,6 @@ module.exports = function (setup) {
                 console.log(res);
                 log.warn("Ignoring ban " + data.pilotName + " is already banned.");
                 cb(true);
-                
             }
         })       
     }
@@ -36,7 +35,7 @@ module.exports = function (setup) {
 		db.find( { deletedAt: {}}).toArray(function (err, docs) {
             if (err) log.error("fleet.getFCPageList: Error for db.find", { err });
             cb(docs);
-		})
+        })
     }
     
     //Revokes a ban given a ban ID.
@@ -56,7 +55,7 @@ module.exports = function (setup) {
             } else {
                 cb(false, "not banned");
             }
-		})
+        })
     }
 
     return module;
