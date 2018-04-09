@@ -35,7 +35,7 @@
                         <tbody>
                           <tr>
                             <td class="tw60per">Your Position:</td>
-                            <td>1,2,3 out of 3</td>
+                            <td>{{ position.position }} out of {{ position.length }}</td>
                           </tr>
                           <!--<tr>
                             <td>FC sees you as: <div class="d-inline" data-toggle="tooltip" data-placement="top" title="The FC sees you as your first pilot on the waitlist."><i class="fas fa-question-circle"></i></div></td>
@@ -43,7 +43,7 @@
                           </tr>-->                      
                           <tr>
                             <td>Chars on Waitlist:</td>
-                            <td>Samuel the Merciless, Amariah Kai, Yumi Tsuchida</td>
+                            <td>{{ charList.join(", ") }}</td>
                           </tr>
                         </tbody>
                       </table>

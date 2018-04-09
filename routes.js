@@ -25,9 +25,13 @@ module.exports = function (app, setup) {
 					if (fleets[i].status !== "Not Listed") fleetCount++;
 				}
 				
-				var userProfile = req.user;
-				var sideBarSelected = 1;
-				res.render('waitlist.njk', {userProfile, sideBarSelected, fleets, fleetCount});
+				waitlist.getUserPosition(req.user.characterID, function(position, found, name) {
+					waitlist.getCharsOnWaitlist(req.user.characterID, function(charList) {
+						var userProfile = req.user;
+						var sideBarSelected = 1;
+						res.render('waitlist.njk', {userProfile, sideBarSelected, fleets, fleetCount, charList, position});
+					})
+				})
 			});
 		} else {
 			//res.sendFile(path.normalize(`${__dirname}/public/index.html`));
@@ -164,12 +168,30 @@ module.exports = function (app, setup) {
 					return;
 				}
 
+				var page = {
+					template: "fcFleetManage",
+					sidebar: {
+						selected: 5,
+						user: req.user
+					},
+					header: {
+						user: req.user
+					},
+					content: {
+						user: req.user,
+						fleet: fleet
+					}
+				}
+				template.pageGenerate(page, function (generatedPage) {
+					res.send(generatedPage);
+				})				
+				/*
 				waitlist.get(function(usersOnWaitlist) {
 					var userProfile = req.user;
 					var sideBarSelected = 5;
 					//console.log(usersOnWaitlist);
 					res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
-				})
+				})*/
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
