@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const setup = require('./setup.js');
+const bans = require('./bans.js')(setup)
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const cache = require('./cache.js')(setup);
@@ -24,8 +25,19 @@ module.exports = function (setup) {
 				req.session.passport.user = userData;
 				req.session.save(function (err) {
 					if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-					next();
+					
 				})
+
+				//check for ban
+				bans.checkIfBanned(req.user.characterID, function(ban) {
+					if (ban.banType == "Squad") {
+						log.warn("Logging out banned user: " + req.user.name);
+						req.logout();
+						res.status(418).send("ban page goes here");
+					} else {
+						next();
+					}
+				});
 			}
 		});
 	}

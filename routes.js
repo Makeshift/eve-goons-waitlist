@@ -1,6 +1,7 @@
 var template = require('./template.js');
 var path = require('path');
 var setup = require('./setup.js');
+var bans = require('./bans.js')(setup);
 var fleets = require('./fleets.js')(setup);
 var users = require('./users.js')(setup);
 var esi = require('eve-swagger');
@@ -291,6 +292,69 @@ module.exports = function (app, setup) {
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
+	})
+
+	app.get('/admin/bans', function(req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+			bans.getBans(function(activeBans) {
+				var page = {
+					template: "adminBan",
+					sidebar: {
+						selected: 7,
+						user: req.user
+					},
+					header: {
+						user: req.user
+					},
+					content: {
+						banList: activeBans
+					}
+				}
+				template.pageGenerate(page, function (generatedPage) {
+					res.send(generatedPage);
+				})
+			})
+		} else {
+			res.status(403).send("You don't have permission to view this page");
+		}
+	})
+	
+	app.post('/admin/bans', function(req, res) {
+		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+			esi.characters.search.strict(req.body.pilotName).then(function (results) {
+				var banObject = {
+					characterID: results[0],
+					pilotName: req.body.pilotName,
+					banType: req.body.type,
+					notes: req.body.notes,
+					banAdmin: req.user,
+					createdAt: Date.now(),
+					deletedAt: {} 
+				}
+				
+				bans.register(banObject, function (success, errTxt) {
+					if (!success) {
+						res.status(409).send(errTxt + "<br><br><a href='/admin/bans'>Go back</a>")
+					} else {
+						res.redirect(302, '/admin/bans');
+					}
+				});
+			}).catch(function (err) {
+				log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
+				res.redirect(`/admin/bans?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+			})
+		}
+	})
+
+	//Soft Delete a ban with a given banID 
+	app.get('/admin/bans/:banID', function(req, res) {
+		if(req.isAuthenticated() && req.user.roleNumeric > 4) {
+			var banID = req.params.banID;
+			var banAdmin = req.user.name;
+
+			bans.revokeBan(banID, banAdmin, res);
+		}
+		res.redirect('/admin/bans');
 	})
 
 	app.get('/admin/commanders', function(req, res) {
