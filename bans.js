@@ -43,6 +43,7 @@ module.exports = function (setup) {
         db.updateOne({ '_id': ObjectId(banID) }, { $set: { deletedAt: Date.now() } }, function (err, result) {
             if (err) log.error("module.revokeBan: Error for updateOne", { err, '_id': banID });
             if (!err) log.debug(banAdmin + " revoked ban: " + banID);
+            if(cb) cb();
 		})
     }
 
