@@ -33,10 +33,11 @@ module.exports = function (setup) {
 					if (ban.banType == "Squad") {
 						log.warn("Logging out banned user: " + req.user.name);
 						req.logout();
-						res.status(418).send("ban page goes here");
+						res.status(418).render("banned.html");
 					} else {
 						next();
 					}
+					return;
 				});
 			}
 		});

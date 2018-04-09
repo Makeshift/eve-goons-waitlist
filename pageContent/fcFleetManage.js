@@ -46,6 +46,7 @@ module.exports = function(payloadContent, cb) {
   function contWaitlistGenerate(shiptable, fleetLength, fleetid, cb) {
     var waitlistHTML = "";
     waitlist.get(function(usersOnWaitlist) {
+      console.log(usersOnWaitlist);
       var usersNeeded = usersOnWaitlist.length;
       var count = 0;
       for (var i = 0; i < usersNeeded; i++) {

@@ -13,32 +13,25 @@ const log = require('./logger.js')(module);
 module.exports = function (app, setup) {
 	app.get('/', function (req, res) {
 		if (req.isAuthenticated()) {
-			//Grab all fleets
+			//Grab all fleets			
 			fleets.getFCPageList(function (fleets) {
 				if (!fleets) {
 					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
 					return;
 				}
-				var page = {
-					template: "publicWaitlist",
-					sidebar: {
-						selected: 1,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleets: fleets
-					}
+				
+				var fleetCount = 0;
+				for (var i = 0; i < fleets.length; i++) {
+					if (fleets[i].status !== "Not Listed") fleetCount++;
 				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
+				
+				var userProfile = req.user;
+				var sideBarSelected = 1;
+				res.render('waitlist.njk', {userProfile, sideBarSelected, fleets, fleetCount});
 			});
 		} else {
-			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
+			//res.sendFile(path.normalize(`${__dirname}/public/index.html`));
+			res.render('login.html');
 		}
 	});
 
@@ -105,23 +98,11 @@ module.exports = function (app, setup) {
 					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
 					return;
 				}
-				var page = {
-					template: "fcFleetList",
-					sidebar: {
-						selected: 5,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleets: fleets
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
+
+				var userProfile = req.user;
+				var sideBarSelected = 5;
+				var fleets = fleets;
+				res.render('fcFleetList.njk', {userProfile, sideBarSelected, fleets});
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -182,22 +163,12 @@ module.exports = function (app, setup) {
 					res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
 					return;
 				}
-				var page = {
-					template: "fcFleetManage",
-					sidebar: {
-						selected: 5,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleet: fleet
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
+
+				waitlist.get(function(usersOnWaitlist) {
+					var userProfile = req.user;
+					var sideBarSelected = 5;
+					//console.log(usersOnWaitlist);
+					res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
 				})
 			})
 		} else {
@@ -297,22 +268,10 @@ module.exports = function (app, setup) {
 	app.get('/admin/bans', function(req, res) {
 		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
 			bans.getBans(function(activeBans) {
-				var page = {
-					template: "adminBan",
-					sidebar: {
-						selected: 7,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						banList: activeBans
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
+				var userProfile = req.user;
+				var sideBarSelected = 7;
+				var banList = activeBans;
+				res.render('adminBan.njk', {userProfile, sideBarSelected, banList});
 			})
 		} else {
 			res.status(403).send("You don't have permission to view this page");
@@ -369,30 +328,18 @@ module.exports = function (app, setup) {
 					genPage();
 				})
 			} else {
+				userProfile = req.user;
 				genPage();
 			}
 			
 			function genPage() {
-				users.getFCList(function(fcList) {
-					var page = {
-						template: "adminFC",
-						sidebar: {
-							selected: 7,
-							user: req.user
-						},
-						header: {
-							user: req.user
-						},
-						content: {
-							user: req.user,
-							fcs: fcList,
-							manageUser: userProfile
-						}
-					}
 
-					template.pageGenerate(page, function(generatedPage) {
-						res.send(generatedPage)
-					})
+				users.getFCList(function(fcList) {
+					var userProfile = req.user;
+					var sideBarSelected = 7;
+					var fcs = fcList;
+					var manageUser = userProfile
+					res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser});	
 				});
 			}
 		} else {

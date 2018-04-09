@@ -2,6 +2,7 @@
 // mandatory setup.js
 const fs = require('fs');
 const path = require('path');
+const nunjucks = require('nunjucks');
 if (!fs.existsSync(path.normalize(__dirname + "/setup.js"))) {
 	throw "You need to create a setup.js file. Refer to the readme."
 }
@@ -86,6 +87,11 @@ database.connect(function () {
 	app.use(bodyParser.urlencoded({ extended: true }));
 	app.use('/includes', express.static('public/includes'));
 	app.use(users.updateUserSession); //Force the session to update from DB on every page load because sessions are not the source of truth here!
+
+	nunjucks.configure('views', {
+		autoescape: true,
+		express: app
+	});
 
 	//Routes
 	require('./oAuthRoutes.js')(app, passport, setup);
