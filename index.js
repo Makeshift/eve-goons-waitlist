@@ -95,7 +95,9 @@ database.connect(function () {
 
 	//Routes
 	require('./oAuthRoutes.js')(app, passport, setup);
-	require('./routes.js')(app, setup);
+	var routeListen = require('./routes.js');
+	app.use(routeListen)
+
 
 	//Configure Express webserver
 	app.listen(setup.settings.port, function listening() {
