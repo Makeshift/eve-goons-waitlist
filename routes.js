@@ -352,9 +352,12 @@ module.exports = function (app, setup) {
 			var banID = req.params.banID;
 			var banAdmin = req.user.name;
 
-			bans.revokeBan(banID, banAdmin, res);
+			bans.revokeBan(banID, banAdmin, function() {
+				res.redirect('/admin/bans');
+			});
+		} else {
+			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
 		}
-		res.redirect('/admin/bans');
 	})
 
 	app.get('/admin/commanders', function(req, res) {
