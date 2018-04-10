@@ -1,43 +1,6 @@
-module.exports = function(payloadContent, cb) {
-/*
-Fleet object format:
-
-{
-	fc: user object,
-	backseat: user object,
-	type: "hq",
-	status: "text",
-	location: {
-		id: id,
-		name: "Jita"
-	},
-	members: [user objects],
-	size: members.length,
-	url: "hhttps://esi.tech.ccp.is..."
-}
-
-*/
-
-var fleets = "";
-for (var i = 0; i < payloadContent.fleets.length; i++) {
-	if (!payloadContent.fleets[i].members) continue;
-
-  	fleets += `
-    <tr>
-      <td><img src="https://image.eveonline.com/Character/${payloadContent.fleets[i].fc.characterID}_32.jpg" alt="FCs Avatar"></td>
-      <td><a href="/esi/ui/info/${payloadContent.fleets[i].fc.characterID}">${payloadContent.fleets[i].fc.name}</a></td>
-      <td><a href="/esi/ui/info/${payloadContent.fleets[i].backseat.characterID || "undefined"}">${payloadContent.fleets[i].backseat.name || "None"}</a>
-      <td>${payloadContent.fleets[i].type}</td>
-      <td>${payloadContent.fleets[i].status}</td>
-      <td><a href="/esi/ui/waypoint/${payloadContent.fleets[i].fc.location.id}">${payloadContent.fleets[i].location || "Unknown"}</a></td>
-      <td>${payloadContent.fleets[i].members.length}</td>
-      <td><a href="/commander/${payloadContent.fleets[i].id}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
-    </tr>
-  	`
-  }
-
-  cb(`
-      <!-- Page Content -->
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
       <div class="page-content">
         <div class="page-header">
           <div class="container-fluid">
@@ -53,7 +16,7 @@ for (var i = 0; i < payloadContent.fleets.length; i++) {
                 <form action="/commander" method="POST" role="form">
                   <div class="vertical-input-group">
                     <div class="input-group">
-                      <span class="input-group-addon">Fleet Boss: ${payloadContent.user.name}</span>
+                      <span class="input-group-addon">Fleet Boss: Caitlin Viliana</span>
                       <input type="text" name="url" class="form-control" autocomplete="off" placeholder="https://esi.tech.ccp.is/v1/fleets/...../?datasource=tranquility" style="max-width:45%" autofocus required/>
                       <select name="type" class="form-control dropdown">
                         <option value="Vanguards">Vanguards</option>
@@ -84,7 +47,18 @@ for (var i = 0; i < payloadContent.fleets.length; i++) {
                         </tr>
                       </thead>
                       <tbody>
-                      ${fleets}
+                        {% for fleet in fleets %}
+                        <tr>
+                          <td><img src="https://image.eveonline.com/Character/{{ fleet.fc.characterID}}_32.jpg" alt="FCs Avatar"></td>
+                          <td><a href="/esi/ui/info/{{ fleet.fc.characterID}}">{{ fleet.fc.name }}</a></td>
+                          <td><a href="/esi/ui/info/{{ fleet.backseat.characterID }}">{{ fleet.backseat.characterID }}</a>
+                          <td>{{ fleet.type }}</td>
+                          <td>{{ fleet.status }}</td>
+                          <td><a href="/esi/ui/waypoint/{{ fleet.fc.location.id }}">{{ fleet.fc.location.name }}</a></td>
+                          <td>{{ fleet.members.length }}</td>
+                          <td><a href="/commander/{{ fleet.id }}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
+                        </tr>
+                        {% endfor %}
                       </tbody>
                     </table>
                   </div>
@@ -93,6 +67,4 @@ for (var i = 0; i < payloadContent.fleets.length; i++) {
             </div>
           </div>
         </section>
-  `)
-
-}
+{%- include "./partials/footer.njk" %}

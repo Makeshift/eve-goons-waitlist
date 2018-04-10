@@ -1,424 +1,41 @@
-var template = require('./template.js');
-var path = require('path');
-var setup = require('./setup.js');
-var bans = require('./bans.js')(setup);
-var fleets = require('./fleets.js')(setup);
-var users = require('./users.js')(setup);
-var esi = require('eve-swagger');
-var refresh = require('passport-oauth2-refresh');
-var cache = require('./cache.js')(setup);
-var waitlist = require('./globalWaitlist.js')(setup);
-const log = require('./logger.js')(module);
+var express = require('express');
+var router = express.Router();
+var pages_controller = require('./controllers/pagesController.js');
+var commander_controller = require('./controllers/commanderController.js')
+var fleet_management_controller = require('./controllers/fleetManagementController.js')
+var admin_bans_controller = require('./controllers/adminbansController.js')
+var admin_fcs_controller = require('./controllers/adminCommandersController.js')
 
-module.exports = function (app, setup) {
-	app.get('/', function (req, res) {
-		if (req.isAuthenticated()) {
-			//Grab all fleets
-			fleets.getFCPageList(function (fleets) {
-				if (!fleets) {
-					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
-					return;
-				}
-				var page = {
-					template: "publicWaitlist",
-					sidebar: {
-						selected: 1,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleets: fleets
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
-			});
-		} else {
-			res.sendFile(path.normalize(`${__dirname}/public/index.html`));
-		}
-	});
-
-	app.post('/', function (req, res) {
-		if (req.isAuthenticated()) {
-			var alt = false;
-			if (req.user.name != req.body.name) {
-				esi.characters.search.strict(req.body.name).then(function (results) {
-					//This can be a user later
-					alt = {
-						name: req.body.name,
-						id: results[0],
-						avatar: "http://image.eveonline.com/Character/" + results[0] + "_128.jpg"
-					};
-					submitAddition();
-				}).catch(function (err) {
-					log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-					res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
-				})
-			} else {
-				submitAddition();
-			}
-
-			function submitAddition() { //Functionception
-				var userAdd = {
-					name: req.body.name,
-					alt: alt,
-					user: req.user,
-					ship: req.body.ship,
-					signupTime: Date.now()
-				}
-				waitlist.addToWaitlist(userAdd, function () {
-					res.redirect(`/?info=Character ${req.body.name} added to waitlist.`);
-				});
-			}
-		}
-	});
-
-	app.get('/remove', function (req, res) {
-		if (req.isAuthenticated()) {
-			waitlist.selfRemove(req.user.characterID, function () {
-				res.redirect('/')
-			})
-		}
-	})
-
-	app.get('/logout', function (req, res) {
-		req.logout();
-		res.redirect('/');
-	});
-
-	/*app.get('/waitlist', function (req, res) {
-		if (req.isAuthenticated()) {
-			res.send(JSON.stringify(req.user, null, 4) + "<br><br><a href='/logout'>Log out</a>");
-		} else {
-			res.redirect('/');
-		}
-	});*/
-
-	app.get('/commander/', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.getFCPageList(function (fleets) {
-				if (!fleets) {
-					res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
-					return;
-				}
-				var page = {
-					template: "fcFleetList",
-					sidebar: {
-						selected: 5,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleets: fleets
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	});
-
-
-	app.post('/commander/', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			users.getLocation(req.user, function (location) {
-				var fleetid = 0;
-				try {
-					fleetid = req.body.url.split("fleets/")[1].split("/")[0];
-				} catch (e) { }
-
-				if (!fleetid) {
-					res.status(400).send("Fleet ID unable to be parsed. Did you click fleets -> *three buttons at the top left* -> Copy fleet URL?<br><br><a href='/commander/'>Go back</a>")
-					return;
-				}
-
-				fleets.getMembers(req.user.characterID, req.user.refreshToken, fleetid, null, function (members) {
-					if (members===null) {
-						log.warn('routes.post /commander/, empty members. Cannot register fleet', { fleetid, characterID: req.user.characterID });
-						res.status(409).send("Empty fleet or other error" + "<br><br><a href='/commander'>Go back</a>")
-						return;
-					}
-					var fleetInfo = {
-						fc: req.user,
-						backseat: {},
-						type: req.body.type,
-						status: "Not Listed",
-						location: location.name,
-						members: members,
-						url: req.body.url,
-						id: fleetid,
-						comms: { name: setup.fleet.comms[0].name, url: setup.fleet.comms[0].url },
-						errors: 0
-					}
-					fleets.register(fleetInfo, function (success, errTxt) {
-						if (!success) {
-							res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
-						} else {
-							res.redirect(302, '/commander/')
-						}
-					});
-				})
-			})
-
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	});
-
-	app.get('/commander/:fleetid/', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.get(req.params.fleetid, function (fleet) {
-				if (!fleet) {
-					res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
-					return;
-				}
-				var page = {
-					template: "fcFleetManage",
-					sidebar: {
-						selected: 5,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						user: req.user,
-						fleet: fleet
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	});
-
-	app.get('/commander/:fleetid/invite/:characterID/:tableID', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.get(req.params.fleetid, function (fleet) {
-				fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function () {
-					res.redirect(302, '/commander/' + req.params.fleetid);
-				});
-				waitlist.setAsInvited(req.params.tableID);
-			})
-
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	});
-
-	app.get('/commander/:fleetid/remove/:tableID', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			waitlist.remove(req.params.tableID, function () {
-				res.redirect(302, '/commander/' + req.params.fleetid);
-			});
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
-	app.get('/commander/:fleetid/delete', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.delete(req.params.fleetid, function () {
-				res.redirect('/commander/');
-			});
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-
-	})
-	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/comms', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateComms(req.params.fleetid, { name: req.body.name, url: req.body.url }, function () {
-				res.redirect('/commander/' + req.params.fleetid);
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
-	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/type', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateType(req.params.fleetid, req.body.type, function () {
-				res.redirect('/commander/' + req.params.fleetid);
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
-	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/status', function (req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateStatus(req.params.fleetid, req.body.status, function () {
-				res.redirect('/commander/' + req.params.fleetid);
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
-	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/commander', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateFC(req.params.fleetid, req.user, function() {
-				res.redirect('/commander/'+req.params.fleetid);
-			});
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-})
-
-	//TODO: DO VALIDATION ON THIS ENDPOINT
-	app.post('/commander/:fleetid/update/backseat', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-			fleets.updateBackseat(req.params.fleetid, req.user, function() {
-				res.redirect('/commander/'+req.params.fleetid);
-			});
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
-	app.get('/admin/bans', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			bans.getBans(function(activeBans) {
-				var page = {
-					template: "adminBan",
-					sidebar: {
-						selected: 7,
-						user: req.user
-					},
-					header: {
-						user: req.user
-					},
-					content: {
-						banList: activeBans
-					}
-				}
-				template.pageGenerate(page, function (generatedPage) {
-					res.send(generatedPage);
-				})
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page");
-		}
-	})
+	//Index pages & user waitlist functions
+	router.get('/', pages_controller.index);
+	router.post('/', pages_controller.joinWaitlist);
+	router.get('/remove', pages_controller.removeSelf);
+	router.get('/logout', pages_controller.logout);
 	
-	app.post('/admin/bans', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			esi.characters.search.strict(req.body.pilotName).then(function (results) {
-				var banObject = {
-					characterID: results[0],
-					pilotName: req.body.pilotName,
-					banType: req.body.type,
-					notes: req.body.notes,
-					banAdmin: req.user,
-					createdAt: Date.now(),
-					deletedAt: {} 
-				}
-				
-				bans.register(banObject, function (success, errTxt) {
-					if (!success) {
-						res.status(409).send(errTxt + "<br><br><a href='/admin/bans'>Go back</a>")
-					} else {
-						res.redirect(302, '/admin/bans');
-					}
-				});
-			}).catch(function (err) {
-				log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-				res.redirect(`/admin/bans?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
-			})
-		}
-	})
+	//Fleets (List and Register)
+	router.get('/commander', commander_controller.index);
+	router.post('/commander', commander_controller.registerFleet);
 
-	//Soft Delete a ban with a given banID 
-	app.get('/admin/bans/:banID', function(req, res) {
-		if(req.isAuthenticated() && req.user.roleNumeric > 4) {
-			var banID = req.params.banID;
-			var banAdmin = req.user.name;
+	//FC Waitlist Management
+	router.get('/commander/:fleetid/', fleet_management_controller.index);
+	router.get('/commander/:fleetid/invite/:characterID/:tableID', fleet_management_controller.invitePilot);
+	router.get('/commander/:fleetid/remove/:tableID', fleet_management_controller.removePilot);
+	router.get('/commander/:fleetid/delete', fleet_management_controller.closeFleet);
+	router.post('/commander/:fleetid/update/comms', fleet_management_controller.updateComms);//TODO: DO VALIDATION ON THIS ENDPOINT
+	router.post('/commander/:fleetid/update/type', fleet_management_controller.updateType);//TODO: DO VALIDATION ON THIS ENDPOINT
+	router.post('/commander/:fleetid/update/status', fleet_management_controller.updateStatus);//TODO: DO VALIDATION ON THIS ENDPOINT
+	router.post('/commander/:fleetid/update/commander', fleet_management_controller.updateCommander);//TODO: DO VALIDATION ON THIS ENDPOINT
+	router.post('/commander/:fleetid/update/backseat', fleet_management_controller.updateBackseat);////TODO: DO VALIDATION ON THIS ENDPOINT
 
-			bans.revokeBan(banID, banAdmin, function() {
-				res.redirect('/admin/bans');
-			});
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
-		}
-	})
+	router.get('/admin/bans', admin_bans_controller.index);
+	router.post('/admin/bans', admin_bans_controller.createBan);
+	router.get('/admin/bans/:banID', admin_bans_controller.revokeBan);
 
-	app.get('/admin/commanders', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			var userProfile = {};
-			if (typeof req.query.user != "undefined") {
-				users.findAndReturnUser(Number(req.query.user), function(profile) {
-					userProfile = profile;
-					genPage();
-				})
-			} else {
-				genPage();
-			}
-			
-			function genPage() {
-				users.getFCList(function(fcList) {
-					var page = {
-						template: "adminFC",
-						sidebar: {
-							selected: 7,
-							user: req.user
-						},
-						header: {
-							user: req.user
-						},
-						content: {
-							user: req.user,
-							fcs: fcList,
-							manageUser: userProfile
-						}
-					}
-
-					template.pageGenerate(page, function(generatedPage) {
-						res.send(generatedPage)
-					})
-				});
-			}
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
-		}
-
-	});
+	router.get('/admin/commanders', admin_fcs_controller.index);
+	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
 	
-	app.post('/admin/commanders/update', function(req, res) {
-		if (req.isAuthenticated() && req.user.roleNumeric > 4) {
-			esi.characters.search.strict(req.body.pilotName).then(function (results) {
-				users.updateUserPermission(results[0], req.body.permission, req.user, res)
-				{
-					res.redirect('/admin/commanders');
-				}
-			}).catch(function (err) {
-				log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-				res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
-			})
-		} else {
-			res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
-		}
-	})
-
 	//Set a users destination
-	app.get('/esi/ui/waypoint/:systemID', function(req, res) {
+	router.get('/esi/ui/waypoint/:systemID', function(req, res) {
 		if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
 			users.setDestination(req.user, req.params.systemID);
 		}
@@ -426,13 +43,14 @@ module.exports = function (app, setup) {
 	})
 
 	//Open the info window of an alliance, corporation or pilot.
-	app.get('/esi/ui/info/:targetID', function(req, res) {
+	router.get('/esi/ui/info/:targetID', function(req, res) {
 		if (req.isAuthenticated && typeof req.params.targetID !== "undefined") {
 			users.showInfo(req.user, req.params.targetID);
 		}
 		res.redirect('back');
 	})
-}
+
+	module.exports = router;
 
 
 

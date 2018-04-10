@@ -1,0 +1,85 @@
+{% block nav %}
+  <!-- Header Navbar -->
+  <header class="header">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid d-flex align-items-center justify-content-between">
+        <!-- Nav Brand -->
+        <div class="navbar-header">
+          <a href="/" class="navbar-brand">
+            <div class="brand-text brand-big visible text-uppercase"><strong class="text-primary">Goon</strong><strong>Incursions</strong></div>
+            <div class="brand-text brand-sm"><strong class="text-primary">G</strong><strong>I</strong></div>
+          </a>
+          <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
+        </div>
+        <!-- End Nav Brand -->
+        <!-- Right Nav Bar -->
+        <ul class="right-menu list-inline no-margin-bottom">
+          <!-- Logout -->
+          <li class="list-inline-item logout"><a id="logout" href="/logout" class="nav-link">Logout <i class="icon-logout"></i></a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  
+  <!-- Nav - Sidebar -->
+  <div class="d-flex align-items-stretch">
+    <nav id="sidebar">
+      <div class="sidebar-header d-flex align-items-center">
+        <div class="avatar"><img src="https://image.eveonline.com/Character/{{ userProfile.characterID }}_128.jpg" alt="..." class="img-fluid rounded-circle"></div>
+        <div class="title">
+          <h1 class="h5">{{ userProfile.name }}</h1>
+          <p>{{ userProfile.role }}</p>
+        </div>
+      </div>
+      <span class="heading">Pilot</span>
+        <ul class="list-unstyled">
+          <li{{  " class=active" if sideBarSelected === 1 }}><a href="/"><i class="fas fa-hourglass-half"></i> Waitlist</a></li>
+          <li{{  " class=active" if sideBarSelected === 2 }}>
+            <a href="#myaccount" aria-expanded="false" data-toggle="collapse" class="collapsed"> <i class="fa fa-user"></i> <strike>My Account <i class="fas fa-sort-down float-right"></i></a></strike>
+            <ul id="myaccount" class="collapse list-unstyled ">
+              <strike><li><a href="#">My Alts & Fits</a></strike></li>
+              <strike><li><a href="#">My Stats</a></strike></li>
+              <strike><li><a href="#">My SRP</a></strike></li>
+            </ul>
+          </li>
+          <li{{  " class=active" if sideBarSelected === 3 }}>
+            <a href="#squadtools" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> Squad Stuff <i class="fas fa-sort-down float-right"></i></a>
+            <ul id="squadtools" class="collapse list-unstyled" >
+              <li><a href="https://goonfleet.com/index.php/topic/219113-incursion-squad-tutorial-directory-read-me/" target="blank">New Pilot Guide</a></li>  
+              <li><a href="https://goonfleet.com/index.php/topic/219234-incursion-squad-fitting-directory/" target="blank">Squad Fittings</a></li>
+              <strike><li><a href="#">Squad Roles</a></strike></li>
+              <strike><li><a href="#">Squad Stats</a></strike></li>
+            </ul>
+          </li>
+          <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-link"></i> Incursion Forums</a></li>
+        </ul>
+
+        {%- if userProfile.roleNumeric > 0 %}   
+        <span class="heading">Fleet Commander</span>
+          <ul class="list-unstyled">
+            <li {{  "class=active" if sideBarSelected === 5 }}> <a href="/commander">
+              <span class="fa-layers fa-fw">
+                <i class="fas fa-hourglass-half"></i>
+                <i class="fas fa-lock-alt" data-fa-transform="shrink-6 down-2 right-4" style="color:#D6D8D9"></i>
+              </span>
+              Fleet Management</a>
+            </li>          
+            <li{{  "class=active" if sideBarSelected === 6 }}><strike><a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
+            {% if userProfile.roleNumeric > 4 %}
+            <li{{  " class=active" if sideBarSelected === 7 }}>
+              <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
+              <ul id="squadmanagement" class="collapse list-unstyled ">
+                <li><a href="/admin/bans">Ban List</a></li>
+                <li><a href="/admin/commanders">FC Management</a></li>
+                <strike><li><a href="#">White List</a></strike></li>
+              </ul>
+            </li>
+            {% endif %}
+          </ul>
+          {% endif %}
+        <hr>
+        <ul class="list-unstyled">
+          <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
+        </li>
+      </nav>
+{% endblock %}
