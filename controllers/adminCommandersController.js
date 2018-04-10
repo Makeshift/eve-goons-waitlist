@@ -1,16 +1,10 @@
-var template = require('../template.js');
 var path = require('path');
 var setup = require('../setup.js');
-var bans = require('../bans.js')(setup);
-var fleets = require('../fleets.js')(setup);
 var users = require('../users.js')(setup);
 var esi = require('eve-swagger');
-var refresh = require('passport-oauth2-refresh');
-var cache = require('../cache.js')(setup);
-var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 
-//Return the FC management page
+//Render FC Management Page
 exports.index = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 4) {
         var userProfile = {};
@@ -27,7 +21,6 @@ exports.index = function(req, res) {
         function genPage() {
 
             users.getFCList(function(fcList) {
-                var userProfile = req.user;
                 var sideBarSelected = 7;
                 var fcs = fcList;
                 var manageUser = userProfile

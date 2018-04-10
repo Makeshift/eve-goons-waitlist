@@ -1,16 +1,13 @@
 var template = require('../template.js');
 var path = require('path');
 var setup = require('../setup.js');
-var bans = require('../bans.js')(setup);
 var fleets = require('../fleets.js')(setup);
 var users = require('../users.js')(setup);
-var esi = require('eve-swagger');
 var refresh = require('passport-oauth2-refresh');
-var cache = require('../cache.js')(setup);
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 
-//Open a Fleet Management Waitlist page.
+//Render Fleet Management Page
 exports.index = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {

@@ -1,19 +1,11 @@
-var template = require('../template.js');
 var path = require('path');
 var setup = require('../setup.js');
-var bans = require('../bans.js')(setup);
 var fleets = require('../fleets.js')(setup);
-var users = require('../users.js')(setup);
 var esi = require('eve-swagger');
-var refresh = require('passport-oauth2-refresh');
-var cache = require('../cache.js')(setup);
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 
-/*
-* Calls the index page.
-* If client != user return the login page.
-*/
+//Render Index/login Page
 exports.index = function(req, res) {
     if (req.isAuthenticated()) {
         //Grab all fleets			
@@ -37,7 +29,6 @@ exports.index = function(req, res) {
             })
         });
     } else {
-        //res.sendFile(path.normalize(`${__dirname}/public/index.html`));
         res.render('login.html');
     }
 };
