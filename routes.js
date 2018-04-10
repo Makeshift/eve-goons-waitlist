@@ -3,7 +3,7 @@ var router = express.Router();
 var pages_controller = require('./controllers/pagesController.js');
 var commander_controller = require('./controllers/commanderController.js')
 var fleet_management_controller = require('./controllers/fleetManagementController.js')
-var admin_bans_controller = require('./controllers/adminbansController.js')
+var admin_bans_controller = require('./controllers/adminBansController.js')
 var admin_fcs_controller = require('./controllers/adminCommandersController.js')
 
 	//Index pages & user waitlist functions
