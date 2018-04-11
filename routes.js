@@ -19,8 +19,8 @@ var esi_controller = require('./controllers/esiController.js')
 
 	//FC Waitlist Management
 	router.get('/commander/:fleetid/', fleet_management_controller.index);
-	router.get('/commander/:fleetid/invite/:characterID/:tableID', fleet_management_controller.invitePilot);
-	router.get('/commander/:fleetid/remove/:tableID', fleet_management_controller.removePilot);
+	router.post('/commander/:fleetid/invite/:characterID/:tableID', fleet_management_controller.invitePilot);
+	router.post('/commander/:fleetid/remove/:tableID', fleet_management_controller.removePilot);
 	router.get('/commander/:fleetid/delete', fleet_management_controller.closeFleet);
 	router.post('/commander/:fleetid/update/comms', fleet_management_controller.updateComms);//TODO: DO VALIDATION ON THIS ENDPOINT
 	router.post('/commander/:fleetid/update/type', fleet_management_controller.updateType);//TODO: DO VALIDATION ON THIS ENDPOINT

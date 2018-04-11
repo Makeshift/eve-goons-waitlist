@@ -15,31 +15,12 @@ exports.index = function(req, res) {
                 res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
                 return;
             }
-
-            var page = {
-                template: "fcFleetManage",
-                sidebar: {
-                    selected: 5,
-                    user: req.user
-                },
-                header: {
-                    user: req.user
-                },
-                content: {
-                    user: req.user,
-                    fleet: fleet
-                }
-            }
-            template.pageGenerate(page, function (generatedPage) {
-                res.send(generatedPage);
-            })				
-            /*
+            
             waitlist.get(function(usersOnWaitlist) {
                 var userProfile = req.user;
                 var sideBarSelected = 5;
-                //console.log(usersOnWaitlist);
                 res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
-            })*/
+            })
         })
     } else {
         res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -50,8 +31,14 @@ exports.index = function(req, res) {
 exports.invitePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function () {
-                res.redirect(302, '/commander/' + req.params.fleetid);
+            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (response) {
+                if(response) {
+                    res.status(400);
+                    res.statusMessage = response;
+                } else {
+                    res.status(200);
+                }
+                res.send('/commander/' + req.params.fleetid);
             });
             waitlist.setAsInvited(req.params.tableID);
         })

@@ -71,10 +71,11 @@ module.exports = function (setup) {
 				throw err;
 			}
 			users.updateRefreshToken(fcid, newRefreshToken);
-			esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" });
-			if (typeof cb === "function") {
+			esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" }).then(result => {
 				cb();
-			}
+			  }).catch(error => {
+				cb(error.message);
+			  });
 		})
 	}
 

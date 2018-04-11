@@ -1,0 +1,410 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+
+<!-- Page Content -->
+      <div class="page-content">
+        <div class="page-header">
+          <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Fleet Management</h2>
+          </div>
+        </div>
+        {% if fleet.status == "Not Listed" %}
+        <div role="alert" class="alert alert-primary global-banner-inactive noselect">
+            <strong>This fleet is not listed:</strong> Pilots cannot see this fleet. If this is the only fleet pilots will be unable to join the waitlist!
+        </div>
+        {% endif %}
+        <section class="no-padding-top no-padding-bottom">
+          <div class="container-fluid">
+            <!-- Upper Fleet Panel -->
+            <div class="row">
+              <div class="col-md-6 col-sm-12">
+                <div class="statistic-block block">
+                  <div class="title">
+                    <div class="icon"></div>
+                    <strong>Fleet Info</strong>
+                  </div>
+                  <!-- Fleet Settings Table -->
+                  <table class="table table-striped table-sm">
+                    <tbody>
+                      <tr>
+                        <td>FC (Boss):</td>
+                        <td><a href="/esi/ui/info/{{ fleet.fc.characterID }}">{{ fleet.fc.name }}</a></td>
+                        <td><button class="btn btn-sm btn-block" id="updateFC">I'm the FC</button></td>
+                      </tr>
+                      <tr>
+                        <td>Backseating FC:</td>
+                        <td><a href="/esi/ui/info/{{ fleet.backseat.characterID }}">{{ fleet.backseat.name }}</a></td>
+                        <td><button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button></td>
+                      </tr>
+                      <tr>
+                        <td>Fleet Status:</td>
+                        <td>{{ fleet.status }}</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
+                            <div class="dropdown-menu" role="menu">
+                              <a class="dropdown-item" id="fleetStatus-1" href="#">Forming</a>
+                              <a class="dropdown-item" id="fleetStatus-2" href="#">Running</a>
+                              <a class="dropdown-item" id="fleetStatus-3" href="#">Docking Soon</a>
+                              <a class="dropdown-item" id="fleetStatus-4" href="#">Short Break</a>
+                              <a class="dropdown-item" id="fleetStatus-5" href="#">Not Listed</a>       
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Fleet Type:</td>
+                        <td>{{ fleet.type }}</td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
+                            <div class="dropdown-menu" role="menu">
+                              <a class="dropdown-item" id="fleetTypeButton-0" href="#">Scouts</a>
+                              <a class="dropdown-item" id="fleetTypeButton-1" href="#">Vanguards</a>
+                              <a class="dropdown-item" id="fleetTypeButton-2" href="#">Assaults</a>
+                              <a class="dropdown-item" id="fleetTypeButton-3" href="#">Headquarters</a>
+                              <a class="dropdown-item" id="fleetTypeButton-4" href="#">Kundalini</a>
+                              <a class="dropdown-item" id="fleetTypeButton-5" href="#">ARSEFleet</a>        
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Fleet Comms:</td>
+                        <td><a href="{{ fleet.comms.url }}">{{ fleet.comms.name }}</a></td>
+                        <td>
+                          <div class="dropdown">
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
+                            <div class="dropdown-menu" role="menu">
+                              <script>function post(path, params) {
+                                    var form = document.createElement("form");
+                                    form.setAttribute("method", "post");
+                                    form.setAttribute("action", path);
+                                    for(var key in params) {
+                                        if(params.hasOwnProperty(key)) {
+                                            var hiddenField = document.createElement("input");
+                                            hiddenField.setAttribute("type", "hidden");
+                                            hiddenField.setAttribute("name", key);
+                                            hiddenField.setAttribute("value", params[key]);
+                                            form.appendChild(hiddenField);
+                                        }
+                                    }
+                                    document.body.appendChild(form);
+                                    form.submit();
+                                }
+                                </script>
+                                <a id="commsbutton-1" class="dropdown-item">Incursions -> B</a>
+                                <script>
+                                    document.getElementById("commsbutton-1").addEventListener("click", function () {
+                                    post("/commander/1090111424590/update/comms", {name: "Incursions -> B", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20B?title=Goonfleet&version=1.2.0"});
+                                    });
+                                </script>
+                                
+                                <a id="commsbutton-2" class="dropdown-item">Incursions -> C</a>
+                                <script>
+                                    document.getElementById("commsbutton-2").addEventListener("click", function () {
+                                    post("/commander/1090111424590/update/comms", {name: "Incursions -> C", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20C?title=Goonfleet&version=1.2.0"});
+                                    });
+                                </script>
+                                
+                                <a id="commsbutton-3" class="dropdown-item">Incursions -> D</a>
+                                <script>
+                                    document.getElementById("commsbutton-3").addEventListener("click", function () {
+                                    post("/commander/1090111424590/update/comms", {name: "Incursions -> D", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20D?title=Goonfleet&version=1.2.0"});
+                                    });
+                                </script>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Fleet System:</td>
+                        <td><a href="/esi/ui/waypoint/{{ fleet.fc.location.id }}">{{ fleet.fc.location.name }}</a></td>
+                        <td><button class="btn btn-sm btn-danger btn-block" data-toggle="modal" data-target="#fleetActions" accesskey="A"><i class="fas fa-exclamation-triangle"></i> More Actions <i class="fas fa-exclamation-triangle"></i></button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- End Upper Fleet Panel -->
+              <!-- Fleet Comp Overview -->              
+              <div class="col-md-6 col-sm-12">
+                <div class="statistic-block block">
+                  <div>
+                      <strong>Fleet at a Glance</strong>
+                    <div class="tab-content">
+                      <div role="tabpanel" class="tab-pane active" id="tab-1">
+                        <table class="table table-striped table-sm">
+                          <tbody>
+                            <tr>
+                                <td class="tw35"><img src="https://image.eveonline.com/Render/37460_32.png" alt="Ship Icon"></td>
+                                <td class="tw20per"><a href="#">Scalpel</a>
+                                <td>1</td>
+                                <td class="tw35"><img src="https://image.eveonline.com/Render/37480_32.png" alt="Ship Icon"></td>
+                                <td class="tw20per"><a href="#">Bifrost</a>
+                                <td>1</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Waitlist Section -->
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <div class="statistic-block block">
+                
+                <!-- Waitlist Navigation Tabs -->
+                <div>
+                <ul class="nav nav-pills nav-justified">
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active"><div id="fleetWaitlistCount" class="badge badge-dark">{{ usersOnWaitlist.length }}</div> Fleet Waitlist</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link"><div class="badge badge-dark">{{ fleet.members.length }}</div> Fleet Comp</a></li>
+                </ul>
+                <div class="tab-content">
+                <!-- Fleet Waitlist -->
+                  <div role="tabpanel" class="tab-pane fade show active" id="waitlist">                
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th class="tw30"></th>
+                          <th class="tw20per">Name</th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw80">Fits</th>
+                          <th>System</th>
+                          <th>Wait Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for user in usersOnWaitlist %}
+                        {% if user.alt == false %}
+                        <tr id="row-{{ user._id }}" class="{{ user.invited }}">
+                          <td>
+                            <img src="https://image.eveonline.com/Character/{{ user.user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
+                          </td>
+                          <td>
+                            <a href="/esi/ui/info/{{ user.user.characterID }}">{{ user.user.name }}</a>
+                            <p><strike>Newbee</strike></p>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm" id="{{ user._id }}"  onclick="invitePilot({{ user.user.characterID }});" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
+                                <div class="dropdown-menu" role="menu">
+                                  <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                  <a class="dropdown-item" href="#">View Pilot Skills</a>
+                                </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm" id="{{ user._id}}" onclick="removePilot()" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          </td>
+                          <td>
+                            <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
+                          </td>
+                          <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
+                          <td>40H 29M</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    <!-- End Fleet Waitlist -->
+                    
+                    <hr />
+                    
+                    <!-- Alt Waitlist -->
+                    <table class="table table-striped table-hover table-sm">
+                      <thead>
+                        <tr>
+                          <th class="tw30 text-right">Alt</th>
+                          <th class="tw20per">Name // Main in Fleet</th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw30"></th>
+                          <th class="tw80">Fits</th>
+                          <th>System</th>
+                          <th>Wait Time</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for user in usersOnWaitlist %}
+                        {% if user.alt != false %}
+                        <tr id="row-{{ user._id }}" class="{{ user.invited }}">
+                          <td>
+                            <img id="avatar-{{ user._id }}" src="https://image.eveonline.com/Character/{{ user.alt.id }}_64.jpg" style="height:75%" alt="avatar" data-toggle="tooltip" title=""> 
+                          </td>
+                          <td>
+                            <a href="/esi/ui/info/{{ user.alt.id }}">{{ user.alt.name }}</a>
+                            <p>Alt of: {{ user.user.name }}</p>
+                          </td>
+                          <td>
+                            <button class="btn btn-success btn-sm" id="{{ user._id }}"  onclick="invitePilot({{ user.alt.id }});" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                            <!--<a href="/commander/{{ fleet.id }}/invite/{{ user.alt.id }}/{{ user._id }}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>-->
+                          </td>
+                          <td>
+                            <div class="dropdown">
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
+                                <div class="dropdown-menu" role="menu">
+                                  <a class="dropdown-item" href="#">View Pilot Profile</a>
+                                  <a class="dropdown-item" href="#">View Pilot Skills</a>
+                                </div>
+                            </div>
+                          </td>
+                          <td>
+                            <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          </td>
+                          <td>
+                            <button class="btn btn-danger btn-sm" id="{{ user._id}}" onclick="removePilot()" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          </td>
+                          <td>
+                            <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
+                          </td>
+                          <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
+                          <td>40H 29M</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- End Alt Waitlist -->
+                  <!-- Fleetlist -->
+                  <div role="tabpanel" class="tab-pane fade" id="fleetlist">
+                  Todo
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- End Waitlist Section -->
+        </div>
+      </section>
+    <!-- Waitlist Action Buttons -->
+    <div class="modal fade" id="fleetActions">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Fleet Actions</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+                <p class="d-block">These buttons can break things, use them with care!</p>
+                <form class="mb-2" action="/commander/{{ fleet.id }}/delete">
+                    <button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
+                </form>
+                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">Clear the Waitlist!</button>        
+                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">I need an Adult!</button>
+            </div>
+        </div>
+    </div>
+    <!-- End Waitlist Action Buttons -->
+
+<!-- Waitlist Scripts -->
+<script>
+    document.getElementById("updateFC").addEventListener("click", function () {
+      post("/commander/{{ fleet.id }}/update/commander", {status: "undefined"});
+    });
+
+    document.getElementById("updateBackseat").addEventListener("click", function () {
+      post("/commander/{{ fleet.id }}/update/backseat", {status: "undefined"});
+    });
+
+    //Update Fleet Status
+    document.getElementById("fleetStatus-1").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/status", {status: "Forming"});
+    });
+
+    document.getElementById("fleetStatus-2").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/status", {status: "Running"});
+    });
+
+    document.getElementById("fleetStatus-3").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/status", {status: "Docking Soon"});
+    });
+
+    document.getElementById("fleetStatus-4").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/status", {status: "Short Break"});
+    });
+
+    document.getElementById("fleetStatus-5").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/status", {status: "Not Listed"});
+    });
+
+    //Update Fleet Type
+    document.getElementById("fleetTypeButton-0").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "Scouts"});
+    });
+
+    document.getElementById("fleetTypeButton-1").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "Vanguards"});
+    });
+
+    document.getElementById("fleetTypeButton-2").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "Assaults"});
+    });
+
+    document.getElementById("fleetTypeButton-3").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
+    });
+
+    document.getElementById("fleetTypeButton-4").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
+    });
+
+    document.getElementById("fleetTypeButton-5").addEventListener("click", function () {
+        post("/commander/{{ fleet.id }}/update/type", {type: "ARSEFleet"});
+    });
+    
+    //Invite a pilot to the fleet
+    function invitePilot(characterID) {
+        var dbRowID = event.target.id;
+        var rowClass = "#row-"+event.target.id;
+        var count = Number($("#fleetWaitlistCount").text());
+        
+        $(rowClass).removeClass().addClass("invite-pending");
+        
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID}).done(function() {
+                $(rowClass).removeClass().addClass("invite-sent");
+                $("#fleetWaitlistCount").text(count-1);
+        }).fail(function(text) {
+            $(rowClass).removeClass().addClass("invite-sent");
+            $(rowClass).removeClass().addClass("invite-failed");
+        });
+    }
+
+    //Remove a pilot from the waitlist
+        function removePilot() {
+            var dbRowID = event.target.id;
+            var rowClass = "#row-"+event.target.id;
+            var count = Number($("#fleetWaitlistCount").text());
+
+            $.ajax({
+                type: "POST",
+                url: "/commander/{{ fleet.id }}/remove/"+dbRowID
+            });
+
+            $(rowClass).removeClass().addClass("invite-failed");
+            setTimeout(function(){
+                if ($(rowClass).length > 0) {
+                    $(rowClass).remove();
+                    $("#fleetWaitlistCount").text(count-1);
+                }
+            }, 5000)     
+        }
+</script>
+{%- include "./partials/footer.njk" %}
