@@ -5,6 +5,7 @@ var commander_controller = require('./controllers/commanderController.js')
 var fleet_management_controller = require('./controllers/fleetManagementController.js')
 var admin_bans_controller = require('./controllers/adminBansController.js')
 var admin_fcs_controller = require('./controllers/adminCommandersController.js')
+var esi_controller = require('./controllers/esiController.js')
 
 	//Index pages & user waitlist functions
 	router.get('/', pages_controller.index);
@@ -34,76 +35,10 @@ var admin_fcs_controller = require('./controllers/adminCommandersController.js')
 	router.get('/admin/commanders', admin_fcs_controller.index);
 	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
 	
-	//Set a users destination
-	router.get('/esi/ui/waypoint/:systemID', function(req, res) {
-		if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
-			users.setDestination(req.user, req.params.systemID);
-		}
-		res.redirect('back');
-	})
 
-	//Open the info window of an alliance, corporation or pilot.
-	router.get('/esi/ui/info/:targetID', function(req, res) {
-		if (req.isAuthenticated && typeof req.params.targetID !== "undefined") {
-			users.showInfo(req.user, req.params.targetID);
-		}
-		res.redirect('back');
-	})
+	/* make these POST requests at some point */
+	//Interacts with the users client via ESI.
+	router.get('/esi/ui/waypoint/:systemID', esi_controller.waypoint);
+	router.get('/esi/ui/info/:targetID', esi_controller.showInfo);
 
 	module.exports = router;
-
-
-
-
-		/*var exampleUser = {
-				 avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
-				 name: "Caitlin Viliana",
-				 role: "Fleet Commander",
-				 relatedChars: [{
-				   avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
-				   name: "Makeshift Storque",
-				   registrationDate: "YYYY-MM-DD"
-				 },{
-				   avatar: "http://image.eveonline.com/Character/96304094_128.jpg",
-				   name: "Experianta",
-				   registrationDate: "YYYY-MM-DD"
-				 }],
-				 registrationDate: "YYYY-MM-DD",
-				 notes: "Is a bit of a wanker",
-				 ships: [{
-					image: "https://image.eveonline.com/Render/17738_32.png",
-					name: "Machariel",
-					addedOn: "YYYY-MM-DD",
-					lastUsed: "5 days ago",
-					fit: "[]"
-				 }, {
-					image: "https://image.eveonline.com/Render/17738_32.png",
-					name: "Machariel",
-					addedOn: "YYYY-MM-DD",
-					lastUsed: "10 days ago",
-					fit: "[]"
-				 }],
-				 statistics: {
-					hoursInFleet: 10,
-					iskMade: "One beelion dollars",
-					noOfDeaths: 2,
-					srpRequests: 2,
-					kickedFromFleet: 5,
-					sites: {
-					  headquarters: 100,
-					  assaults: 50,
-					  vanguards: 5,
-					  fc: 30
-					}
-				 },
-				 notifications: [
-				 {
-				 	text: "Invited to Fleet",
-				  	time: "YYY-MM-DD HH:mm:ss"
-				 },
-				 {	
-				 	text: "Focus ended: 1DQ1-A",
-				  	time: "YYY-MM-DD HH:mm:ss"
-				  }
-				 ]
-			 };*/
