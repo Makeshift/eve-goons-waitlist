@@ -5,7 +5,7 @@ var commander_controller = require('./controllers/commanderController.js')
 var fleet_management_controller = require('./controllers/fleetManagementController.js')
 var admin_bans_controller = require('./controllers/adminBansController.js')
 var admin_fcs_controller = require('./controllers/adminCommandersController.js')
-var esi_controller = require('./controllers/esiController.js')
+var api_controller = require('./controllers/apiController.js')
 
 	//Index pages & user waitlist functions
 	router.get('/', pages_controller.index);
@@ -37,7 +37,9 @@ var esi_controller = require('./controllers/esiController.js')
 	
 
 	//Interacts with the users client via ESI.
-	router.post('/esi/ui/waypoint/:systemID', esi_controller.waypoint);
-	router.post('/esi/ui/info/:targetID', esi_controller.showInfo);
+	router.post('/esi/ui/waypoint/:systemID', api_controller.waypoint);
+	router.post('/esi/ui/info/:targetID', api_controller.showInfo);
 
+	//App API endpoints
+	router.post('/internal-api/fleetcomp/:fleetid', api_controller.fleetAtAGlance);
 	module.exports = router;

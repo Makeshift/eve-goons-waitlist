@@ -27,7 +27,7 @@ exports.index = function(req, res) {
                     }
                     usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
                 }
-                
+
                 var userProfile = req.user;
                 var sideBarSelected = 5;
                 res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});

@@ -133,19 +133,8 @@
                   <div>
                       <strong>Fleet at a Glance</strong>
                     <div class="tab-content">
-                      <div role="tabpanel" class="tab-pane active" id="tab-1">
-                        <table class="table table-striped table-sm">
-                          <tbody>
-                            <tr>
-                                <td class="tw35"><img src="https://image.eveonline.com/Render/37460_32.png" alt="Ship Icon"></td>
-                                <td class="tw20per"><a href="#">Scalpel</a>
-                                <td>1</td>
-                                <td class="tw35"><img src="https://image.eveonline.com/Render/37480_32.png" alt="Ship Icon"></td>
-                                <td class="tw20per"><a href="#">Bifrost</a>
-                                <td>1</td>
-                            </tr>
-                          </tbody>
-                        </table>
+                      <div role="tabpanel" class="tab-pane active" id="fleetAtAGlance">
+                        <i id="fleetAtAGlanceLoading" class="fal fa-spinner-third fa-3x fa-spin d-block my-3" style="margin-left:auto;margin-right:auto;"></i>
                       </div>
                     </div>
                   </div>
@@ -309,10 +298,20 @@
             </div>
         </div>
     </div>
-    <!-- End Waitlist Action Buttons -->
 
 <!-- Waitlist Scripts -->
 <script>
+    //On page load
+    $( document ).ready(function() {
+      updateFleetGlance();
+    });
+
+    //Start Timer
+    setInterval(function()
+    { 
+      updateFleetGlance();
+    }, 30000);//Every 30 seconds
+
     document.getElementById("updateFC").addEventListener("click", function () {
       post("/commander/{{ fleet.id }}/update/commander", {status: "undefined"});
     });
@@ -407,7 +406,20 @@
         }, 5000)     
     }
 
-    //Open the show info window for a pilot, corp or alliance.
-    
+    function updateFleetGlance() {
+      $.ajax({
+        type:"POST",
+        url:"/internal-api/fleetcomp/{{fleet.id}}",
+        datatype:"HTML",
+        success:function(data)
+        {
+           $( "#fleetAtAGlance" ).empty();
+           $( "#fleetAtAGlance" ).append(data);
+        }
+      }).fail(function(err) {
+        console.log("Faied to update fleet at a glance: ",err);
+      });
+    }
+
 </script>
 {%- include "./partials/footer.njk" %}
