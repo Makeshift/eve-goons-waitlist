@@ -11,27 +11,25 @@ const log = require('../logger.js')(module);
 exports.index = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            if (!fleet) {
-                res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
-                return;
-            }
-            
-            waitlist.get(function(usersOnWaitlist) {
-                //Display the wait time in a nice format.
-                for(var i = 0; i < usersOnWaitlist.length; i++) {
-                    var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
-                    var signupHours = 0;
-                    while (signuptime > 59) {
-                        signuptime -= 60;
-                        signupHours++;
+            if (fleet) {
+                waitlist.get(function(usersOnWaitlist) {
+                    //Display the wait time in a nice format.
+                    for(var i = 0; i < usersOnWaitlist.length; i++) {
+                        var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+                        var signupHours = 0;
+                        while (signuptime > 59) {
+                            signuptime -= 60;
+                            signupHours++;
+                        }
+                        usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
                     }
-                    usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
-                }
 
-                var userProfile = req.user;
-                var sideBarSelected = 5;
-                res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
-            })
+                    var sideBarSelected = 5;
+                    res.render('fcFleetManage.njk', {req.user, sideBarSelected, fleet, usersOnWaitlist});
+                })
+            } else { 
+                res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
+            }
         })
     } else {
         res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
@@ -42,15 +40,15 @@ exports.index = function(req, res) {
 exports.invitePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (response) {
-                if(response) {
-                    res.status(400);
-                    res.statusMessage = response;
+            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
+                if(status == 200) {
+                    waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
+                        res.status(invStatus).send(invResponse);
+                    });
+                    
                 } else {
-                    waitlist.setAsInvited(req.params.tableID);
-                    res.status(200);
+                    res.status(status).send(response)
                 }
-                res.send('/commander/' + req.params.fleetid);
             });
            
         })
@@ -63,8 +61,8 @@ exports.invitePilot = function(req, res) {
 //Remove a specific pilot from the waitlist
 exports.removePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-        waitlist.remove(req.params.tableID, function () {
-            res.redirect(302, '/commander/' + req.params.fleetid);
+        waitlist.remove(req.params.tableID, function (status, response) {
+            res.status(status).send(response);
         });
     } else {
         res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");

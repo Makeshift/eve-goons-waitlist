@@ -207,12 +207,16 @@ module.exports = function (setup) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("module.setDestination: Error for requestNewAccessToken", { err, user });
+				cb(err);
+			} else {
+				log.debug("Setting "+user.name+"\'s destination to "+systemID);
+				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
+					cb("OK");
+				}.catch(err => {
+					log.error("users.setDestination: ", { err });
+					cb(err);
+				});
 			}
-			//users.updateRefreshToken(user.characterID, newRefreshToken);
-			esi.characters(user.characterID, accessToken).autopilot.destination(systemID).catch(err => {
-				log.error("users.setDestination: ", { err });
-			});
-			log.debug("Setting "+user.name+"\'s destination to "+systemID);
 		})
 	}
 
@@ -221,12 +225,17 @@ module.exports = function (setup) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("module.showInfo: Error for requestNewAccessToken", { err, user });
+				cb(err)
+			} else {
+				log.debug("Opening "+targetID+"\'s information window for "+user.name)
+				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
+					cb("OK");
+				}.catch(err => {
+					log.error("users.showInfo: ", { err });
+					cb(err)
+				});
+				
 			}
-			//users.updateRefreshToken(user.characterID, newRefreshToken);
-			esi.characters(user.characterID, accessToken).window.info(targetID).catch(err => {
-				log.error("users.showInfo: ", { err });
-			});
-			log.debug("Opening "+targetID+"\'s information window for "+user.name)
 		})
 	}
 	
