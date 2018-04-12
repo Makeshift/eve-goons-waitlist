@@ -39,6 +39,14 @@
               url: "/esi/ui/info/"+targetID
             });
         }
+
+      //Sets a waypoint
+      function setWaypoint(systemID) {
+          $.ajax({
+              type: "POST",
+              url: "/esi/ui/waypoint/"+systemID
+          });
+      }
     </script>
   </body>
 </html>

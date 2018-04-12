@@ -54,7 +54,7 @@
                           <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
                           <td>{{ fleet.type }}</td>
                           <td>{{ fleet.status }}</td>
-                          <td><a href="/esi/ui/waypoint/{{ fleet.fc.location.id }}">{{ fleet.fc.location.name }}</a></td>
+                          <td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.fc.location.id }})">{{ fleet.fc.location.name }}</a></td>
                           <td>{{ fleet.members.length }}</td>
                           <td><a href="/commander/{{ fleet.id }}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
                         </tr>

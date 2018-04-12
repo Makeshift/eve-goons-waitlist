@@ -36,9 +36,8 @@ var esi_controller = require('./controllers/esiController.js')
 	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
 	
 
-	/* make these POST requests at some point */
 	//Interacts with the users client via ESI.
-	router.get('/esi/ui/waypoint/:systemID', esi_controller.waypoint);
+	router.post('/esi/ui/waypoint/:systemID', esi_controller.waypoint);
 	router.post('/esi/ui/info/:targetID', esi_controller.showInfo);
 
 	module.exports = router;
