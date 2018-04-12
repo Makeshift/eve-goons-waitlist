@@ -35,7 +35,7 @@ module.exports = function (setup) {
 	}
 
 	module.setAsInvited = function (tableID, cb) {
-		db.updateOne({ '_id': ObjectId(tableID) }, { $set: { "invited": true } }, function (err, result) {
+		db.updateOne({ '_id': ObjectId(tableID) }, { $set: { "invited": "invite-sent" } }, function (err, result) {
 			if (err) log.error("setAsInvited: Error for db.updateOne", { err, '_id': ObjectId(tableID) });
 			if (typeof cb === "function") cb();
 		})

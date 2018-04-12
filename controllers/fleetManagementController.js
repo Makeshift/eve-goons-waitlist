@@ -17,6 +17,17 @@ exports.index = function(req, res) {
             }
             
             waitlist.get(function(usersOnWaitlist) {
+                //Display the wait time in a nice format.
+                for(var i = 0; i < usersOnWaitlist.length; i++) {
+                    var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+                    var signupHours = 0;
+                    while (signuptime > 59) {
+                        signuptime -= 60;
+                        signupHours++;
+                    }
+                    usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                }
+                
                 var userProfile = req.user;
                 var sideBarSelected = 5;
                 res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
@@ -36,11 +47,12 @@ exports.invitePilot = function(req, res) {
                     res.status(400);
                     res.statusMessage = response;
                 } else {
+                    waitlist.setAsInvited(req.params.tableID);
                     res.status(200);
                 }
                 res.send('/commander/' + req.params.fleetid);
             });
-            waitlist.setAsInvited(req.params.tableID);
+           
         })
 
     } else {

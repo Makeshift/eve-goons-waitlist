@@ -28,12 +28,12 @@
                     <tbody>
                       <tr>
                         <td>FC (Boss):</td>
-                        <td><a href="/esi/ui/info/{{ fleet.fc.characterID }}">{{ fleet.fc.name }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
                         <td><button class="btn btn-sm btn-block" id="updateFC">I'm the FC</button></td>
                       </tr>
                       <tr>
                         <td>Backseating FC:</td>
-                        <td><a href="/esi/ui/info/{{ fleet.backseat.characterID }}">{{ fleet.backseat.name }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a></td>
                         <td><button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button></td>
                       </tr>
                       <tr>
@@ -188,11 +188,11 @@
                             <img src="https://image.eveonline.com/Character/{{ user.user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
                           </td>
                           <td>
-                            <a href="/esi/ui/info/{{ user.user.characterID }}">{{ user.user.name }}</a>
+                            <a href="javascript:void(0);" onclick="showInfo({{ user.user.characterID }})">{{ user.user.name }}</a></td>
                             <p><strike>Newbee</strike></p>
                           </td>
                           <td>
-                            <button class="btn btn-success btn-sm" id="{{ user._id }}"  onclick="invitePilot({{ user.user.characterID }});" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-success btn-sm" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
                           </td>
                           <td>
                             <div class="dropdown">
@@ -207,13 +207,13 @@
                             <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                           </td>
                           <td>
-                            <button class="btn btn-danger btn-sm" id="{{ user._id}}" onclick="removePilot()" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                           </td>
                           <td>
                             <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
                           </td>
                           <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
-                          <td>40H 29M</td>
+                          <td>{{ user.signupTime }}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -246,11 +246,11 @@
                             <img id="avatar-{{ user._id }}" src="https://image.eveonline.com/Character/{{ user.alt.id }}_64.jpg" style="height:75%" alt="avatar" data-toggle="tooltip" title=""> 
                           </td>
                           <td>
-                            <a href="/esi/ui/info/{{ user.alt.id }}">{{ user.alt.name }}</a>
-                            <p>Alt of: {{ user.user.name }}</p>
+                            <a href="javascript:void(0);" onclick="showInfo({{ user.alt.id }})">{{ user.alt.name }}</a>
+                            <p class="mb-0">Alt of: {{ user.user.name }}</p>
                           </td>
                           <td>
-                            <button class="btn btn-success btn-sm" id="{{ user._id }}"  onclick="invitePilot({{ user.alt.id }});" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-success btn-sm"  onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}');" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
                           </td>
                           <td>
                             <div class="dropdown">
@@ -265,13 +265,13 @@
                             <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                           </td>
                           <td>
-                            <button class="btn btn-danger btn-sm" id="{{ user._id}}" onclick="removePilot()" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                           </td>
                           <td>
                             <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
                           </td>
                           <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
-                          <td>40H 29M</td>
+                          <td>{{ user.signupTime }}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -368,9 +368,9 @@
     });
     
     //Invite a pilot to the fleet
-    function invitePilot(characterID) {
-        var dbRowID = event.target.id;
-        var rowClass = "#row-"+event.target.id;
+    function invitePilot(characterID, dbRowID) {
+        var dbRowID = dbRowID;
+        var rowClass = "#row-"+dbRowID;
         var count = Number($("#fleetWaitlistCount").text());
         
         $(rowClass).removeClass().addClass("invite-pending");
@@ -381,29 +381,33 @@
                 $(rowClass).removeClass().addClass("invite-sent");
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {
-            $(rowClass).removeClass().addClass("invite-sent");
             $(rowClass).removeClass().addClass("invite-failed");
         });
     }
 
     //Remove a pilot from the waitlist
-        function removePilot() {
-            var dbRowID = event.target.id;
-            var rowClass = "#row-"+event.target.id;
-            var count = Number($("#fleetWaitlistCount").text());
+    function removePilot(id) {
+        console.log(id);
+        var dbRowID = id;
+        var rowClass = "#row-"+id;
+        var count = Number($("#fleetWaitlistCount").text());
 
-            $.ajax({
-                type: "POST",
-                url: "/commander/{{ fleet.id }}/remove/"+dbRowID
-            });
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/remove/"+dbRowID
+        });
 
-            $(rowClass).removeClass().addClass("invite-failed");
-            setTimeout(function(){
-                if ($(rowClass).length > 0) {
-                    $(rowClass).remove();
-                    $("#fleetWaitlistCount").text(count-1);
-                }
-            }, 5000)     
-        }
+        $("#fleetWaitlistCount").text(count-1);
+
+        $(rowClass).removeClass().addClass("invite-failed");
+        setTimeout(function(){
+            if ($(rowClass).length > 0) {
+                $(rowClass).remove();
+            }
+        }, 5000)     
+    }
+
+    //Open the show info window for a pilot, corp or alliance.
+    
 </script>
 {%- include "./partials/footer.njk" %}
