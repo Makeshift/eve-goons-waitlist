@@ -50,8 +50,8 @@
                         {% for fleet in fleets %}
                         <tr>
                           <td><img src="https://image.eveonline.com/Character/{{ fleet.fc.characterID}}_32.jpg" alt="FCs Avatar"></td>
-                          <td><a href="/esi/ui/info/{{ fleet.fc.characterID}}">{{ fleet.fc.name }}</a></td>
-                          <td><a href="/esi/ui/info/{{ fleet.backseat.characterID }}">{{ fleet.backseat.characterID }}</a>
+                          <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
+                          <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
                           <td>{{ fleet.type }}</td>
                           <td>{{ fleet.status }}</td>
                           <td><a href="/esi/ui/waypoint/{{ fleet.fc.location.id }}">{{ fleet.fc.location.name }}</a></td>

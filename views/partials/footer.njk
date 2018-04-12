@@ -27,9 +27,18 @@
     <!--<script src="/includes/js/charts-home.js"></script>-->
     <script src="/includes/js/front.js"></script>
     <script>
+      //Tooltips
       $(function () {
         $('[data-toggle="tooltip"]').tooltip()
       })
+
+      //Pilot, Corp, Alliance showinfo
+      function showInfo(targetID) {
+            $.ajax({
+              type: "POST",
+              url: "/esi/ui/info/"+targetID
+            });
+        }
     </script>
   </body>
 </html>

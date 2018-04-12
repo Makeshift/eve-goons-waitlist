@@ -39,6 +39,6 @@ var esi_controller = require('./controllers/esiController.js')
 	/* make these POST requests at some point */
 	//Interacts with the users client via ESI.
 	router.get('/esi/ui/waypoint/:systemID', esi_controller.waypoint);
-	router.get('/esi/ui/info/:targetID', esi_controller.showInfo);
+	router.post('/esi/ui/info/:targetID', esi_controller.showInfo);
 
 	module.exports = router;

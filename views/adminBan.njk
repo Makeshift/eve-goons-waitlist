@@ -35,9 +35,9 @@
                       {% for ban in banList %}
                       <tr>
                         <td><img src="https://image.eveonline.com/Character/{{ ban.characterID }}_32.jpg" alt="{{ ban.pilotName }}s Avatar"></td>
-                        <td><a href="/esi/ui/info/{{ ban.characterID }}">{{ ban.pilotName }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="showInfo({{ ban.characterID }})">{{ ban.pilotName }}</a></td>
                         <td>{{ ban.banType }}</td>
-                        <td><a href="/esi/ui/info/{{ ban.banAdmin.characterID }}">{{ ban.banAdmin.name }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="showInfo({{ ban.banAdmin.characterID }})">{{ ban.banAdmin.name }}</a></td>
                         <td>{{ ban.createdAt }}</td>
                         <td>{{ ban.notes }}</td>
                         <td><a class="btn btn-sm btn-success" href="/admin/bans/{{ ban._id }}"><i class="fa fa-gavel"></i> Revoke</a></td>
