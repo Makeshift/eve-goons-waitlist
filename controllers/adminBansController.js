@@ -13,7 +13,6 @@ exports.index = function(req, res) {
             for ( var i = 0; i < activeBans.length; i++) {
                 activeBans[i].createdAt = new Date(activeBans[i].createdAt).toDateString();
             }
-            
             var userProfile = req.user;
             var sideBarSelected = 7;
             var banList = activeBans;
