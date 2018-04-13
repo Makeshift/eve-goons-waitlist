@@ -23,9 +23,9 @@ exports.index = function(req, res) {
                         }
                         usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
                     }
-
+                    var userProfile = req.user;
                     var sideBarSelected = 5;
-                    res.render('fcFleetManage.njk', {req.user, sideBarSelected, fleet, usersOnWaitlist});
+                    res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
                 })
             } else { 
                 res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");

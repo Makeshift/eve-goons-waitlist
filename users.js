@@ -212,7 +212,7 @@ module.exports = function (setup) {
 				log.debug("Setting "+user.name+"\'s destination to "+systemID);
 				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
 					cb("OK");
-				}.catch(err => {
+				}).catch(err => {
 					log.error("users.setDestination: ", { err });
 					cb(err);
 				});
@@ -230,7 +230,7 @@ module.exports = function (setup) {
 				log.debug("Opening "+targetID+"\'s information window for "+user.name)
 				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
 					cb("OK");
-				}.catch(err => {
+				}).catch(err => {
 					log.error("users.showInfo: ", { err });
 					cb(err)
 				});
