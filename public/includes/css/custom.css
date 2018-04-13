@@ -3,6 +3,11 @@ body{
 	overflow-x: hidden!important;
 }
 
+/* Fixes the table being misaligned under an image */
+.img{
+	padding-bottom: 1px;
+}
+
 /* Card Titles */
 .title strong{
 	font-weight: normal;

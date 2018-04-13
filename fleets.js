@@ -131,7 +131,7 @@ module.exports = function (setup) {
 					}
 					if (members.includes(charID)) {
 						log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
-						waitlist.remove(onWaitlist[i]._id);
+						waitlist.remove(onWaitlist[i]._id, function(){});
 					}
 				}
 			})
