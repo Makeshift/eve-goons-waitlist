@@ -7,8 +7,13 @@ const log = require('../logger.js')(module);
 
 //Render Ban Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+    if (req.isAuthenticated() && req.user.roleNumeric > 3) {
         bans.getBans(function(activeBans) {
+            
+            for ( var i = 0; i < activeBans.length; i++) {
+                activeBans[i].createdAt = new Date(activeBans[i].createdAt).toDateString();
+            }
+            
             var userProfile = req.user;
             var sideBarSelected = 7;
             var banList = activeBans;
