@@ -13,6 +13,14 @@ exports.index = function(req, res) {
             for ( var i = 0; i < activeBans.length; i++) {
                 activeBans[i].createdAt = new Date(activeBans[i].createdAt).toDateString();
             }
+
+            //Sort by name then date.
+            activeBans.sort(function(a,b) { 
+                if(a.pilotName > b.pilotName) return 1;
+                if(a.createdAt > b.createdAt) return -1;
+                return  0;
+            });
+
             var userProfile = req.user;
             var sideBarSelected = 7;
             var banList = activeBans;
