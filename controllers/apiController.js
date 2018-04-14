@@ -1,4 +1,3 @@
-var template = require('../template.js');
 var path = require('path');
 var setup = require('../setup.js');
 var cache = require('../cache.js')(setup);
