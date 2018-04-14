@@ -51,6 +51,12 @@ exports.permissions = {
 
 //roleNumeric titles, use null to disable. Leave index0 as member
 exports.userPermissions =  ["Member", "Trainee", null, "Fleet Commander", "Senior FC", "Leadership"];
+
+exports.fleetCompFilters = {
+	logi: [11987,11989,22474,22442],//Guardian, Oneiros, Damnation, Eos
+	caps: [23757,37604,23915,37605,23911,37607,24483,37606,42242,45645],//Archon, Apostle, Chimera, Minokawa, Thanatos, Ninazu, Nidhoggur, Lif, Dagon, Loggerhead
+	supers: [23919,11567,23917,3764,23913,671,22852,23773,42241,3514,42125,42126,45649]//Aeon, Avatar, Wyvern, Leviathan, Nyx, Erebus, Hel, Ragnarok, Molok, Revenant, Vendetta, Vanquisher, Komodo
+}
 ```
 Many of the variables can be populated from here: https://developers.eveonline.com/
 
