@@ -47,6 +47,17 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	background-color: rgb(221,221,221);
 }
 
+/* Fleet at a Glance */
+.nav-link.comp{
+	background: none;
+	color: #DC3545;
+	margin-top: -10px;
+  }
+  .nav-link.comp.active{
+	background: none;
+	color: white;
+  }
+  
 /* Inline radio button spacing */
 .form-check-label{
 	margin-right: 10px;

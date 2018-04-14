@@ -42,5 +42,5 @@ var api_controller = require('./controllers/apiController.js')
 	router.post('/esi/ui/info/:targetID', api_controller.showInfo);
 
 	//App API endpoints
-	router.post('/internal-api/fleetcomp/:fleetid', api_controller.fleetAtAGlance);
+	router.post('/internal-api/fleetcomp/:fleetid/:filter', api_controller.fleetAtAGlance);
 	module.exports = router;

@@ -124,11 +124,16 @@
               </div>
             </div>
             <!-- End Upper Fleet Panel -->
-            <!-- Fleet Comp Overview -->              
+            <!-- Fleet Comp Overview -->
             <div class="col-md-6 col-sm-12">
               <div class="statistic-block block">
                 <div>
-                    <strong>Fleet at a Glance</strong>
+                  <ul class="nav nav-pills nav-justified">
+                    <li class="nav-item"><a role="tab" data-toggle="pill" id="fleet" href="javascript:void();" class="nav-link comp active">Fleet at a Glance</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" id="logi" href="javascript:void();" class="nav-link comp">Logistics</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" id="caps" href="javascript:void();" class="nav-link comp">Capitals</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" id="supers" href="javascript:void();" class="nav-link comp">Supers</a></li>
+                  </ul>
                   <div class="tab-content">
                     <div role="tabpanel" class="tab-pane active" id="fleetAtAGlance">
                       <i id="fleetAtAGlanceLoading" class="fal fa-spinner-third fa-3x fa-spin d-block my-3" style="margin-left:auto;margin-right:auto;"></i>
@@ -403,10 +408,16 @@
         }, 5000)     
     }
 
+    var compFilter = "fleet";
+    $( ".comp" ).click(function() {
+      compFilter = $(this).attr('id');
+      updateFleetGlance();
+    });
+
     function updateFleetGlance() {
       $.ajax({
         type:"POST",
-        url:"/internal-api/fleetcomp/{{fleet.id}}",
+        url:"/internal-api/fleetcomp/{{fleet.id}}/"+compFilter,
         datatype:"HTML",
         success:function(data)
         {
