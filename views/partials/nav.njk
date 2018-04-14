@@ -65,9 +65,9 @@
               Fleet Management</a>
             </li>          
             <li{{  "class=active" if sideBarSelected === 6 }}><strike><a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
-            {% if userProfile.roleNumeric > 4 %}
+            {% if userProfile.roleNumeric >= 4 %}
             <li{{  " class=active" if sideBarSelected === 7 }}>
-              <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
+              <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Waitlist Admin <i class="fas fa-sort-down float-right"></i></a>
               <ul id="squadmanagement" class="collapse list-unstyled ">
                 <li><a href="/admin/bans">Ban List</a></li>
                 <li><a href="/admin/commanders">FC Management</a></li>
@@ -78,6 +78,7 @@
           </ul>
           {% endif %}
         <hr>
+        
         <ul class="list-unstyled">
           <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
         </li>
