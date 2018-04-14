@@ -46,11 +46,11 @@ exports.settings = {
 }
 
 exports.permissions = {
-	"alliances": ["Alliance 1", "Alliance 2"], //Whitelisted Alliances
-	"admins": ["Player 1", "Player 2"], //FC's
-	"leadership": ["Player 3", "Player 1"], //Can manage FC's
-	"blacklist": ["Player 5"] //Banned
+	"alliances": ["Alliance 1", "Alliance 2"] //Whitelisted Alliances
 }
+
+//roleNumeric titles, use null to disable. Leave index0 as member
+exports.userPermissions =  ["Member", "Trainee", null, "Fleet Commander", "Senior FC", "Leadership"];
 ```
 Many of the variables can be populated from here: https://developers.eveonline.com/
 

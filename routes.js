@@ -34,6 +34,7 @@ var api_controller = require('./controllers/apiController.js')
 
 	router.get('/admin/commanders', admin_fcs_controller.index);
 	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
+	router.post('/admin/commanders/trainee', admin_fcs_controller.setTrainee);
 	
 
 	//Interacts with the users client via ESI.
