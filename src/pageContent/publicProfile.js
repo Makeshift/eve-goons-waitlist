@@ -1,6 +1,5 @@
-module.exports = function(payloadContent, cb) {
-
- cb(`
+module.exports = function publicProfile(payloadContent, cb) {
+  cb(`
 
 <!-- Page Content -->
       <div class="page-content">
@@ -21,7 +20,8 @@ module.exports = function(payloadContent, cb) {
                     <strong>Under Construction</strong>
                   </div>
                   <!-- Add Fitting Section -->
-                  <!--<p>To add new fits <a href="#fittings" data-toggle="collapse" aria-expanded="false" aria-controls="fittings" role="button">click here</a>.
+                  <!--<p>To add new fits <a href="#fittings" data-toggle="collapse" aria-expanded="false" 
+                  aria-controls="fittings" role="button">click here</a>.
                   <!--<div>
                     <div class="collapse" id="fittings">
                       <ul>
@@ -31,10 +31,15 @@ module.exports = function(payloadContent, cb) {
                       </ul>
                       <form>
                         <div class="form-group">
-                          <label for="dna" data-toggle="tooltip" data-placement="top" title="Drag and drop your fit into a private chat channel and press enter. Right click on your message and click copy. Then paste that in this box.">Fit DNA <i class="fa fa-question-circle"></i></label>
-                          <textarea class="form-control" id="dna" name="dna" style="resize:none;" placeholder="<url=fitting:17740:26394;1:15150;4:14767;1:3186;8:14646;2:15290;2:26076;1:41210;1:14654;2:28288;5:12791;640::>Sams old Vindicator</url>" required></textarea>
+                          <label for="dna" data-toggle="tooltip" data-placement="top" title="Drag and drop your fit 
+                          into a private chat channel and press enter. Right click on your message and click copy. Then 
+                          paste that in this box.">Fit DNA <i class="fa fa-question-circle"></i></label>
+                          <textarea class="form-control" id="dna" name="dna" style="resize:none;" 
+                          placeholder="<url=fitting:17740:26394;1:15150;4:14767;1:3186;8:14646;2:15290;2:26076;1:41210;1
+                          :14654;2:28288;5:12791;640::>Sams old Vindicator</url>" required></textarea>
                         </div>
-                        <button class="btn btn-primary float-right" type="submit"><i class="fa fa-plus-circle"></i> Add Fit</button>
+                        <button class="btn btn-primary float-right" type="submit"><i class="fa fa-plus-circle">
+                        </i> Add Fit</button>
                       </form>
                     </div>-->
                   </div>-->
@@ -51,7 +56,8 @@ module.exports = function(payloadContent, cb) {
                     </thead>
                     <tbody>
                       <tr>
-                        <td><img src="https://image.eveonline.com/Render/2863_64.png" alt="Ship Portrait" width="35"></td>
+                        <td><img src="https://image.eveonline.com/Render/2863_64.png" alt="Ship Portrait" width="35">
+                        </td>
                         <td><a href="#">Primae</a></td>
                         <td>DD-MM-YYYY</td>
                         <td><a href="#">View Fit</a>
@@ -69,7 +75,8 @@ module.exports = function(payloadContent, cb) {
                     <strong>Character Management</strong>
                   </div>-->
                   <!-- Character Help Info Section -->
-                 <!--<p>Linking your characters provides many <a href="#characterHelp" data-toggle="collapse" aria-expanded="false" aria-controls="characterHelp" role="button">advantages</a>.
+                 <!--<p>Linking your characters provides many <a href="#characterHelp" data-toggle="collapse" 
+                 aria-expanded="false" aria-controls="characterHelp" role="button">advantages</a>.
                   <div>
                     <div class="collapse" id="characterHelp">
                       <ul>
@@ -80,7 +87,8 @@ module.exports = function(payloadContent, cb) {
                     </div>
                   </div>
                   <p>To link another character to this account please sign in using Eve SSO:</p>
-                  <a href="#"><img src="img/EVE_SSO_Login_Buttons_Large_Black.png" alt="Eve SSO" style="display:block;"></a>-->
+                  <a href="#"><img src="img/EVE_SSO_Login_Buttons_Large_Black.png" 
+                  alt="Eve SSO" style="display:block;"></a>-->
                   <!-- Fleet Settings Table -->
                   <!--<table class="table table-striped table-hover table-sm noselect">
                     <thead>
@@ -92,7 +100,8 @@ module.exports = function(payloadContent, cb) {
                     </thead>
                     <tbody>
                       <tr>
-                        <td><img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="Character Portrait" width="35"></td>
+                        <td><img src="http://image.eveonline.com/Character/96304094_128.jpg" alt="Character Portrait" 
+                        width="35"></td>
                         <td><a href="#">Caitlin Viliana</a></td>
                         <td>DD-MM-YYYY</td>
                       </tr>
@@ -107,5 +116,4 @@ module.exports = function(payloadContent, cb) {
 
 
 `);
-
-}
+};

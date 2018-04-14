@@ -2,12 +2,20 @@
   "name": "eve-goons-waitlist",
   "version": "2.0.0",
   "description": "The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet of Eve Online.",
-  "main": "index.js",
+  "main": "src/index.js",
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
   "scripts": {
-    "start": "node index.js",
-    "build:docker": "docker build -t waitlist .",
-    "start:docker": "docker run -it -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
-    "start:dockercmp": "docker-compose up",
+    "start": "node src/index.js",
+    "build:docker": "docker build --build-arg PUID=$(id -u $USER) --build-arg PGID=$(id -g $USER) -t waitlist .",
+    "start:docker": "docker run -it --name waitlist -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
+    "start:dockercmp": "export PUID=$(id -u $USER) && export PGID=$(id -g $USER) && docker-compose up",
+    "lint": "./node_modules/.bin/eslint ./src/ --fix",
+    "precommit": "npm run lint",
+    "commit": "git-cz",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -19,6 +27,7 @@
   "license": "GPL-3.0",
   "dependencies": {
     "body-parser": "^1.18.2",
+    "colors": "1.2.1",
     "connect-mongo": "^2.0.1",
     "eve-swagger": "^0.3.3",
     "express": "^4.16.2",
@@ -34,5 +43,63 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Makeshift/eve-goons-waitlist.git"
-  }
+  },
+  "devDependencies": {
+    "@babel/cli": "7.0.0-beta.32",
+    "@babel/core": "7.0.0-beta.32",
+    "@babel/plugin-proposal-object-rest-spread": "7.0.0-beta.32",
+    "@babel/preset-env": "7.0.0-beta.32",
+    "babel-eslint": "7.2.3",
+    "commitizen": "2.9.6",
+    "cz-conventional-changelog": "2.1.0",
+    "eslint": "4.19.1",
+    "eslint-config-airbnb": "16.1.0",
+    "eslint-loader": "2.0.0",
+    "eslint-plugin-import": "2.10.0",
+    "husky": "0.14.3"
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": "airbnb/base",
+    "rules": {
+      "react/require-default-props": "off",
+      "no-return-assign": [
+        "error",
+        "except-parens"
+      ],
+      "max-len": [
+        "error",
+        {
+          "code": 120
+        }
+      ],
+      "import/no-extraneous-dependencies": [
+        "error",
+        {
+          "devDependencies": true
+        }
+      ],
+      "no-plusplus": [
+        "error",
+        {
+          "allowForLoopAfterthoughts": true
+        }
+      ],
+      "no-bitwise": [
+        "error",
+        {
+          "int32Hint": true
+        }
+      ],
+      "comma-dangle": "off",
+      "no-loop-func": "off",
+      "no-shadow": "off",
+      "no-undef": "off",
+      "no-use-before-define": "off",
+      "global-require": "off",
+      "no-underscore-dangle": "off"
+    },
+    "globals": {}
+  },
+  "eslintIgnore": []
 }

@@ -1,4 +1,4 @@
-module.exports = function(payloadContent, cb) {
+module.exports = function fcLookUp(payloadContent, cb) {
 /*
 Content payload template:
 payload.content = {
@@ -44,23 +44,24 @@ payload.content = {
         }
      }
   }
-  
+
 }
 */
-var altChars = "";
-for (var i = 0; i < payloadContent.user.relatedChars.length; i++) {
-  altChars += `
+  let altChars = '';
+  for (let i = 0; i < payloadContent.user.relatedChars.length; i++) {
+    altChars += `
   <tr>
-    <td><img src="${payloadContent.user.relatedChars[i].avatar}" alt="${payloadContent.user.relatedChars[i].name}'s Avatar" height=30%></td>
+    <td><img src="${payloadContent.user.relatedChars[i].avatar}" 
+    alt="${payloadContent.user.relatedChars[i].name}'s Avatar" height=30%></td>
     <td><a href="#">${payloadContent.user.relatedChars[i].name}</a></td>
     <td>${payloadContent.user.relatedChars[i].registrationDate}</td>
   </tr>
   `;
-}
+  }
 
-var ships = "";
-for (var i = 0; i < payloadContent.user.ships.length; i++) {
-  ships += `
+  let ships = '';
+  for (let i = 0; i < payloadContent.user.ships.length; i++) {
+    ships += `
   <tr>
     <td><img src="${payloadContent.user.ships[i].image}" alt="${payloadContent.user.ships[i].name} Icon"></td>
     <td><a href="#">${payloadContent.user.ships[i].name}</a></td>
@@ -68,8 +69,8 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
     <td>${payloadContent.user.ships[i].lastUsed}</td>
     <td><a href="#">View Fit</a></td>
   </tr>
-  `
-}
+  `;
+  }
 
   cb(`
           <!-- Page Content -->
@@ -77,7 +78,8 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
         <div class="page-header">
           <div class="container-fluid">
             <form>
-              <input class="form-control" type="search" name="search" placeholder="Who are you searching for..." autofocus style="max-width: 350px; display:inline;"> 
+              <input class="form-control" type="search" name="search" placeholder="Who are you searching for..." 
+              autofocus style="max-width: 350px; display:inline;"> 
               <button class="btn btn-link btn-lg" type="submit"><i class="icon-magnifying-glass-browser"></i></button>
             </form>
           </div>
@@ -121,9 +123,12 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
                   <p>FC Comments:</p>
                   <form>
                     <div class="form-group">
-                      <textarea class="form-control" style="resize:none;" placeholder="Notes about this pilot FCs may need to know about!">${payloadContent.user.notes}</textarea>
+                      <textarea class="form-control" style="resize:none;" 
+                      placeholder="Notes about this pilot FCs may need to know about!">${payloadContent.user.notes}
+                      </textarea>
                     </div>
-                    <button class="btn btn-success btn-sm position-right"><i class="fa fa-check-circle"></i> Save Comment</button>
+                    <button class="btn btn-success btn-sm position-right">
+                    <i class="fa fa-check-circle"></i> Save Comment</button>
                   </form>
                   <!--<hr>
                   <div class="row">
@@ -171,8 +176,10 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
                       <!-- Metric Tabs -->
                       <div>
                         <ul class="nav nav-tabs">
-                          <li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-1" class="nav-link">Pilot Overview</a></li>
-                          <li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-2" class="nav-link">Site Numbers</a></li>
+                          <li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-1" 
+                          class="nav-link">Pilot Overview</a></li>
+                          <li class="nav-item"><a role="tab" data-toggle="tab" href="#tab-2" 
+                          class="nav-link">Site Numbers</a></li>
                         </ul>
                         <div class="tab-content">
                           <!-- Pilot Overview -->
@@ -239,5 +246,5 @@ for (var i = 0; i < payloadContent.user.ships.length; i++) {
               </div>
             </div>
         </section>
-	`);
-}
+`);
+};

@@ -1,81 +1,81 @@
-var setup = require('../setup.js');
-var cache = require('../cache.js')(setup);
-var waitlist = require('../globalWaitlist.js')(setup);
-var users = require('../users.js')(setup);
+const setup = require('../setup.js');
+const cache = require('../cache.js')(setup);
+const waitlist = require('../globalWaitlist.js')(setup);
+const users = require('../users.js')(setup);
 
-module.exports = function(payloadContent, cb) {
-
-  var ships = [];
-  var members = [];
-  //TODO: UGH!
+module.exports = function fcFleetManage(payloadContent, cb) {
+  const ships = [];
+  let fleetLength;
+  // TODO: UGH!
   if (payloadContent.fleet) {
     if (payloadContent.fleet.members) {
-      var fleetLength = payloadContent.fleet.members.length || 0;
+      fleetLength = payloadContent.fleet.members.length || 0;
     } else {
       fleetLength = 0;
     }
   } else {
     fleetLength = 0;
   }
-  for (var i = 0; i < fleetLength; i++) {
-  	ships.push(payloadContent.fleet.members[i].ship_type_id)
+  for (let i = 0; i < fleetLength; i++) {
+    ships.push(payloadContent.fleet.members[i].ship_type_id);
   }
-  var distribution = ships.reduce((acum,cur) => Object.assign(acum,{[cur]: (acum[cur] | 0)+1}),{}); //Shamelessly stolen from stackoverflow
-  var shiptable = "";
 
-  var numOfShips = Object.keys(distribution).length;
-  var counter = 0;
-  //Unpleasant hack for dealing with async for loops because I really should learn promises and await...
-  for (var i = 0; i < numOfShips; i++) {
-    cache.get(Object.keys(distribution)[i], function(item){
-      counter++;
-    	shiptable += `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id || item}_32.png" alt="Ship Icon"></td>
-  	  	<td class="tw20per"><a href="#">${item.name || item || "CacheError"}</a>
-  	  	<td>${distribution[item.id]}</td>
-    	`;
+  // Shamelessly stolen from stackoverflow
+  const distribution = ships.reduce((acum, cur) => Object.assign(acum, { [cur]: (acum[cur] | 0) + 1 }), {});
+  let shiptable = '';
+
+  const numOfShips = Object.keys(distribution).length;
+  let counter = 0;
+  // TODO: Asyncyfy
+  // Unpleasant hack for dealing with async for loops because I really should learn promises and await...
+  for (let i = 0; i < numOfShips; i++) {
+    cache.get(Object.keys(distribution)[i], (item) => {
+      counter += 1;
+      shiptable +=
+        `<td class="tw35"><img src="https://image.eveonline.com/Render/${item.id || item}_32.png" alt="Ship Icon"></td>
+         <td class="tw20per"><a href="#">${item.name || item || 'CacheError'}</a>
+         <td>${distribution[item.id]}</td>`;
       if (counter % 3 === 0) {
-        shiptable += `</tr><tr>`
+        shiptable += '</tr><tr>';
       }
       if (counter >= numOfShips) {
-        contWaitlistGenerate(shiptable, fleetLength, payloadContent.fleet.id, cb);
+        contWaitlistGenerate(fleetLength, payloadContent.fleet.id, cb);
       }
-
-    })
+    });
   }
 
-  function contWaitlistGenerate(shiptable, fleetLength, fleetid, cb) {
-    var waitlistHTML = "";
-    waitlist.get(function(usersOnWaitlist) {
-      var usersNeeded = usersOnWaitlist.length;
-      var count = 0;
-      for (var i = 0; i < usersNeeded; i++) {
-        //TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background and grabbed from the DB
-        users.getLocation(usersOnWaitlist[i].user, function(){}); //Stupid hack because things were coming back in the wrong order, ugh
-        entry = usersOnWaitlist[i];
-          count++;
-          var characterID = entry.user.characterID;
-          var tableID = entry._id;
-          var name = entry.user.name;
-          var role = entry.user.role;
-          var removetext = "";
-          var invited = "invite-default";
-          if (entry.invited === true) {
-            invited = "invite-sent";
-          }
-          if (typeof entry.alt === "object") {
-            characterID = entry.alt.id;
-            name = entry.alt.name;
-            role = "Alt of: " + entry.user.name;
-            removetext = "?alt=true"
-          }
+  function contWaitlistGenerate(fleetLength, fleetid, cb) {
+    let waitlistHTML = '';
+    waitlist.get((usersOnWaitlist) => {
+      const usersNeeded = usersOnWaitlist.length;
+      let count = 0;
+      for (let i = 0; i < usersNeeded; i++) {
+        // TODO: This is a bit sketchy, we're asking for a new location every time we load? This should be background
+        // and grabbed from the DB
+        // Stupid hack because things were coming back in the wrong order, ugh
+        users.getLocation(usersOnWaitlist[i].user, () => {});
+        const entry = usersOnWaitlist[i];
+        count += 1;
+        let { characterID, name, role } = entry.user;
+        const tableID = entry._id;
+        let invited = 'invite-default';
+        if (entry.invited === true) {
+          invited = 'invite-sent';
+        }
+        if (typeof entry.alt === 'object') {
+          characterID = entry.alt.id;
+          // eslint-disable-next-line prefer-destructuring
+          name = entry.alt.name;
+          role = `Alt of: ${entry.user.name}`;
+        }
 
-          var signuptime = Math.floor((Date.now() - entry.signupTime)/1000/60);
-          var signupHours = 0;
-          while (signuptime > 59) {
-            signuptime -= 60;
-            signupHours++;
-          }
-          waitlistHTML += `
+        let signuptime = Math.floor((Date.now() - entry.signupTime) / 1000 / 60);
+        let signupHours = 0;
+        while (signuptime > 59) {
+          signuptime -= 60;
+          signupHours += 1;
+        }
+        waitlistHTML += `
           <tr class="${invited}">
                             <td>
                               <img src="https://image.eveonline.com/Character/${characterID}_32.jpg" alt="avatar"> 
@@ -85,11 +85,18 @@ module.exports = function(payloadContent, cb) {
                               <p>${role}</p>
                             </td>
                             <td>
-                              <a href="/commander/${fleetid}/invite/${characterID}/${tableID}"><button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button></a>
+                              <a href="/commander/${fleetid}/invite/${characterID}/${tableID}">
+                                <button class="btn btn-success btn-sm" title="Invite to Fleet">
+                                  <i class="fa fa-plus"></i>
+                                </button>
+                              </a>
                             </td>
                             <td>
                               <div class="dropdown">
-                                <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
+                                <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" 
+                                aria-expanded="false" type="button">
+                                  <i class="fas fa-caret-circle-down" style="margin-right:-50%"></i>
+                                </button>
                                 <div class="dropdown-menu" role="menu">
                                   <a class="dropdown-item" href="#">View Pilot Profile</a>
                                   <a class="dropdown-item" href="#">View Pilot Skills</a>
@@ -100,27 +107,31 @@ module.exports = function(payloadContent, cb) {
                               <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                             </td>
                             <td>
-                              <a href="/commander/${fleetid}/remove/${tableID}/"><button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button></a>
+                              <a href="/commander/${fleetid}/remove/${tableID}/">
+                                <button class="btn btn-danger btn-sm" title="Remove from Waitlist">
+                                  <i class="fa fa-minus"></i>
+                                </button>
+                              </a>
                             </td>
                             <td>
-                              <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="${entry.ship}" alt="${entry.ship}">-->${entry.ship}</a>
+                              <a href="#">${entry.ship}</a>
                             </td>
-                            <td><a href="#">${"Unknown"}</a></td>
+                            <td><a href="#">${'Unknown'}</a></td>
                             <td>${signupHours}H ${signuptime}M</td>
                           </tr>
           `;
-          if (count >= usersNeeded) {
-            genPage(waitlistHTML, usersNeeded, fleetLength, cb);
-          }
+        if (count >= usersNeeded) {
+          genPage(waitlistHTML, usersNeeded, fleetLength, cb);
+        }
       }
       if (usersNeeded === 0) {
-        genPage("", usersNeeded, fleetLength, cb)
+        genPage('', usersNeeded, fleetLength, cb);
       }
-    })
+    });
   }
 
   function genPage(waitlistHTML, usersNeededWaitlist, fleetLength, cb) {
-    var commsChannels = `<script>function post(path, params) {
+    let commsChannels = `<script>function post(path, params) {
     var form = document.createElement("form");
     form.setAttribute("method", "post");
     form.setAttribute("action", path);
@@ -137,22 +148,24 @@ module.exports = function(payloadContent, cb) {
     form.submit();
 }
 </script>`;
-    for (var i = 0; i < setup.fleet.comms.length; i++) {
+    for (let i = 0; i < setup.fleet.comms.length; i++) {
       if (payloadContent.fleet.comms.name !== setup.fleet.comms[i].name) {
         commsChannels += `
           <a id="commsbutton-${i}" class="dropdown-item">${setup.fleet.comms[i].name}</a>
           <script>
             document.getElementById("commsbutton-${i}").addEventListener("click", function () {
-              post("/commander/${payloadContent.fleet.id}/update/comms", {name: "${setup.fleet.comms[i].name}", url: "${setup.fleet.comms[i].url}"});
+              post("/commander/${payloadContent.fleet.id}/update/comms", 
+              {name: "${setup.fleet.comms[i].name}", 
+              url: "${setup.fleet.comms[i].url}"});
             });
           </script>
-          `
-        }
+          `;
+      }
     }
 
-    var fleetTypeList = ["Scouts", "Vanguards", "Assaults", "Headquarters", "Kundalini", "ARSEFleet"];
-    var fleetType = "";
-    for (var i = 0; i < fleetTypeList.length; i++) {
+    const fleetTypeList = ['Scouts', 'Vanguards', 'Assaults', 'Headquarters', 'Kundalini', 'ARSEFleet'];
+    let fleetType = '';
+    for (let i = 0; i < fleetTypeList.length; i++) {
       if (payloadContent.fleet.type !== fleetTypeList[i]) {
         fleetType += `<a class="dropdown-item" id="fleetTypeButton-${i}" href="#">${fleetTypeList[i]}</a>
           <script>
@@ -160,13 +173,13 @@ module.exports = function(payloadContent, cb) {
               post("/commander/${payloadContent.fleet.id}/update/type", {type: "${fleetTypeList[i]}"});
             });
           </script>
-        `
+        `;
       }
     }
 
-    var fleetStatusList = ["Not Listed","Forming", "Running", "Docking Soon", "Short Break"];
-    var fleetStatus = "";
-    for (var i = 0; i < fleetStatusList.length; i++) {
+    const fleetStatusList = ['Not Listed', 'Forming', 'Running', 'Docking Soon', 'Short Break'];
+    let fleetStatus = '';
+    for (let i = 0; i < fleetStatusList.length; i++) {
       if (payloadContent.fleet.status !== fleetStatusList[i]) {
         fleetStatus += `<a class="dropdown-item" id="fleetStatus-${i}" href="#">${fleetStatusList[i]}</a>
           <script>
@@ -174,31 +187,38 @@ module.exports = function(payloadContent, cb) {
               post("/commander/${payloadContent.fleet.id}/update/status", {status: "${fleetStatusList[i]}"});
             });
           </script>
-        `
+        `;
       }
     }
 
-    var updateFC = "";
-    updateFC += `<button class="btn btn-sm btn-block" id="updateFC">I\'m the FC</button>`;
+    let updateFC = '';
+    updateFC += '<button class="btn btn-sm btn-block" id="updateFC">I\'m the FC</button>';
     updateFC += `<script>
       document.getElementById("updateFC").addEventListener("click", function () {
-        post("/commander/${payloadContent.fleet.id}/update/commander", {status: "${fleetStatusList[i]}"});
+        post("/commander/${payloadContent.fleet.id}/update/commander", 
+        // TODO: What is i ?
+        // eslint-disable-next-line no-undef
+        {status: "${fleetStatusList[i]}"});
       });
-    </script>`
+    </script>`;
 
-    var updateBackseat = "";
-    updateBackseat += `<button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button>`
+    let updateBackseat = '';
+    updateBackseat += '<button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button>';
     updateBackseat += `<script>
     document.getElementById("updateBackseat").addEventListener("click", function () {
-      post("/commander/${payloadContent.fleet.id}/update/backseat", {status: "${fleetStatusList[i]}"});
+      post("/commander/${payloadContent.fleet.id}/update/backseat", 
+      // TODO: What is i ?        
+      // eslint-disable-next-line no-undef
+      {status: "${fleetStatusList[i]}"});
     });
-  </script>`
+  </script>`;
 
-    var notListedBanner = "";
-    if (payloadContent.fleet.status == "Not Listed") {
+    let notListedBanner = '';
+    if (payloadContent.fleet.status === 'Not Listed') {
       notListedBanner = `<div role="alert" class="alert alert-primary global-banner-inactive noselect">
-          <strong>This fleet is not listed:</strong> Pilots cannot see this fleet. If this is the only fleet pilots will be unable to join the waitlist!
-        </div>`
+          <strong>This fleet is not listed:</strong> Pilots cannot see this fleet. If this is the only fleet pilots 
+          will be unable to join the waitlist!
+        </div>`;
     }
 
     cb(`
@@ -225,12 +245,14 @@ module.exports = function(payloadContent, cb) {
                     <tbody>
                       <tr>
                         <td>FC (Boss):</td>
-                        <td><a href="/esi/ui/info/${payloadContent.fleet.fc.characterID}">${payloadContent.fleet.fc.name}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleet.fc.characterID}">
+                          ${payloadContent.fleet.fc.name}</a></td>
                         <td>${updateFC}</td>
                       </tr>
                       <tr>
                         <td>Backseating FC:</td>
-                        <td><a href="/esi/ui/info/${payloadContent.fleet.backseat.characterID || "undefined"}">${payloadContent.fleet.backseat.name || "None"}</a></td>
+                        <td><a href="/esi/ui/info/${payloadContent.fleet.backseat.characterID || 'undefined'}">
+                          ${payloadContent.fleet.backseat.name || 'None'}</a></td>
                         <td>${updateBackseat}</td>
                       </tr>
                       <tr>
@@ -238,7 +260,10 @@ module.exports = function(payloadContent, cb) {
                         <td>${payloadContent.fleet.status}</td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" 
+                            aria-expanded="false" type="button">Update Status 
+                              <i class="fas fa-sort-down float-right"></i>
+                            </button>
                             <div class="dropdown-menu" role="menu">
                               ${fleetStatus}
                             </div>
@@ -250,7 +275,10 @@ module.exports = function(payloadContent, cb) {
                         <td>${payloadContent.fleet.type}</td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" 
+                            aria-expanded="false" type="button">Change Type 
+                              <i class="fas fa-sort-down float-right"></i>
+                            </button>
                             <div class="dropdown-menu" role="menu">
                               ${fleetType}
                             </div>
@@ -259,10 +287,14 @@ module.exports = function(payloadContent, cb) {
                       </tr>
                       <tr>
                         <td>Fleet Comms:</td>
-                        <td><a href="${payloadContent.fleet.comms.url || "#"}">${payloadContent.fleet.comms.name}</a></td>
+                        <td><a href="${payloadContent.fleet.comms.url || '#'}">${payloadContent.fleet.comms.name}</a>
+                        </td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
+                            <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" 
+                            aria-expanded="false" type="button">Change Channel 
+                              <i class="fas fa-sort-down float-right"></i>
+                            </button>
                             <div class="dropdown-menu" role="menu">
                               ${commsChannels}
                             </div>
@@ -271,12 +303,16 @@ module.exports = function(payloadContent, cb) {
                       </tr>
                       <tr>
                         <td>Fleet System:</td>
-                        <td colspan="2"><a href="/esi/ui/waypoint/${payloadContent.fleet.fc.location.id}">${payloadContent.fleet.location}</a></td>
+                        <td colspan="2"><a href="/esi/ui/waypoint/${payloadContent.fleet.fc.location.id}">
+                          ${payloadContent.fleet.location}</a></td>
                       </tr>
                       <tr>
                         <td colspan="3">
                           <form action="/commander/${payloadContent.fleet.id}/delete">
-                            <button class="btn btn-danger btn-sm btn-block" type="submit"><i class="fas fa-exclamation-triangle"></i> Close the Fleet! <i class="fas fa-exclamation-triangle"></i></button>
+                            <button class="btn btn-danger btn-sm btn-block" type="submit">
+                              <i class="fas fa-exclamation-triangle"></i> Close the Fleet! 
+                              <i class="fas fa-exclamation-triangle"></i>
+                            </button>
                           </form>
                         </td>
                       </tr>
@@ -313,8 +349,10 @@ module.exports = function(payloadContent, cb) {
                 <!-- Waitlist Navigation Tabs -->
                 <div>
                 <ul class="nav nav-pills nav-justified">
-                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active"><div class="badge badge-dark">${usersNeededWaitlist}</div> Fleet Waitlist</a></li>
-                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link"><div class="badge badge-dark">${fleetLength}</div> Fleet Comp</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active">
+                    <div class="badge badge-dark">${usersNeededWaitlist}</div> Fleet Waitlist</a></li>
+                    <li class="nav-item"><a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link">
+                    <div class="badge badge-dark">${fleetLength}</div> Fleet Comp</a></li>
                 </ul>
                 <div class="tab-content">
                 <!-- Fleet Waitlist -->
@@ -369,11 +407,13 @@ module.exports = function(payloadContent, cb) {
                             <p>Newbro</p>
                           </td>
                           <td>
-                            <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                            <button class="btn btn-success btn-sm" title="Invite to Fleet"><i class="fa fa-plus"></i>
+                            </button>
                           </td>
                           <td>
                             <div class="dropdown">
-                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" 
+                              aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
                               <div class="dropdown-menu" role="menu">
                                 <a class="dropdown-item" href="#">View Pilot Profile</a>
                                 <a class="dropdown-item" href="#">View Pilot Skills</a>
@@ -384,13 +424,18 @@ module.exports = function(payloadContent, cb) {
                             <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
                           </td>
                           <td>
-                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus">
+                            </i></button>
                           </td>
                           <td>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" 
+                            alt="Vindicator"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" 
+                            alt="Bhaalgorn"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" 
+                            alt="Guardian"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" 
+                            alt="Nyx"></a>
                           </td>
                           <td><a href="#">Jita</a></td>
                           <td>00M 00H</td>
@@ -431,7 +476,8 @@ module.exports = function(payloadContent, cb) {
                         </td>   
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                            <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" 
+                            aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
                             <div class="dropdown-menu" role="menu">
                               <a class="dropdown-item" href="#">View Pilot Profile</a>
                               <a class="dropdown-item" href="#">View Pilot Skills</a>
@@ -439,15 +485,20 @@ module.exports = function(payloadContent, cb) {
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i>
+                          </button>
                         </td>
                         <th><a href="#">Thanatos</a></th>
                         <td>Active // Logi</td>
                         <td>
-                          <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
-                          <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
-                          <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
-                          <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                          <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" 
+                          alt="Vindicator"></a>
+                          <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" 
+                          alt="Bhaalgorn"></a>
+                          <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" 
+                          alt="Guardian"></a>
+                          <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" 
+                          alt="Nyx"></a>
                         </td>
                         <td><a href="#">Jita</a></td>
                         <td>00M 00H</td>
@@ -460,7 +511,8 @@ module.exports = function(payloadContent, cb) {
                           </td>
                           <td>
                             <div class="dropdown">
-                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
+                              <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" 
+                              aria-expanded="false" type="button"><i class="fa fa-cog"></i> </button>
                               <div class="dropdown-menu" role="menu">
                                 <a class="dropdown-item" href="#">View Pilot Profile</a>
                                 <a class="dropdown-item" href="#">View Pilot Skills</a>
@@ -468,15 +520,20 @@ module.exports = function(payloadContent, cb) {
                             </div>
                           </td>
                           <td>
-                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                            <button class="btn btn-danger btn-sm" title="Remove from Waitlist"><i class="fa fa-minus">
+                            </i></button>
                           </td>                          
                           <th><a href="#">Thanatos</a></th>
                           <td>Active // Logi</td>
                           <td>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" alt="Vindicator"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" alt="Bhaalgorn"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" alt="Guardian"></a>
-                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" alt="Nyx"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17740_32.png" title="Vindicator" 
+                            alt="Vindicator"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/17920_32.png" title="Bhaalgorn" 
+                            alt="Bhaalgorn"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/11987_32.png" title="Guardian" 
+                            alt="Guardian"></a>
+                            <a href="#"><img src="https://image.eveonline.com/Render/23913_32.png" title="Nyx" 
+                            alt="Nyx"></a>
                           </td>
                           <td><a href="#">Jita</a></td>
                           <td>00M 00H</td>
@@ -491,7 +548,6 @@ module.exports = function(payloadContent, cb) {
           <!-- End Waitlist Section -->
         </div>
       </section>
-  `)
+  `);
   }
-
-}
+};

@@ -1,46 +1,49 @@
-const setup = require('./setup.js');
 const path = require('path');
+
 module.exports = {
-	header: header,
-	footer: footer,
-	sidebar: sidebar,
-	generateTemplate: generateTemplate,
-	pageGenerate: pageGenerate
-}
+  header,
+  footer,
+  sidebar,
+  generateTemplate,
+  pageGenerate
+};
 
 function pageGenerate(payload, cb) {
-	generateTemplate(payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)), function (generatedPage) {
-		cb(generatedPage);
-	})
+  generateTemplate(
+    // eslint-disable-next-line import/no-dynamic-require
+    payload, require(path.normalize(`${__dirname}/pageContent/${payload.template}`)),
+    generatedPage => cb(generatedPage)
+  );
 }
 
-//TODO: Undecided if I like this system.
+// TODO: Undecided if I like this system.
 function generateTemplate(payload, content, cb) {
-	header(payload.header, function (header) {
-		sidebar(payload.sidebar, function (sidebar) {
-			content(payload.content, function (content) {
-				footer(null, function (footer) {
-					cb(header + sidebar + content + footer);
-				})
-			})
-		})
-	})
+  header(payload.header, (header) => {
+    sidebar(payload.sidebar, (sidebar) => {
+      content(payload.content, (content) => {
+        footer(null, (footer) => {
+          cb(header + sidebar + content + footer);
+        });
+      });
+    });
+  });
 }
 
 function header(headerPayload, cb) {
-	var notifications = "";
-	for (var i = 0; i < headerPayload.user.notifications.length || 0; i++) {
-		notifications += `<a href="#" class="dropdown-item">
-    <div class="text d-flex justify-content-between"><strong>${headerPayload.user.notifications[i].text}</strong><br>${headerPayload.user.notifications[i].time}</div></a>`
-	}
+  let notifications = '';
+  for (let i = 0; i < headerPayload.user.notifications.length || 0; i++) {
+    notifications += `<a href="#" class="dropdown-item">
+    <div class="text d-flex justify-content-between"><strong>${headerPayload.user.notifications[i].text}</strong><br>
+${headerPayload.user.notifications[i].time}</div></a>`;
+  }
 
-	var notificationBadge = "";
-	var noOfNotifications = headerPayload.user.notifications.length
-	if (noOfNotifications > 0) {
-		notificationBadge = `<span class="badge dashbg-3">!</span>`;
-	}
+  let notificationBadge = '';
+  const noOfNotifications = headerPayload.user.notifications.length;
+  if (noOfNotifications > 0) {
+    notificationBadge = '<span class="badge dashbg-3">!</span>';
+  }
 
-	cb(`
+  cb(`
   <!DOCTYPE html>
 <html>
   <head>
@@ -79,7 +82,8 @@ function header(headerPayload, cb) {
           <!-- Nav Brand -->
           <div class="navbar-header">
             <a href="/" class="navbar-brand">
-              <div class="brand-text brand-big visible text-uppercase"><strong class="text-primary">Goon</strong><strong>Incursions</strong></div>
+              <div class="brand-text brand-big visible text-uppercase"><strong class="text-primary">Goon</strong>
+              <strong>Incursions</strong></div>
               <div class="brand-text brand-sm"><strong class="text-primary">G</strong><strong>I</strong></div>
             </a>
             <button class="sidebar-toggle"><i class="fas fa-bars"></i></button>
@@ -89,31 +93,34 @@ function header(headerPayload, cb) {
           <ul class="right-menu list-inline no-margin-bottom">
             <!-- User Notifications Feed -->
             <li class="list-inline-item dropdown">
-              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link tasks-toggle"><i class="icon-new-file"></i>${notificationBadge}</a>
+              <a id="notifications" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+              class="nav-link tasks-toggle"><i class="icon-new-file"></i>${notificationBadge}</a>
               <ul aria-labelledby="notifications" class="dropdown-menu tasks-list">
                 <li>
                   ${notifications}
                 </li>
                 <li>
-                  <a href="#" class="dropdown-item text-center"> <strong>See All Notifications <i class="fa fa-angle-right"></i></strong></a>
+                  <a href="#" class="dropdown-item text-center"> <strong>See All Notifications 
+                  <i class="fa fa-angle-right"></i></strong></a>
                 </li>
               </ul>
             </li>
             <!-- Logout -->
-            <li class="list-inline-item logout"><a id="logout" href="/logout" class="nav-link">Logout <i class="icon-logout"></i></a></li>
+            <li class="list-inline-item logout"><a id="logout" href="/logout" class="nav-link">Logout 
+            <i class="icon-logout"></i></a></li>
           </ul>
         </div>
       </nav>
     </header>
-  `)
+  `);
 }
 
-//TODO: Dynamically select which page we're on for selection
+// TODO: Dynamically select which page we're on for selection
 function sidebar(sidebarPayload, cb) {
-	//Only show the FC nav for the correct people
-	var fcnav = "";
-	if (sidebarPayload.user.roleNumeric >= 1) {
-		fcnav += `
+  // Only show the FC nav for the correct people
+  let fcnav = '';
+  if (sidebarPayload.user.roleNumeric >= 1) {
+    fcnav += `
     <span class="heading">Fleet Commander</span>
     <ul class="list-unstyled">
       <li ${sidebarPayload.selected === 5 ? 'class="active"' : ''}> <a href="/commander">
@@ -123,30 +130,34 @@ function sidebar(sidebarPayload, cb) {
         </span>
         Fleet Management</a>
       </li>          
-      <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>`
-  
+      <li ${sidebarPayload.selected === 6 ? 'class="active"' : ''}> <a href="#">
+      <i class="fas fa-search"></i> Pilot Lookup</a></strike></li>`;
+
 
     if (sidebarPayload.user.roleNumeric >= 4) {
-      fcnav +=`
+      fcnav += `
       <li ${sidebarPayload.selected === 7 ? 'class="active"' : ''}>
-        <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
+        <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed">
+        <i class="fab fa-strava"></i> Squad L <i class="fas fa-sort-down float-right"></i></a>
         <ul id="squadmanagement" class="collapse list-unstyled ${sidebarPayload.selected === 3 ? 'show' : ''}">
           <li><a href="/admin/bans">Ban List</a></li>
           <li><a href="/admin/commanders">FC Management</a></li>
           <strike><li><a href="#">White List</a></strike></li>
         </ul>
-      </li>`
+      </li>`;
     }
-      fcnav+=`
-    </ul>`
-	}
+    fcnav += `
+    </ul>`;
+  }
 
-	cb(`
+  cb(`
     <!-- Nav - Sidebar -->
     <div class="d-flex align-items-stretch">
       <nav id="sidebar">
         <div class="sidebar-header d-flex align-items-center">
-          <div class="avatar"><img src="https://image.eveonline.com/Character/${sidebarPayload.user.characterID}_128.jpg" alt="..." class="img-fluid rounded-circle"></div>
+          <div class="avatar">
+            <img src="https://image.eveonline.com/Character/${sidebarPayload.user.characterID}_128.jpg" alt="..." 
+            class="img-fluid rounded-circle"></div>
           <div class="title">
             <h1 class="h5">${sidebarPayload.user.name}</h1>
             <p>${sidebarPayload.user.role}</p>
@@ -154,9 +165,12 @@ function sidebar(sidebarPayload, cb) {
         </div>
         <span class="heading">Pilot</span>
         <ul class="list-unstyled">
-          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="/"><i class="fas fa-hourglass-half"></i> Waitlist</a></li>
+          <li ${sidebarPayload.selected === 1 ? 'class="active"' : ''}><a href="/">
+          <i class="fas fa-hourglass-half"></i> Waitlist</a></li>
           <li ${sidebarPayload.selected === 2 ? 'class="active"' : ''}>
-            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> <i class="fa fa-user"></i> <strike>My Account <i class="fas fa-sort-down float-right"></i></a></strike>
+            <a href="#myaccount" aria-expanded="${sidebarPayload.selected === 2 ? 'true' : 'false'}" 
+            data-toggle="collapse" class="${sidebarPayload.selected === 2 ? '' : 'collapsed'}"> 
+            <i class="fa fa-user"></i> <strike>My Account <i class="fas fa-sort-down float-right"></i></a></strike>
             <ul id="myaccount" class="collapse list-unstyled ${sidebarPayload.selected === 2 ? 'show' : ''}">
               <strike><li><a href="#">My Alts & Fits</a></strike></li>
               <strike><li><a href="#">My Stats</a></strike></li>
@@ -164,15 +178,20 @@ function sidebar(sidebarPayload, cb) {
             </ul>
           </li>
           <li ${sidebarPayload.selected === 3 ? 'class="active"' : ''}>
-            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> Squad Stuff <i class="fas fa-sort-down float-right"></i></a>
+            <a href="#squadtools" aria-expanded="${sidebarPayload.selected === 3 ? 'true' : 'false'}" 
+            data-toggle="collapse" class="collapsed"><i class="fab fa-gitkraken"></i> Squad Stuff 
+            <i class="fas fa-sort-down float-right"></i></a>
             <ul id="squadtools" class="collapse list-unstyled" ${sidebarPayload.selected === 3 ? 'show' : ''}>
-              <li><a href="https://goonfleet.com/index.php/topic/219113-incursion-squad-tutorial-directory-read-me/" target="blank">New Pilot Guide</a></li>  
-              <li><a href="https://goonfleet.com/index.php/topic/219234-incursion-squad-fitting-directory/" target="blank">Squad Fittings</a></li>
+              <li><a href="https://goonfleet.com/index.php/topic/219113-incursion-squad-tutorial-directory-read-me/" 
+              target="blank">New Pilot Guide</a></li>  
+              <li><a href="https://goonfleet.com/index.php/topic/219234-incursion-squad-fitting-directory/" 
+              target="blank">Squad Fittings</a></li>
               <strike><li><a href="#">Squad Roles</a></strike></li>
               <strike><li><a href="#">Squad Stats</a></strike></li>
             </ul>
           </li>
-          <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> <i class="fa fa-link"></i> Incursion Forums</a></li>
+          <li> <a href="https://goonfleet.com/index.php/forum/273-incursions/" target="_blank"> 
+          <i class="fa fa-link"></i> Incursion Forums</a></li>
         </ul>
           ${fcnav}
         <hr>
@@ -184,19 +203,28 @@ function sidebar(sidebarPayload, cb) {
 }
 
 function footer(footerPayload, cb) {
-	cb(`
+  cb(`
             <!-- Legal Notices  Modal -->
             <div role="dialog" tabindex="-1" class="modal fade" id="legal">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
                     <h4 class="modal-title"><strong class="text-primary">Goon</strong><strong>Incursions</strong></h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span 
+                    aria-hidden="true">×</span></button>
                   </div>
                   <div class="modal-body">
-                    <p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to the Goon Incursions Squad. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
+                    <p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved 
+                    worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE 
+                    logo, EVE and all associated logos and designs are the intellectual property of CCP hf. 
+                    All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable 
+                    features of the intellectual property relating to these trademarks are likewise the intellectual 
+                    property of CCP hf. CCP hf. has granted permission to the Goon Incursions Squad. CCP is in no way 
+                    responsible for the content on or functioning of this website, nor can it be liable for any damage 
+                    arising from the use of this website.</p>
                     <ul class="list-unstyled text-center">
-                      <li><small>Design by <a href="#">Caitlin  Viliana</a>, theme by: <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
+                      <li><small>Design by <a href="#">Caitlin  Viliana</a>, theme by: 
+                      <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
                       <li><small>Website developed and maintained by: <a href="#">Makeshift Storque</a></small></li>
                     </ul>
                   </div>
