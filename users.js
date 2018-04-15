@@ -189,15 +189,12 @@ module.exports = function (setup) {
 
 	//Update a users permission and title.
 	module.updateUserPermission = function(characterID, permission, adminUser, cb) {
-		var rolesList = ["Member", "Trainee", "", "Fleet Commander", "", "Leadership"];
-
-
 		//Stop a user from adjusting their own access.
 		if(characterID !== adminUser.characterID)
 		{
-			db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: rolesList[permission]} }, function (err, result) {
+			db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
 				if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
-				if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + rolesList[permission]);
+				if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + setup.userPermissions[permission]);
 			})
 		}
 	}
@@ -207,12 +204,16 @@ module.exports = function (setup) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("module.setDestination: Error for requestNewAccessToken", { err, user });
+				cb(err);
+			} else {
+				log.debug("Setting "+user.name+"\'s destination to "+systemID);
+				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
+					cb("OK");
+				}).catch(err => {
+					log.error("users.setDestination: ", { err });
+					cb(err);
+				});
 			}
-			//users.updateRefreshToken(user.characterID, newRefreshToken);
-			esi.characters(user.characterID, accessToken).autopilot.destination(systemID).catch(err => {
-				log.error("users.setDestination: ", { err });
-			});
-			log.debug("Setting "+user.name+"\'s destination to "+systemID);
 		})
 	}
 
@@ -221,12 +222,17 @@ module.exports = function (setup) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("module.showInfo: Error for requestNewAccessToken", { err, user });
+				cb(err)
+			} else {
+				log.debug("Opening "+targetID+"\'s information window for "+user.name)
+				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
+					cb("OK");
+				}).catch(err => {
+					log.error("users.showInfo: ", { err });
+					cb(err)
+				});
+				
 			}
-			//users.updateRefreshToken(user.characterID, newRefreshToken);
-			esi.characters(user.characterID, accessToken).window.info(targetID).catch(err => {
-				log.error("users.showInfo: ", { err });
-			});
-			log.debug("Opening "+targetID+"\'s information window for "+user.name)
 		})
 	}
 	

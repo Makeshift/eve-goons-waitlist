@@ -188,11 +188,11 @@
                         <tbody>
                           <tr>
                             <td  class="tw60per">Fleet Commander:</td>
-                            <td><a href="/esi/ui/info/{{ fleet.fc.characterID }}">{{ fleet.fc.name }}</a></td>
+                            <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
                           </tr>
                           <tr>
                             <td>Secondary Fleet Commander:</td>
-                            <td><a href="/esi/ui/info/{{ fleet.backseat.characterID}}">{{ fleet.backseat.name }}</a></td>
+                            <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a></td>
                           </tr>
                           <tr>
                             <td>Fleet Type:</td>
@@ -218,7 +218,7 @@
                           </tr>                      
                           <tr>
                             <td>Fleet Location:</td>
-                            <td><a href="/esi/ui/waypoint/{{ fleet.fc.location.id }}">{{ fleet.fc.location.name }}</a></td>
+                            <td><a href="javascript:void(0)" onclick="setWaypoint({{ fleet.fc.location.id }})">{{ fleet.fc.location.name }}</a></td>
                           </tr>
                           <tr>
                             <td>Fleet Comms:</td>

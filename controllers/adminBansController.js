@@ -1,4 +1,3 @@
-var template = require('../template.js');
 var path = require('path');
 var setup = require('../setup.js');
 var bans = require('../bans.js')(setup);
@@ -7,8 +6,20 @@ const log = require('../logger.js')(module);
 
 //Render Ban Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+    if (req.isAuthenticated() && req.user.roleNumeric > 3) {
         bans.getBans(function(activeBans) {
+            
+            for ( var i = 0; i < activeBans.length; i++) {
+                activeBans[i].createdAt = new Date(activeBans[i].createdAt).toDateString();
+            }
+
+            //Sort by name then date.
+            activeBans.sort(function(a,b) { 
+                if(a.pilotName > b.pilotName) return 1;
+                if(a.createdAt > b.createdAt) return -1;
+                return  0;
+            });
+
             var userProfile = req.user;
             var sideBarSelected = 7;
             var banList = activeBans;

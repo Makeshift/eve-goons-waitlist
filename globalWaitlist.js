@@ -25,19 +25,27 @@ module.exports = function (setup) {
 		module.checkIfUserIsIn(user.name, function (status) {
 			if (!status) {
 				db.insert(user, function (err, doc) {
-					if (err) log.error("addToWaitlist: Error for db.insert", { err, 'user': user.name });
-					cb(true);
+					if (err) {
+						log.error("addToWaitlist: Error for db.insert", { err, 'user': user.name });
+						cb(400, err);
+					} else {
+						cb(200, "OK");
+					}
 				})
 			} else {
-				cb(true);
+				cb(200, "OK");
 			}
 		})
 	}
 
 	module.setAsInvited = function (tableID, cb) {
-		db.updateOne({ '_id': ObjectId(tableID) }, { $set: { "invited": true } }, function (err, result) {
-			if (err) log.error("setAsInvited: Error for db.updateOne", { err, '_id': ObjectId(tableID) });
-			if (typeof cb === "function") cb();
+		db.updateOne({ '_id': ObjectId(tableID) }, { $set: { "invited": "invite-sent" } }, function (err, result) {
+			if (err) {
+				log.error("setAsInvited: Error for db.updateOne", { err, '_id': ObjectId(tableID) });
+				cb(400, err)
+			} else {
+				cb(200, "OK")
+			}
 		})
 
 	}
@@ -56,8 +64,12 @@ module.exports = function (setup) {
 	module.remove = function (tableID, cb) {
 		log.debug(`Deleting ID from waitlist: ${tableID}`);
 		db.deleteOne({ '_id': ObjectId(tableID) }, function (err, result) {
-			if (err) log.error("remove: Error for db.deleteOne", { err, '_id': ObjectId(tableID) });
-			if (typeof cb === "function") cb();
+			if (err) {
+				log.error("remove: Error for db.deleteOne", { err, '_id': ObjectId(tableID) });
+				cb(400, err);
+			} else { 
+				cb(200, "OK");
+			}
 		})
 	}
 	//Temporary - This will delete the first alt it finds on the waitlist, it can be pressed multiple times to remove all of them

@@ -6,25 +6,25 @@
 }
 
 /* Invite send PENDING */
-.invite-pending, .invite-pending a{
-	background-color: #055673!important; 
+table.table-striped>tbody>tr.invite-pending, table.table-hover>tbody>tr.invite-pending a{
+	background-color: #055673; 
 	color:white;
 }
 
 /* Invite send OKAY */
-.invite-sent, .invite-sent a{
-	background-color: #1a461a!important;
-	color:white!important;
+table.table-striped>tbody>tr.invite-sent, table.table-hover>tbody>tr.invite-sent a{
+	background-color: #1a461a;
+	color:white;
 }
 
 /* Invite send FAILED */
-.invite-failed, .invite-failed a{
-	background-color: #670808!important;
+table.table-striped>tbody>tr.invite-failed, table.table-hover>tbody>tr.invite-failed a{
+	background-color: #670808;
 	color: white;
 }
 
 .invite-alert{
-	background-color: rgba(128, 128, 128, 0.22)!important;
+	background-color: rgba(128, 128, 128, 0.22);
 }
 
 /* Skills */
