@@ -6,26 +6,23 @@
 }
 
 /* Invite send PENDING */
-table.table-striped>tbody>tr.invite-pending, table.table-hover>tbody>tr.invite-pending a{
+table.table-striped>tbody>tr.invite-pending, table.table-hover>tbody>tr.invite-pending a, table.table-hover>tbody>tr.invite-pending:hover, table.table-hover>tbody>tr.invite-pending:focus{
 	background-color: #055673; 
 	color:white;
 }
 
 /* Invite send OKAY */
-table.table-striped>tbody>tr.invite-sent, table.table-hover>tbody>tr.invite-sent a{
+table.table-striped>tbody>tr.invite-sent, table.table-hover>tbody>tr.invite-sent a, table.table-hover>tbody>tr.invite-sent:hover, table.table-hover>tbody>tr.invite-sent:focus{
 	background-color: #1a461a;
 	color:white;
 }
 
 /* Invite send FAILED */
-table.table-striped>tbody>tr.invite-failed, table.table-hover>tbody>tr.invite-failed a{
+table.table-striped>tbody>tr.invite-failed, table.table-hover>tbody>tr.invite-failed a, table.table-hover>tbody>tr.invite-failed:hover, table.table-hover>tbody>tr.invite-failed:focus{
 	background-color: #670808;
 	color: white;
 }
 
-.invite-alert{
-	background-color: rgba(128, 128, 128, 0.22);
-}
 
 /* Skills */
 .skills-pass, .skills-pass a{
