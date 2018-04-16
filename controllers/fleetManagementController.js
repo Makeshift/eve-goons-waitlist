@@ -133,3 +133,18 @@ exports.closeFleet = function(req, res) {
         res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
     }
 }
+
+//Remove all pilots from the waitlist
+exports.clearWaitlist = function(req, res) {
+    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+        waitlist.get(function(pilotsOnWaitlist) {
+            log.debug(req.user.name + " is removing all pilots from the waitlist.");
+            for (var i = 0; i < pilotsOnWaitlist.length; i++) {
+                waitlist.remove(pilotsOnWaitlist[i]._id, function(){});
+            }
+            res.status(200).send();
+        })        
+    } else {
+        res.status(400).send("You do not have permission to complete this action. Are you an FC?");
+    }
+}

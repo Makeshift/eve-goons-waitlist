@@ -295,8 +295,8 @@
                 <form class="mb-2" action="/commander/{{ fleet.id }}/delete">
                     <button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
                 </form>
-                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">Clear the Waitlist!</button>        
-                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">I need an Adult!</button>
+                <button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>        
+                <button class="btn btn-danger btn-sm btn-block disabled" type="button" title="Hahaha, no!">I need an Adult!</button>
             </div>
         </div>
     </div>
@@ -427,6 +427,26 @@
       }).fail(function(err) {
         console.log("Faied to update fleet at a glance: ",err);
       });
+    }
+
+    //Remove all pilots from the waitlist.
+    function clearWaitlist(){
+      if (confirm("Are you sure you want to remove all users from the waitlist?")) {
+          $.ajax({
+            type:"POST",
+            url:"/internal-api/waitlist/remove-all",
+            datatype:"HTML",
+          success:function(data)
+          {
+              location.reload();
+          }
+        }).fail(function(err) {
+            console.log("Faied to clean the waitlist: ",err);
+            $( '#fleetActions' ).modal('toggle');
+        });
+      } else {
+        $( '#fleetActions' ).modal('toggle');
+      }
     }
 </script>
 {%- include "./partials/footer.njk" %}
