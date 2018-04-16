@@ -1518,6 +1518,8 @@ nav#sidebar.shrinked a[aria-expanded="true"]::after {
 
 .banned {
   background: url(../img/dead.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 .login-page .container {

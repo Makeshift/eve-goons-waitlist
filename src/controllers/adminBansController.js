@@ -5,8 +5,20 @@ const log = require('../logger.js')(module);
 
 // Render Ban Page
 exports.index = function adminBanController(req, res) {
-  if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+  if (req.isAuthenticated() && req.user.roleNumeric > 3) {
     bans.getBans((activeBans) => {
+
+      for (let i = 0; i < activeBans.length; i++) {
+      activeBans[i].createdAt = new Date(activeBans[i].createdAt).toDateString();
+    }
+
+    //Sort by name then date.
+    activeBans.sort(function(a,b) {
+      if(a.pilotName > b.pilotName) return 1;
+      if(a.createdAt > b.createdAt) return -1;
+      return  0;
+    });
+      
       const userProfile = req.user;
       const sideBarSelected = 7;
       const banList = activeBans;

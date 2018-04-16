@@ -201,46 +201,48 @@ module.exports = function usersModule() {
 
   // Update a users permission and title.
   module.updateUserPermission = function updateUserPermission(characterID, permission, adminUser) {
-    const rolesList = ['Member', 'Trainee', '', 'Fleet Commander', '', 'Leadership'];
-
-
-    // Stop a user from adjusting their own access.
-    if (characterID !== adminUser.characterID) {
-      db.updateOne(
-        { characterID }, { $set: { roleNumeric: Number(permission), role: rolesList[permission] } },
-        (err) => {
-          if (err) log.error('Error updating user permissions ', { err, characterID });
-          if (!err) log.debug(`${adminUser.Name} changed the role of ${characterID} to ${rolesList[permission]}`);
-        }
-      );
+    //Stop a user from adjusting their own access.
+    if(characterID !== adminUser.characterID) {
+      db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
+        if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
+        if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + setup.userPermissions[permission]);
+      })
     }
   };
 
   // Set a users destination
   module.setDestination = function setDestination(user, systemID) {
-    refresh.requestNewAccessToken('provider', user.refreshToken, (err, accessToken) => {
+    refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken) {
       if (err) {
-        log.error('module.setDestination: Error for requestNewAccessToken', { err, user });
+        log.error("module.setDestination: Error for requestNewAccessToken", { err, user });
+        cb(err);
+      } else {
+        log.debug("Setting "+user.name+"\'s destination to "+systemID);
+        esi.characters(user.characterID, accessToken).autopilot.destination(systemID)
+          .then(() => cb("OK"))
+          .catch(err => {
+            log.error("users.setDestination: ", { err });
+            cb(err);
+          });
       }
-      // users.updateRefreshToken(user.characterID, newRefreshToken);
-      esi.characters(user.characterID, accessToken).autopilot.destination(systemID).catch((err) => {
-        log.error('users.setDestination: ', { err });
-      });
-      log.debug(`Setting ${user.name}'s destination to ${systemID}`);
     });
   };
 
   // Open the info window of an alliance, corporation or pilot.
   module.showInfo = function showInfo(user, targetID) {
-    refresh.requestNewAccessToken('provider', user.refreshToken, (err, accessToken) => {
+    refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken) {
       if (err) {
-        log.error('module.showInfo: Error for requestNewAccessToken', { err, user });
+        log.error("module.showInfo: Error for requestNewAccessToken", { err, user });
+        cb(err)
+      } else {
+        log.debug("Opening "+targetID+"\'s information window for "+user.name)
+        esi.characters(user.characterID, accessToken).window.info(targetID)
+          .then(() => cb("OK"))
+          .catch(err => {
+            log.error("users.showInfo: ", { err });
+            cb(err)
+          });
       }
-      // users.updateRefreshToken(user.characterID, newRefreshToken);
-      esi.characters(user.characterID, accessToken).window.info(targetID).catch((err) => {
-        log.error('users.showInfo: ', { err });
-      });
-      log.debug(`Opening ${targetID}'s information window for ${user.name}`);
     });
   };
 

@@ -59,16 +59,15 @@ module.exports = function fleets(setup) {
   module.invite = function invite(fcid, refreshToken, fleetid, inviteeid, cb) {
     refresh.requestNewAccessToken('provider', refreshToken, (err, accessToken, newRefreshToken) => {
       if (err) {
-        log.error('fleets.invite: Error for requestNewAccessToken', { err, fleetid, inviteeid });
-        // TODO: is it good to throw?
-        throw err;
+        log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
+        cb(400, err);
+      } else {
+        users.updateRefreshToken(fcid, newRefreshToken);
+        esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" })
+          .then(() => cb(200, "OK"))
+          .catch(error => cb(400, error.message));
       }
-      users.updateRefreshToken(fcid, newRefreshToken);
-      esi.characters(fcid, accessToken).fleet(fleetid).invite({ character_id: inviteeid, role: 'squad_member' });
-      if (typeof cb === 'function') {
-        cb();
-      }
-    });
+    })
   };
 
   module.register = function register(data, cb) {
@@ -125,7 +124,7 @@ module.exports = function fleets(setup) {
           }
           if (members.includes(charID)) {
             log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
-            waitlist.remove(onWaitlist[i]._id);
+            waitlist.remove(onWaitlist[i]._id, ()=>{});
           }
         }
       });

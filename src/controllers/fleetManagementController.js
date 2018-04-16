@@ -1,4 +1,3 @@
-const template = require('../template.js');
 const setup = require('../setup.js');
 const fleets = require('../fleets.js')(setup);
 const waitlist = require('../globalWaitlist.js')(setup);
@@ -10,36 +9,26 @@ const error403Message = `You don't have permission to view this page. If this is
 exports.index = function fleetManagementController(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
     fleets.get(req.params.fleetid, (fleet) => {
-      if (!fleet) {
+      if (fleet) {
+        waitlist.get(function(usersOnWaitlist) {
+          //Display the wait time in a nice format.
+          for(let i = 0; i < usersOnWaitlist.length; i++) {
+            let signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+            let signupHours = 0;
+            while (signuptime > 59) {
+              signuptime -= 60;
+              signupHours++;
+            }
+            usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';
+          }
+          let userProfile = req.user;
+          let sideBarSelected = 5;
+          res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
+        })
+      } else {
         res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
-        return;
       }
-
-      const page = {
-        template: 'fcFleetManage',
-        sidebar: {
-          selected: 5,
-          user: req.user
-        },
-        header: {
-          user: req.user
-        },
-        content: {
-          user: req.user,
-          fleet
-        }
-      };
-      template.pageGenerate(page, (generatedPage) => {
-        res.send(generatedPage);
       });
-      /*
-            waitlist.get(function(usersOnWaitlist) {
-                var userProfile = req.user;
-                var sideBarSelected = 5;
-                //console.log(usersOnWaitlist);
-                res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
-            }) */
-    });
   } else {
     res.status(403).send(error403Message);
   }
@@ -48,12 +37,17 @@ exports.index = function fleetManagementController(req, res) {
 // Invite a pilot to a specific fleet
 exports.invitePilot = function invitePilot(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-    fleets.get(req.params.fleetid, (fleet) => {
-      fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, () => {
-        res.redirect(302, `/commander/${req.params.fleetid}`);
+    fleets.get(req.params.fleetid, function (fleet) {
+      fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
+        if(status === 200) {
+          waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
+            res.status(invStatus).send(invResponse);
+          });
+        } else {
+          res.status(status).send(response)
+        }
       });
-      waitlist.setAsInvited(req.params.tableID);
-    });
+    })
   } else {
     res.status(403).send(error403Message);
   }
@@ -62,8 +56,8 @@ exports.invitePilot = function invitePilot(req, res) {
 // Remove a specific pilot from the waitlist
 exports.removePilot = function removePilot(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-    waitlist.remove(req.params.tableID, () => {
-      res.redirect(302, `/commander/${req.params.fleetid}`);
+    waitlist.remove(req.params.tableID, function (status, response) {
+      res.status(status).send(response);
     });
   } else {
     res.status(403).send(error403Message);

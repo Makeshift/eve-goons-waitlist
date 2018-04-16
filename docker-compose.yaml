@@ -22,6 +22,6 @@ services:
     container_name: mongo
     image: mvertes/alpine-mongo
     volumes:
-      - ./data:/data/db
+      - /data/db:/data/db
     ports:
       - "27017:27017"
