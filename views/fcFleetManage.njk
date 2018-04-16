@@ -26,12 +26,12 @@
                     <tr>
                       <td>FC (Boss):</td>
                       <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
-                      <td><button class="btn btn-sm btn-block" id="updateFC">I'm the FC</button></td>
+                      <td><button class="btn btn-sm btn-block" onclick="setFC()">I'm the FC</button></td>
                     </tr>
                     <tr>
                       <td>Backseating FC:</td>
                       <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a></td>
-                      <td><button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button></td>
+                      <td><button class="btn btn-sm btn-block" onclick="setBackseat()">Update Backseat</button></td>
                     </tr>
                     <tr>
                       <td>Fleet Status:</td>
@@ -40,11 +40,11 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" id="fleetStatus-1" href="#">Forming</a>
-                            <a class="dropdown-item" id="fleetStatus-2" href="#">Running</a>
-                            <a class="dropdown-item" id="fleetStatus-3" href="#">Docking Soon</a>
-                            <a class="dropdown-item" id="fleetStatus-4" href="#">Short Break</a>
-                            <a class="dropdown-item" id="fleetStatus-5" href="#">Not Listed</a>       
+                            <a class="dropdown-item" onclick="setFleetStatus('Forming')">Forming</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Running')">Running</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Docking Soon')">Docking Soon</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Short Break')">Short Break</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Not Listed')">Not Listed</a>       
                           </div>
                         </div>
                       </td>
@@ -56,12 +56,12 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" id="fleetTypeButton-0" href="#">Scouts</a>
-                            <a class="dropdown-item" id="fleetTypeButton-1" href="#">Vanguards</a>
-                            <a class="dropdown-item" id="fleetTypeButton-2" href="#">Assaults</a>
-                            <a class="dropdown-item" id="fleetTypeButton-3" href="#">Headquarters</a>
-                            <a class="dropdown-item" id="fleetTypeButton-4" href="#">Kundalini</a>
-                            <a class="dropdown-item" id="fleetTypeButton-5" href="#">ARSEFleet</a>        
+                            <a class="dropdown-item" onclick="setFleetType('Scouts')">Scouts</a>
+                            <a class="dropdown-item" onclick="setFleetType('Vanguards')">Vanguards</a>
+                            <a class="dropdown-item" onclick="setFleetType('Assaults')">Assaults</a>
+                            <a class="dropdown-item" onclick="setFleetType('Headquarters')">Headquarters</a>
+                            <a class="dropdown-item" onclick="setFleetType('Kundalini')">Kundalini</a>
+                            <a class="dropdown-item" onclick="setFleetType('ARSEFleet')">ARSEFleet</a>        
                           </div>
                         </div>
                       </td>
@@ -281,60 +281,6 @@
       updateFleetGlance();
     }, 30000);//Every 30 seconds
 
-    document.getElementById("updateFC").addEventListener("click", function () {
-      post("/commander/{{ fleet.id }}/update/commander", {status: "undefined"});
-    });
-
-    document.getElementById("updateBackseat").addEventListener("click", function () {
-      post("/commander/{{ fleet.id }}/update/backseat", {status: "undefined"});
-    });
-
-    //Update Fleet Status
-    document.getElementById("fleetStatus-1").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Forming"});
-    });
-
-    document.getElementById("fleetStatus-2").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Running"});
-    });
-
-    document.getElementById("fleetStatus-3").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Docking Soon"});
-    });
-
-    document.getElementById("fleetStatus-4").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Short Break"});
-    });
-
-    document.getElementById("fleetStatus-5").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Not Listed"});
-    });
-
-    //Update Fleet Type
-    document.getElementById("fleetTypeButton-0").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Scouts"});
-    });
-
-    document.getElementById("fleetTypeButton-1").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Vanguards"});
-    });
-
-    document.getElementById("fleetTypeButton-2").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Assaults"});
-    });
-
-    document.getElementById("fleetTypeButton-3").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
-    });
-
-    document.getElementById("fleetTypeButton-4").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
-    });
-
-    document.getElementById("fleetTypeButton-5").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "ARSEFleet"});
-    });
-
     //Invite a pilot to the fleet
     function invitePilot(characterID, dbRowID) {
         var dbRowID = dbRowID;
@@ -416,9 +362,32 @@
       });
     }
 
+    //Change the FC
+    function setFC(){
+      $.ajax({
+          type:"POST",
+          url:"/commander/{{ fleet.id }}/update/commander"
+      }).done(function () {
+          location.reload();
+      }).error(function (err){
+          console.log("Error updating the backseat: ",err);
+      })   
+    }
+
+    //Change the backseat
+    function setBackseat(){
+      $.ajax({
+          type:"POST",
+          url:"/commander/{{ fleet.id }}/update/backseat"
+      }).done(function () {
+          location.reload();
+      }).error(function (err){
+          console.log("Error updating the backseat: ",err);
+      })
+    }
+
     //Change the comms channel for the fleet
     function setCommsChannel(comsUrl, comsName){
-
       $.ajax({
         type:"POST",
         url:"/commander/{{ fleet.id }}/update/comms",
@@ -428,6 +397,33 @@
             console.log("Error updating comms information: ", err);
         });
     }
+
+    //Set the fleet status
+    function setFleetStatus(fleetStatus){
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/status",
+        data: {status: fleetStatus}
+      }).done(function(){
+          location.reload();
+      }).fail(function(err) {
+          console.log("Error updating fleet status: ", err);
+      });
+    }
+
+    //Set the fleet type
+    function setFleetType(fleetType){
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/type",
+        data: {type: fleetType}
+      }).done(function(){
+          location.reload();
+      }).fail(function(err) {
+          console.log("Error updating fleet type: ", err);
+      });
+    }
+
     //Remove all pilots from the waitlist.
     function clearWaitlist(){
       if (confirm("Are you sure you want to remove all users from the waitlist?")) {
