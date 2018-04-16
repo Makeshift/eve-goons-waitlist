@@ -73,43 +73,10 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <script>function post(path, params) {
-                                  var form = document.createElement("form");
-                                  form.setAttribute("method", "post");
-                                  form.setAttribute("action", path);
-                                  for(var key in params) {
-                                      if(params.hasOwnProperty(key)) {
-                                          var hiddenField = document.createElement("input");
-                                          hiddenField.setAttribute("type", "hidden");
-                                          hiddenField.setAttribute("name", key);
-                                          hiddenField.setAttribute("value", params[key]);
-                                          form.appendChild(hiddenField);
-                                      }
-                                  }
-                                  document.body.appendChild(form);
-                                  form.submit();
-                              }
-                              </script>
-                              <a id="commsbutton-1" class="dropdown-item">Incursions -> B</a>
-                              <script>
-                                  document.getElementById("commsbutton-1").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> B", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20B?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
-                              
-                              <a id="commsbutton-2" class="dropdown-item">Incursions -> C</a>
-                              <script>
-                                  document.getElementById("commsbutton-2").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> C", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20C?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
-                              
-                              <a id="commsbutton-3" class="dropdown-item">Incursions -> D</a>
-                              <script>
-                                  document.getElementById("commsbutton-3").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> D", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20D?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[0].url}}','{{comms[0].name | safe}}')">{{comms[0].name | safe}}</a>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[1].url}}','{{comms[1].name | safe}}')">{{comms[1].name | safe}}</a>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[2].url}}','{{comms[2].name | safe}}')">{{comms[2].name | safe}}</a>                             
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[3].url}}','{{comms[3].name | safe}}')">{{comms[3].name | safe}}</a>
                           </div>
                         </div>
                       </td>
@@ -195,7 +162,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -253,7 +220,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -367,7 +334,7 @@
     document.getElementById("fleetTypeButton-5").addEventListener("click", function () {
         post("/commander/{{ fleet.id }}/update/type", {type: "ARSEFleet"});
     });
-    
+
     //Invite a pilot to the fleet
     function invitePilot(characterID, dbRowID) {
         var dbRowID = dbRowID;
@@ -428,7 +395,39 @@
         console.log("Faied to update fleet at a glance: ",err);
       });
     }
+    
+    //Send a notification to a pilot.
+    function alarmUser(targetid, dbRowID) {
+      var rowClass = "#row-"+dbRowID;
 
+      $.ajax({
+        type:"POST",
+        url:"/internal-api/alarm-user/"+targetid,
+        datatype:"HTML",
+        success:function(data)
+        {
+            $(rowClass).removeClass().addClass("invite-pending");
+            $(rowClass).delay(5000).queue(function(){
+              $(this).removeClass().addClass("invite-default");
+            });
+        }
+      }).fail(function(err) {
+          console.log("Faied to alarm user: ",err);
+      });
+    }
+
+    //Change the comms channel for the fleet
+    function setCommsChannel(comsUrl, comsName){
+
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/comms",
+        data: {name: comsName, url: comsUrl}}).done(function(){
+            location.reload();
+        }).fail(function(err) {
+            console.log("Error updating comms information: ", err);
+        });
+    }
     //Remove all pilots from the waitlist.
     function clearWaitlist(){
       if (confirm("Are you sure you want to remove all users from the waitlist?")) {

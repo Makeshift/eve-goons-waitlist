@@ -96,3 +96,7 @@ module.createShipsHTML = function (ships, filter, res) {
     
     res.status(200).send(html);
 }
+
+exports.alarmUser = function(req, res) {
+    res.status(200).send();
+}
