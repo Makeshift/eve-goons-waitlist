@@ -10,11 +10,11 @@ exports.index = function(req, res) {
         var userProfile = {};
         if (typeof req.query.user != "undefined") {
             users.findAndReturnUser(Number(req.query.user), function(profile) {
-                userProfile = profile;
+                manageUser = profile;
                 genPage();
             })
         } else {
-            userProfile = req.user;
+            manageUser = req.user;
             genPage();
         }
         
@@ -36,8 +36,8 @@ exports.index = function(req, res) {
                 });
 
                 var sideBarSelected = 7;
+                var userProfile = req.user;
                 var fcs = fcList;
-                var manageUser = userProfile
                 res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml});	
             });
         }
