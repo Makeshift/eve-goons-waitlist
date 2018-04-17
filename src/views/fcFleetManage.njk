@@ -26,12 +26,12 @@
                     <tr>
                       <td>FC (Boss):</td>
                       <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
-                      <td><button class="btn btn-sm btn-block" id="updateFC">I'm the FC</button></td>
+                      <td><button class="btn btn-sm btn-block" onclick="setFC()">I'm the FC</button></td>
                     </tr>
                     <tr>
                       <td>Backseating FC:</td>
                       <td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a></td>
-                      <td><button class="btn btn-sm btn-block" id="updateBackseat">Update Backseat</button></td>
+                      <td><button class="btn btn-sm btn-block" onclick="setBackseat()">Update Backseat</button></td>
                     </tr>
                     <tr>
                       <td>Fleet Status:</td>
@@ -40,11 +40,11 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" id="fleetStatus-1" href="#">Forming</a>
-                            <a class="dropdown-item" id="fleetStatus-2" href="#">Running</a>
-                            <a class="dropdown-item" id="fleetStatus-3" href="#">Docking Soon</a>
-                            <a class="dropdown-item" id="fleetStatus-4" href="#">Short Break</a>
-                            <a class="dropdown-item" id="fleetStatus-5" href="#">Not Listed</a>       
+                            <a class="dropdown-item" onclick="setFleetStatus('Forming')">Forming</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Running')">Running</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Docking Soon')">Docking Soon</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Short Break')">Short Break</a>
+                            <a class="dropdown-item" onclick="setFleetStatus('Not Listed')">Not Listed</a>       
                           </div>
                         </div>
                       </td>
@@ -56,12 +56,12 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <a class="dropdown-item" id="fleetTypeButton-0" href="#">Scouts</a>
-                            <a class="dropdown-item" id="fleetTypeButton-1" href="#">Vanguards</a>
-                            <a class="dropdown-item" id="fleetTypeButton-2" href="#">Assaults</a>
-                            <a class="dropdown-item" id="fleetTypeButton-3" href="#">Headquarters</a>
-                            <a class="dropdown-item" id="fleetTypeButton-4" href="#">Kundalini</a>
-                            <a class="dropdown-item" id="fleetTypeButton-5" href="#">ARSEFleet</a>        
+                            <a class="dropdown-item" onclick="setFleetType('Scouts')">Scouts</a>
+                            <a class="dropdown-item" onclick="setFleetType('Vanguards')">Vanguards</a>
+                            <a class="dropdown-item" onclick="setFleetType('Assaults')">Assaults</a>
+                            <a class="dropdown-item" onclick="setFleetType('Headquarters')">Headquarters</a>
+                            <a class="dropdown-item" onclick="setFleetType('Kundalini')">Kundalini</a>
+                            <a class="dropdown-item" onclick="setFleetType('ARSEFleet')">ARSEFleet</a>        
                           </div>
                         </div>
                       </td>
@@ -73,43 +73,10 @@
                         <div class="dropdown">
                           <button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
                           <div class="dropdown-menu" role="menu">
-                            <script>function post(path, params) {
-                                  var form = document.createElement("form");
-                                  form.setAttribute("method", "post");
-                                  form.setAttribute("action", path);
-                                  for(var key in params) {
-                                      if(params.hasOwnProperty(key)) {
-                                          var hiddenField = document.createElement("input");
-                                          hiddenField.setAttribute("type", "hidden");
-                                          hiddenField.setAttribute("name", key);
-                                          hiddenField.setAttribute("value", params[key]);
-                                          form.appendChild(hiddenField);
-                                      }
-                                  }
-                                  document.body.appendChild(form);
-                                  form.submit();
-                              }
-                              </script>
-                              <a id="commsbutton-1" class="dropdown-item">Incursions -> B</a>
-                              <script>
-                                  document.getElementById("commsbutton-1").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> B", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20B?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
-                              
-                              <a id="commsbutton-2" class="dropdown-item">Incursions -> C</a>
-                              <script>
-                                  document.getElementById("commsbutton-2").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> C", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20C?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
-                              
-                              <a id="commsbutton-3" class="dropdown-item">Incursions -> D</a>
-                              <script>
-                                  document.getElementById("commsbutton-3").addEventListener("click", function () {
-                                  post("/commander/1090111424590/update/comms", {name: "Incursions -> D", url: "mumble://mumble.goonfleet.com/Squads%20and%20SIGs/Incursions/Fleet%20D?title=Goonfleet&version=1.2.0"});
-                                  });
-                              </script>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[0].url}}','{{comms[0].name | safe}}')">{{comms[0].name | safe}}</a>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[1].url}}','{{comms[1].name | safe}}')">{{comms[1].name | safe}}</a>
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[2].url}}','{{comms[2].name | safe}}')">{{comms[2].name | safe}}</a>                             
+                              <a class="dropdown-item" onclick="setCommsChannel('{{comms[3].url}}','{{comms[3].name | safe}}')">{{comms[3].name | safe}}</a>
                           </div>
                         </div>
                       </td>
@@ -179,7 +146,7 @@
                           <img src="https://image.eveonline.com/Character/{{ user.user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
                         </td>
                         <td>
-                          <a href="javascript:void(0);" onclick="showInfo({{ user.user.characterID }})">{{ user.user.name }}</a></td>
+                          <a href="javascript:void(0);" onclick="showInfo({{ user.user.characterID }})">{{ user.user.name }}</a>
                           <p><strike>Newbee</strike></p>
                         </td>
                         <td>
@@ -195,7 +162,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -253,7 +220,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -295,8 +262,8 @@
                 <form class="mb-2" action="/commander/{{ fleet.id }}/delete">
                     <button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
                 </form>
-                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">Clear the Waitlist!</button>        
-                <button class="btn btn-danger btn-sm btn-block disabled" type="submit">I need an Adult!</button>
+                <button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>        
+                <button class="btn btn-danger btn-sm btn-block disabled" type="button" title="Hahaha, no!">I need an Adult!</button>
             </div>
         </div>
     </div>
@@ -314,60 +281,6 @@
       updateFleetGlance();
     }, 30000);//Every 30 seconds
 
-    document.getElementById("updateFC").addEventListener("click", function () {
-      post("/commander/{{ fleet.id }}/update/commander", {status: "undefined"});
-    });
-
-    document.getElementById("updateBackseat").addEventListener("click", function () {
-      post("/commander/{{ fleet.id }}/update/backseat", {status: "undefined"});
-    });
-
-    //Update Fleet Status
-    document.getElementById("fleetStatus-1").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Forming"});
-    });
-
-    document.getElementById("fleetStatus-2").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Running"});
-    });
-
-    document.getElementById("fleetStatus-3").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Docking Soon"});
-    });
-
-    document.getElementById("fleetStatus-4").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Short Break"});
-    });
-
-    document.getElementById("fleetStatus-5").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/status", {status: "Not Listed"});
-    });
-
-    //Update Fleet Type
-    document.getElementById("fleetTypeButton-0").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Scouts"});
-    });
-
-    document.getElementById("fleetTypeButton-1").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Vanguards"});
-    });
-
-    document.getElementById("fleetTypeButton-2").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Assaults"});
-    });
-
-    document.getElementById("fleetTypeButton-3").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
-    });
-
-    document.getElementById("fleetTypeButton-4").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "Kundalini"});
-    });
-
-    document.getElementById("fleetTypeButton-5").addEventListener("click", function () {
-        post("/commander/{{ fleet.id }}/update/type", {type: "ARSEFleet"});
-    });
-    
     //Invite a pilot to the fleet
     function invitePilot(characterID, dbRowID) {
         var dbRowID = dbRowID;
@@ -427,6 +340,108 @@
       }).fail(function(err) {
         console.log("Faied to update fleet at a glance: ",err);
       });
+    }
+    
+    //Send a notification to a pilot.
+    function alarmUser(targetid, dbRowID) {
+      var rowClass = "#row-"+dbRowID;
+
+      $.ajax({
+        type:"POST",
+        url:"/internal-api/alarm-user/"+targetid,
+        datatype:"HTML",
+        success:function(data)
+        {
+            $(rowClass).removeClass().addClass("invite-pending");
+            $(rowClass).delay(5000).queue(function(){
+              $(this).removeClass().addClass("invite-default");
+            });
+        }
+      }).fail(function(err) {
+          console.log("Faied to alarm user: ",err);
+      });
+    }
+
+    //Change the FC
+    function setFC(){
+      $.ajax({
+          type:"POST",
+          url:"/commander/{{ fleet.id }}/update/commander"
+      }).done(function () {
+          location.reload();
+      }).error(function (err){
+          console.log("Error updating the backseat: ",err);
+      })   
+    }
+
+    //Change the backseat
+    function setBackseat(){
+      $.ajax({
+          type:"POST",
+          url:"/commander/{{ fleet.id }}/update/backseat"
+      }).done(function () {
+          location.reload();
+      }).error(function (err){
+          console.log("Error updating the backseat: ",err);
+      })
+    }
+
+    //Change the comms channel for the fleet
+    function setCommsChannel(comsUrl, comsName){
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/comms",
+        data: {name: comsName, url: comsUrl}}).done(function(){
+            location.reload();
+        }).fail(function(err) {
+            console.log("Error updating comms information: ", err);
+        });
+    }
+
+    //Set the fleet status
+    function setFleetStatus(fleetStatus){
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/status",
+        data: {status: fleetStatus}
+      }).done(function(){
+          location.reload();
+      }).fail(function(err) {
+          console.log("Error updating fleet status: ", err);
+      });
+    }
+
+    //Set the fleet type
+    function setFleetType(fleetType){
+      $.ajax({
+        type:"POST",
+        url:"/commander/{{ fleet.id }}/update/type",
+        data: {type: fleetType}
+      }).done(function(){
+          location.reload();
+      }).fail(function(err) {
+          console.log("Error updating fleet type: ", err);
+      });
+    }
+
+    //Remove all pilots from the waitlist.
+    function clearWaitlist(){
+      if (confirm("Are you sure you want to remove all users from the waitlist?")) {
+          $.ajax({
+            type:"POST",
+            url:"/internal-api/waitlist/remove-all",
+            datatype:"HTML",
+          success:function(data)
+          {
+              location.reload();
+          }
+        }).fail(function(err) {
+            console.log("Faied to clean the waitlist: ",err);
+            $( '#fleetActions' ).modal('toggle');
+        });
+      } else {
+        $( '#fleetActions' ).modal('toggle');
+      }
     }
 </script>
 {%- include "./partials/footer.njk" %}

@@ -20,29 +20,29 @@ module.exports = function globalWaitlist() {
   };
 
   module.addToWaitlist = function addToWaitlist(user, cb) {
-    module.checkIfUserIsIn(user.name, function (status) {
+    module.checkIfUserIsIn(user.name, (status) => {
       if (!status) {
-        db.insert(user, function (err, doc) {
+        db.insert(user, (err) => {
           if (err) {
-            log.error("addToWaitlist: Error for db.insert", { err, 'user': user.name });
+            log.error('addToWaitlist: Error for db.insert', { err, user: user.name });
             cb(400, err);
           } else {
-            cb(200, "OK");
+            cb(200, 'OK');
           }
-        })
+        });
       } else {
-        cb(200, "OK");
+        cb(200, 'OK');
       }
     });
   };
 
   module.setAsInvited = function setAsInvited(tableID, cb) {
-    db.updateOne({ '_id': ObjectId(tableID) }, { $set: { "invited": "invite-sent" } }, function (err, result) {
+    db.updateOne({ _id: ObjectId(tableID) }, { $set: { invited: 'invite-sent' } }, (err) => {
       if (err) {
-        log.error("setAsInvited: Error for db.updateOne", { err, '_id': ObjectId(tableID) });
-        cb(400, err)
+        log.error('setAsInvited: Error for db.updateOne', { err, _id: ObjectId(tableID) });
+        cb(400, err);
       } else {
-        cb(200, "OK")
+        cb(200, 'OK');
       }
     });
   };
@@ -60,14 +60,14 @@ module.exports = function globalWaitlist() {
 
   module.remove = function remove(tableID, cb) {
     log.debug(`Deleting ID from waitlist: ${tableID}`);
-    db.deleteOne({ '_id': ObjectId(tableID) }, function (err, result) {
+    db.deleteOne({ _id: ObjectId(tableID) }, (err) => {
       if (err) {
-        log.error("remove: Error for db.deleteOne", { err, '_id': ObjectId(tableID) });
+        log.error('remove: Error for db.deleteOne', { err, _id: ObjectId(tableID) });
         cb(400, err);
       } else {
-        cb(200, "OK");
+        cb(200, 'OK');
       }
-    })
+    });
   };
 
   // Temporary - This will delete the first alt it finds on the waitlist, it can be pressed multiple times to remove

@@ -42,10 +42,14 @@ router.get('/admin/commanders', adminFcController.index);
 router.post('/admin/commanders/update', adminFcController.updateUser);
 router.post('/admin/commanders/trainee', adminFcController.updateUser);
 
-//Interacts with the users client via ESI.
+// Interacts with the users client via ESI.
 router.post('/esi/ui/waypoint/:systemID', apiController.waypoint);
 router.post('/esi/ui/info/:targetID', apiController.showInfo);
+
+// App API endpoints
 router.post('/internal-api/fleetcomp/:fleetid/:filter', apiController.fleetAtAGlance);
+router.post('/internal-api/alarm-user/:targetid', apiController.alarmUser);
+router.post('/internal-api/waitlist/remove-all', fleetManagementController.clearWaitlist);
 
 module.exports = router;
 

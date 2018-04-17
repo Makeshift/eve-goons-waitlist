@@ -10,25 +10,29 @@ exports.index = function fleetManagementController(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
     fleets.get(req.params.fleetid, (fleet) => {
       if (fleet) {
-        waitlist.get(function(usersOnWaitlist) {
-          //Display the wait time in a nice format.
-          for(let i = 0; i < usersOnWaitlist.length; i++) {
-            let signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+        waitlist.get((waitlist) => {
+          const usersOnWaitlist = waitlist;
+          // Display the wait time in a nice format.
+          for (let i = 0; i < usersOnWaitlist.length; i++) {
+            let signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime) / 1000 / 60);
             let signupHours = 0;
             while (signuptime > 59) {
               signuptime -= 60;
-              signupHours++;
+              signupHours += 1;
             }
-            usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';
+            usersOnWaitlist[i].signupTime = `${signupHours}H ${signuptime}M`;
           }
-          let userProfile = req.user;
-          let sideBarSelected = 5;
-          res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist});
-        })
+          const userProfile = req.user;
+          const { comms } = setup.fleet;
+          const sideBarSelected = 5;
+          res.render('fcFleetManage.njk', {
+            userProfile, sideBarSelected, fleet, usersOnWaitlist, comms
+          });
+        });
       } else {
         res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
       }
-      });
+    });
   } else {
     res.status(403).send(error403Message);
   }
@@ -37,17 +41,20 @@ exports.index = function fleetManagementController(req, res) {
 // Invite a pilot to a specific fleet
 exports.invitePilot = function invitePilot(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-    fleets.get(req.params.fleetid, function (fleet) {
-      fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
-        if(status === 200) {
-          waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
-            res.status(invStatus).send(invResponse);
-          });
-        } else {
-          res.status(status).send(response)
+    fleets.get(req.params.fleetid, (fleet) => {
+      fleets.invite(
+        fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID,
+        (status, response) => {
+          if (status === 200) {
+            waitlist.setAsInvited(req.params.tableID, (invStatus, invResponse) => {
+              res.status(invStatus).send(invResponse);
+            });
+          } else {
+            res.status(status).send(response);
+          }
         }
-      });
-    })
+      );
+    });
   } else {
     res.status(403).send(error403Message);
   }
@@ -56,7 +63,7 @@ exports.invitePilot = function invitePilot(req, res) {
 // Remove a specific pilot from the waitlist
 exports.removePilot = function removePilot(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-    waitlist.remove(req.params.tableID, function (status, response) {
+    waitlist.remove(req.params.tableID, (status, response) => {
       res.status(status).send(response);
     });
   } else {
@@ -127,5 +134,20 @@ exports.closeFleet = function closeFleet(req, res) {
     });
   } else {
     res.status(403).send(error403Message);
+  }
+};
+
+// Remove all pilots from the waitlist
+exports.clearWaitlist = function clearWaitlist(req, res) {
+  if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+    waitlist.get((pilotsOnWaitlist) => {
+      log.debug(`${req.user.name} is removing all pilots from the waitlist.`);
+      for (let i = 0; i < pilotsOnWaitlist.length; i++) {
+        waitlist.remove(pilotsOnWaitlist[i]._id, () => {});
+      }
+      res.status(200).send();
+    });
+  } else {
+    res.status(400).send('You do not have permission to complete this action. Are you an FC?');
   }
 };

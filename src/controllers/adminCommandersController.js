@@ -9,20 +9,23 @@ to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>`;
 // Render FC Management Page
 exports.index = function adminCommandsController(req, res) {
   function genPage(userProfile) {
-    let roleDropdownContentHtml = "";
+    let roleDropdownContentHtml = '';
 
     for (let i = 1; i < setup.userPermissions.length; i++) {
       if (setup.userPermissions[i] !== null) {
         roleDropdownContentHtml += `<option value="${i}">${setup.userPermissions[i]}</option>`;
       }
-      (setup.userPermissions[0] !== null) ? roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`: null;
+
+      if (setup.userPermissions[0] !== null) {
+        roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`;
+      }
     }
 
     users.getFCList((fcList) => {
-      fcList.sort(function(a,b) {
-        if(a.roleNumeric < b.roleNumeric) return 1;
-        if(a.name > b.name) return -1;
-        return  0;
+      fcList.sort((a, b) => {
+        if (a.roleNumeric < b.roleNumeric) return 1;
+        if (a.name > b.name) return -1;
+        return 0;
       });
 
       const sideBarSelected = 7;
@@ -66,26 +69,24 @@ exports.updateUser = function updateUser(req, res) {
   }
 };
 
-//Sets a pilot as Trainee (Reserved for low level admins).
+// Sets a pilot as Trainee (Reserved for low level admins).
 exports.setTrainee = function setTrainee(req, res) {
   if (req.isAuthenticated() && req.user.roleNumeric > 3) {
-    esi.characters.search.strict(req.body.pilotName).then(function (results) {
-      users.findAndReturnUser(results[0], function(userObject) {
+    esi.characters.search.strict(req.body.pilotName).then((results) => {
+      users.findAndReturnUser(results[0], (userObject) => {
         if (userObject.roleNumeric === 0) {
           users.updateUserPermission(results[0], 1, req.user, res);
-          {
-            res.redirect('/admin/commanders');
-          }
+          res.redirect('/admin/commanders');
         } else {
           res.status(403).send("You could not add this pilot as a trainee, is it possible that they're already an FC?");
         }
-      })
-    }).catch(function (err) {
-      log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
+      });
+    }).catch((err) => {
+      log.error('routes.post: Error for esi.characters.search', { err, name: req.body.name });
       res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || 
-      ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
-    })
+      ${err.toString().split('\n')[0]} || ${err.toString().split('\n')[1]} || < Show this to Makeshift!`);
+    });
   } else {
     res.status(403).send(error403Message);
   }
-}
+};

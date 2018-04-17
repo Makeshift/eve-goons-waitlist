@@ -42,7 +42,7 @@ exports.joinWaitlist = function joinWaitlist(req, res) {
       alt,
       user: req.user,
       ship: req.body.ship,
-      invited: "invite-default",
+      invited: 'invite-default',
       signupTime: Date.now()
     };
     waitlist.addToWaitlist(userAdd, () => {
