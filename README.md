@@ -1,5 +1,5 @@
 # eve-goons-waitlist
-The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet of Eve Online.
+The ESI-enabled ajax-based waitlist used by the Incursions squad in Goonfleet of Eve Online.
 
 ### Installation and Setup
 * Clone repo
