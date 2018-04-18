@@ -24,9 +24,10 @@ exports.index = function(req, res) {
                 if (setup.userPermissions[i] !== null) {
                     roleDropdownContentHtml += `<option value="${i}">${setup.userPermissions[i]}</option>`;
                 }
-                (setup.userPermissions[0] !== null)? roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`: null;
             }
-
+            (setup.userPermissions[0] !== null)? roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`: null;
+            
+            console.log(roleDropdownContentHtml);
             users.getFCList(function(fcList) {
                 //Sort by role then name.
                 fcList.sort(function(a,b) { 
