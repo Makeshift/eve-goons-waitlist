@@ -234,7 +234,7 @@ module.exports = function usersModule() {
   };
 
   // Open the info window of an alliance, corporation or pilot.
-  module.showInfo = function showInfo(user, targetID) {
+  module.showInfo = function showInfo(user, targetID, cb) {
     refresh.requestNewAccessToken('provider', user.refreshToken, (err, accessToken) => {
       if (err) {
         log.error('module.showInfo: Error for requestNewAccessToken', { err, user });

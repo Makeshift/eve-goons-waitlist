@@ -52,7 +52,7 @@ exports.joinWaitlist = function joinWaitlist(req, res) {
 
   if (req.isAuthenticated()) {
     let alt = false;
-    if (req.user.name !== req.body.name) {
+    if (req.user.name.toLowerCase() !== req.body.name.toLowerCase()) {
       esi.characters.search.strict(req.body.name).then((results) => {
         // This can be a user later
         alt = {

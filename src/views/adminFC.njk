@@ -54,7 +54,7 @@
                   <li>{{manageUser.role}}</li>
                   <li><strike>FCed for:</strike> </li>
                 </ul>
-                {% if userProfile.roleNumberic > 4 %}
+                {% if userProfile.roleNumeric > 4 %}
                 <form  method="post" action="/admin/commanders/update">
                   <input type="hidden" name="pilotName" value="{{manageUser.name}}">
                   <div class="form-group">
@@ -89,7 +89,7 @@
         </div>
       </div>
     </section>
-    {% if userProfile.roleNumberic > 4 %}
+    {% if userProfile.roleNumeric > 4 %}
     <!-- New FC Modal -->
     <div class="modal fade" id="addFC" role="dialog" tabindex="-1">
       <div class="modal-dialog" role="document">

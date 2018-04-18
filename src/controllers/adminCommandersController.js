@@ -8,17 +8,16 @@ to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>`;
 
 // Render FC Management Page
 exports.index = function adminCommandsController(req, res) {
-  function genPage(userProfile) {
+  function genPage(manageUser) {
     let roleDropdownContentHtml = '';
 
     for (let i = 1; i < setup.userPermissions.length; i++) {
       if (setup.userPermissions[i] !== null) {
         roleDropdownContentHtml += `<option value="${i}">${setup.userPermissions[i]}</option>`;
       }
-
-      if (setup.userPermissions[0] !== null) {
-        roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`;
-      }
+    }
+    if (setup.userPermissions[0] !== null) {
+      roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`;
     }
 
     users.getFCList((fcList) => {
@@ -30,7 +29,7 @@ exports.index = function adminCommandsController(req, res) {
 
       const sideBarSelected = 7;
       const fcs = fcList;
-      const manageUser = userProfile;
+      const userProfile = req.user;
       res.render('adminFC.njk', {
         userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml
       });
@@ -38,15 +37,16 @@ exports.index = function adminCommandsController(req, res) {
   }
 
   if (req.isAuthenticated() && req.user.roleNumeric >= 4) {
-    let userProfile = {};
+    let userProfile;
+    let manageUser;
     if (typeof req.query.user !== 'undefined') {
       users.findAndReturnUser(Number(req.query.user), (profile) => {
-        userProfile = profile;
+        manageUser = profile;
         genPage(userProfile);
       });
     } else {
-      userProfile = req.user;
-      genPage(userProfile);
+      manageUser = req.user;
+      genPage(manageUser);
     }
   } else {
     res.status(403).send(error403Message);
