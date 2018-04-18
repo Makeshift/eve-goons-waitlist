@@ -37,7 +37,7 @@ exports.index = function(req, res) {
 exports.joinWaitlist = function(req, res) {
     if (req.isAuthenticated()) {
         var alt = false;
-        if (req.user.name != req.body.name) {
+        if (req.user.name.toLowerCase() != req.body.name.toLowerCase()) {
             esi.characters.search.strict(req.body.name).then(function (results) {
                 //This can be a user later
                 alt = {
