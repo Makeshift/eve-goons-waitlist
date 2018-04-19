@@ -30,6 +30,7 @@ exports.registerFleet = function registerFleet(req, res) {
     users.getLocation(req.user, (location) => {
       let fleetid = 0;
       try {
+        // eslint-disable-next-line prefer-destructuring
         fleetid = req.body.url.split('fleets/')[1].split('/')[0];
       } catch (e) {
         log.error(e);

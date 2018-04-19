@@ -6,45 +6,46 @@ const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('users');
 const log = require('./logger.js')(module);
 
-const generateNewUser = function generateNewUser(
-  refreshToken, characterDetails,
-  masterAccount, associatedMasterAccount, cb
-) {
-  module.getUserDataFromID(characterDetails.CharacterID, (alliance, corporation) => {
-    if (alliance && setup.permissions.alliances.includes(alliance.name)) {
-      log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.name}`);
-      const newUserTemplate = {
-        characterID: characterDetails.CharacterID,
-        name: characterDetails.CharacterName,
-        scopes: characterDetails.Scopes,
-        alliance,
-        corporation,
-        refreshToken,
-        role: 'Member',
-        roleNumeric: 0,
-        registrationDate: new Date(),
-        notes: '',
-        ships: [],
-        relatedChars: [],
-        statistics: { sites: {} },
-        notifications: [],
-        location: { lastCheck: 0 }
-      };
-      db.insert(newUserTemplate, (err) => {
-        if (err) log.error('generateNewUser: Error for db.insert', { err, name: characterDetails.CharacterName });
-        cb(newUserTemplate);
-      });
-    } else {
-      const msg = `${characterDetails.CharacterName} is not in a whitelisted alliance 
-        (${alliance ? alliance.name : 'null'})`;
-      log.warn(msg);
-      cb(false, msg);
-    }
-  });
-};
-
 module.exports = function usersModule() {
   const module = {};
+
+  const generateNewUser = function generateNewUser(
+    refreshToken, characterDetails,
+    masterAccount, associatedMasterAccount, cb
+  ) {
+    module.getUserDataFromID(characterDetails.CharacterID, (alliance, corporation) => {
+      if (alliance && setup.permissions.alliances.includes(alliance.name)) {
+        log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.name}`);
+        const newUserTemplate = {
+          characterID: characterDetails.CharacterID,
+          name: characterDetails.CharacterName,
+          scopes: characterDetails.Scopes,
+          alliance,
+          corporation,
+          refreshToken,
+          role: 'Member',
+          roleNumeric: 0,
+          registrationDate: new Date(),
+          notes: '',
+          ships: [],
+          relatedChars: [],
+          statistics: { sites: {} },
+          notifications: [],
+          location: { lastCheck: 0 }
+        };
+        db.insert(newUserTemplate, (err) => {
+          if (err) log.error('generateNewUser: Error for db.insert', { err, name: characterDetails.CharacterName });
+          cb(newUserTemplate);
+        });
+      } else {
+        const msg = `${characterDetails.CharacterName} is not in a whitelisted alliance 
+        (${alliance ? alliance.name : 'null'})`;
+        log.warn(msg);
+        cb(false, msg);
+      }
+    });
+  };
+
   // This nested if stuff is kinda unpleasant and I'd like to fix it
   module.updateUserSession = function updateUserSession(req, res, next) {
     if (typeof req.session.passport === 'undefined' || typeof req.session.passport.user === 'undefined') {

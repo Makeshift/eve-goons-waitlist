@@ -46,10 +46,9 @@ exports.fleetAtAGlance = function fleetAtAGlance(req, res) {
 // Count the total number of each ship and make the table.
 module.createShipsHTML = function createShipsHTML(ships, filter, res) {
   const fleet = [];
-  let ship;
 
   while (ships.length > 0) {
-    ship = ships.pop();
+    const ship = ships.pop();
 
     if (fleet[ship.id]) {
       fleet[ship.id].count += 1;
@@ -76,9 +75,9 @@ module.createShipsHTML = function createShipsHTML(ships, filter, res) {
   fleet.forEach((ship) => {
     if (filterShipIDs === undefined || (filterShipIDs !== undefined && filterShipIDs.includes(fleet[ship].id))) {
       html += `<td class="tw35">
-                        <img src="https://image.eveonline.com/Render/${fleet[ship].id}_32.png" alt="Ship Icon"></td>
-                    <td class="tw20per"><a href="#">${fleet[ship].name}</a></td>
-                    <td>${fleet[ship].count}</td>`;
+                        <img src="https://image.eveonline.com/Render/${ship.id}_32.png" alt="Ship Icon"></td>
+                    <td class="tw20per"><a href="#">${ship.name}</a></td>
+                    <td>${ship.count}</td>`;
       if (count % 3 === 0) {
         html += '</tr><tr>';
       }
