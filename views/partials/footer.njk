@@ -25,26 +25,55 @@
     <!--<script src="/includes/js/charts-home.js"></script>-->
     <script src="/includes/js/front.js"></script>
     <script>
-      //Tooltips
-      $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      })
+        //Tooltips
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
 
-      //Pilot, Corp, Alliance showinfo
-      function showInfo(targetID) {
+        //Inform user that they don't get notifications.
+        $(document).ready(function () {
+            if (Notify.needsPermission && Notify.isSupported()) {
+                var noNotify = `<div role="alert" id="noNotify" class="alert alert-primary global-banner-inactive">
+                <i class="fas fa-bell-slash"></i> Notifications disabled: this means you may miss your invite. Click <span style="text-decoration:underline" onclick="enableNotifications()">HERE</span> to enable them.
+              </div>`
+                $( "#alertarea" ).prepend( noNotify );
+            }
+           
+        })
+        
+        //Enable Notifications at users request
+        function enableNotifications() {
+             if (!Notify.needsPermission) {
+                console.log("allowed");
+            } else if (Notify.isSupported()) {
+                Notify.requestPermission(enableNotificationsGranted, enableNotificationsDenied);
+            }
+
+            function enableNotificationsGranted() {
+                console.log('Permission has been granted by the user');
+                $( "#noNotify" ).hide();
+            }
+            
+            function enableNotificationsDenied() {
+                console.warn('Permission has been denied by the user');
+            }
+        }
+
+        //Pilot, Corp, Alliance showinfo
+        function showInfo(targetID) {
             $.ajax({
               type: "POST",
               url: "/esi/ui/info/"+targetID
             });
         }
 
-      //Sets a waypoint
-      function setWaypoint(systemID) {
-          $.ajax({
-              type: "POST",
-              url: "/esi/ui/waypoint/"+systemID
-          });
-      }
+        //Sets a waypoint
+        function setWaypoint(systemID) {
+              $.ajax({
+                type: "POST",
+                url: "/esi/ui/waypoint/"+systemID
+        });
+    }
     </script>
   </body>
 </html>
