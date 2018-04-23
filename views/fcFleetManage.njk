@@ -296,6 +296,7 @@
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {
             $(rowClass).removeClass().addClass("invite-failed");
+            console.log(text.responseText);
         });
     }
 
