@@ -25,6 +25,11 @@
     <!--<script src="/includes/js/charts-home.js"></script>-->
     <script src="/includes/js/front.js"></script>
     <script>
+        //Page Load
+        $(document).ready(function() {
+            poll();
+        });
+        
         //Tooltips
         $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip()
@@ -57,6 +62,46 @@
             function enableNotificationsDenied() {
                 console.warn('Permission has been denied by the user');
             }
+        }
+
+        //Longpoll for Notifications
+        var poll = function () {
+            $.ajax({
+            url: "/poll/{{userProfile.characterID}}",
+            success: function(data){
+                if (!Notify.needsPermission) {
+                    showNotification(data);
+                }
+                //repoll
+                poll();
+            },
+            error: function() {
+                poll();
+            },
+            timeout: 30000 // 30 seconds
+            });
+        };
+
+        function showNotification(payload) {
+            console.log(payload.data);
+            var cNotification = new Notify(payload.data.appName, {
+                    body: payload.data.message,
+                    icon: payload.data.imgUrl,
+                    tag: payload.data.target.id,
+                    timeout: 30,
+                    notifyClick: cClick,
+                    notifyShow: cShow
+                });
+
+                cNotification.show();
+                
+                function cShow() {
+                    var audio = new Audio(payload.data.sound);
+                    audio.play();
+                }
+                function cClick() {
+                    window.location.assign(payload.data.comms.url);
+                }
         }
 
         //Pilot, Corp, Alliance showinfo
