@@ -2,6 +2,7 @@ var path = require('path');
 var setup = require('../setup.js');
 var fleets = require('../fleets.js')(setup);
 var users = require('../users.js')(setup);
+var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
@@ -43,6 +44,27 @@ exports.invitePilot = function(req, res) {
             fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
                 if(status == 200) {
                     waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
+                        if (invStatus == 200) {
+                            var notificationPackage = {
+                                target: {
+                                    id: req.params.characterID,
+                                    name: null
+                                },
+                                sender: {
+                                    id: req.user.characterID,
+                                    name: req.user.name
+                                },
+                                comms: {
+                                    name: fleet.comms.name,
+                                    url: fleet.comms.url
+                                },
+                                message: req.user.name + ` is trying to invite you to a fleet. Please check your screen and join comms: ` + fleet.comms.name,
+                                sound: '/includes/inviteAlarm.mp3'
+                            }
+                            api.sendAlarm(notificationPackage, function(noteResponse){
+                                
+                            });
+                        }
                         res.status(invStatus).send(invResponse);
                     });
                     

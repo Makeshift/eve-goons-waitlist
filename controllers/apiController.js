@@ -97,6 +97,26 @@ module.createShipsHTML = function (ships, filter, res) {
     res.status(200).send(html);
 }
 
-exports.alarmUser = function(req, res) {
+exports.alarmUser = function(req, res) {   
     res.status(200).send();
+}
+
+//Send notification package to the user
+exports.sendAlarm = function (notifyPackage, cb) {   
+    users.findAndReturnUser(Number(notifyPackage.target.id), function(userProfile) {
+        notifyPackage.appName = `Goon Incursion Squad`;
+        notifyPackage.imgUrl = `/includes/img/gsf-bee.png`;
+        notifyPackage.target.name = userProfile.name;
+        notifyPackage.message = notifyPackage.message + `\n~~ Notification for: `+notifyPackage.target.name+` ~~`;
+
+        const longpoll = require("express-longpoll")(require('express'));
+        longpoll.publishToId("/poll/:id", notifyPackage.target.id, {
+            data: notifyPackage
+        });
+    })
+
+    
+    if (typeof cb === "function") { 
+        cb(200);
+    }
 }
