@@ -6,6 +6,7 @@ var users = require('../users.js')(setup);
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
+var api = require('./apiController');
 
 exports.waypoint = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
@@ -97,8 +98,38 @@ module.createShipsHTML = function (ships, filter, res) {
     res.status(200).send(html);
 }
 
+//Create a notification for the user.
 exports.alarmUser = function(req, res) {   
-    res.status(200).send();
+    if(req.isAuthenticated && req.user.roleNumeric > 0) {
+        fleets.get(req.params.fleetid, function(fleetObject) {
+            var notificationPackage = {
+                target: {
+                    id: req.params.targetid,
+                    name: null
+                },
+                sender: {
+                    id: req.user.characterID,
+                    name: req.user.name
+                },
+                comms: {
+                    name: fleetObject.comms.name,
+                    url: fleetObject.comms.url
+                },
+                message: req.user.name + ` is trying to get your attention. Please join them on comms: `+fleetObject.comms.name,
+                sound: '/includes/alarm.mp3'
+            }
+
+            api.sendAlarm(notificationPackage, function(result) {
+                if (result == 200){
+                    res.status(200).send();
+                } else {
+                    res.status(400).send();
+                }
+            })
+        })
+    } else {
+        res.status(400).send("Forbidden");
+    }   
 }
 
 //Send notification package to the user
@@ -115,7 +146,6 @@ exports.sendAlarm = function (notifyPackage, cb) {
         });
     })
 
-    
     if (typeof cb === "function") { 
         cb(200);
     }
