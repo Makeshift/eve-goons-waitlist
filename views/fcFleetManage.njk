@@ -150,7 +150,16 @@
                           <p><strike>Newbee</strike></p>
                         </td>
                         <td>
-                          <button class="btn btn-success btn-sm" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                          <div class="dropdown">
+                            <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-plus"></i> <i class="ml-2 pr-0 fas fa-caret-down" style="margin-right:-50%"></i></button>
+                              <div class="dropdown-menu" role="menu">
+                                {% for squad in squads %}
+                                  {% if squad.wingName === 'Active' or squad.wingName === 'active' %}
+                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
+                                  {% endif %}
+                                {% endfor %}
+                              </div>
+                          </div>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -208,7 +217,16 @@
                           <p class="mb-0">Alt of: {{ user.user.name }}</p>
                         </td>
                         <td>
-                          <button class="btn btn-success btn-sm"  onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}');" title="Invite to Fleet"><i class="fa fa-plus"></i></button>
+                          <div class="dropdown">
+                            <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-plus"></i> <i class="ml-2 pr-0 fas fa-caret-down" style="margin-right:-50%"></i></button>
+                              <div class="dropdown-menu" role="menu">
+                                {% for squad in squads %}
+                                  {% if squad.wingName === 'Active' or squad.wingName === 'active' %}
+                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
+                                  {% endif %}
+                                {% endfor %}
+                              </div>
+                          </div>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -259,11 +277,11 @@
             <!-- Modal body -->
             <div class="modal-body">
                 <p class="d-block">These buttons can break things, use them with care!</p>
-                <form class="mb-2" action="/commander/{{ fleet.id }}/delete">
+                <form class="my-2" action="/commander/{{ fleet.id }}/delete">
                     <button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
                 </form>
-                <button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>        
-                <button class="btn btn-danger btn-sm btn-block disabled" type="button" title="Hahaha, no!">I need an Adult!</button>
+                <button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>       
+                <button class="btn btn-danger btn-sm btn-block disabled" type="button" data-toggle="tooltip" title="Hahaha, no!">I need an Adult!</button>
             </div>
         </div>
     </div>
@@ -282,7 +300,7 @@
     }, 15000);//Every 15 seconds
 
     //Invite a pilot to the fleet
-    function invitePilot(characterID, dbRowID) {
+    function invitePilot(characterID, dbRowID, wingID, squadID) {
         var dbRowID = dbRowID;
         var rowClass = "#row-"+dbRowID;
         var count = Number($("#fleetWaitlistCount").text());
@@ -291,7 +309,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID}).done(function() {
+            url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID+"/"+wingID+"/"+squadID}).done(function() {
                 $(rowClass).removeClass().addClass("invite-sent");
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {

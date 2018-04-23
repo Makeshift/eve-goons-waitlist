@@ -63,14 +63,49 @@ module.exports = function (setup) {
 		});
 	}
 
-	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
+	/*
+	* Return an array of squads
+	* Squad {squadID, squadName, wingName}
+	*/
+	module.getSquads = function (fc, fleetid, cb) {
+		refresh.requestNewAccessToken('provider', fc.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("fleets.getSquads: Error for requestNewAccessToken", { err, characterID });
+				// TODO: is it good to throw?
+				throw err;
+			}
+			users.updateRefreshToken(fc.characterID, newRefreshToken);
+			var squads = [];
+			esi.characters(fc.characterID, accessToken).fleet(fleetid).wings().then(function (wings) {
+				for(var w = 0; w < wings.length; w++) {
+					for(var s = 0; s < wings[w].squads.length; s++){
+						var squad = {
+							id: wings[w].squads[s].id,
+							name: wings[w].squads[s].name,
+							wingId: wings[w].id,
+							wingName: wings[w].name
+						}
+						squads.push(squad);
+					}
+				}
+				cb(squads);
+			}).catch(function (err) {
+				log.error("fleets.getSquads: Error for fleet.wings ", { err, fleetid });
+				if (typeof cb === "function") {
+					cb(null);
+				}
+			})
+		});
+	}
+
+	module.invite = function (fcid, refreshToken, fleetid, inviteeid, wingid, squadid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				cb(400, err);
 			} else {
 				users.updateRefreshToken(fcid, newRefreshToken);
-				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" }).then(result => {
+				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member", "squad_id": squadid, "wing_id": wingid}).then(result => {
 					cb(200, "OK");
 				  }).catch(error => {
 					cb(400, error.message);
