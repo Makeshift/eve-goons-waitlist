@@ -43,6 +43,6 @@ var api_controller = require('./controllers/apiController.js')
 
 	//App API endpoints
 	router.post('/internal-api/fleetcomp/:fleetid/:filter', api_controller.fleetAtAGlance);
-	router.post('/internal-api/alarm-user/:targetid', api_controller.alarmUser);
+	router.post('/internal-api/alarm-user/:targetid/:fleetid', api_controller.alarmUser);
 	router.post('/internal-api/waitlist/remove-all', fleet_management_controller.clearWaitlist);
 	module.exports = router;

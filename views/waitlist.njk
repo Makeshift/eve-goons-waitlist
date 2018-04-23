@@ -248,23 +248,6 @@
               if (!results[2]) return '';
               return decodeURIComponent(results[2].replace(/\+/g, " "));
             }
-
-            var doc = document.getElementById("alertarea");
-
-            var errtext = getParameterByName("err");
-            var infotext = getParameterByName("info");
-            if (errtext) {
-              doc.innerHTML += `<div role="alert" class="alert alert-primary global-banner-inactive">
-                <strong>Error:</strong> ${errtext}
-              </div>`;
-            }
-            if (!infotext) {
-              infotext = 'This waitlist is in heavy, heavy alpha. Most things do not work, wording will be incorrect and things will break. Click <a href="https://github.com/Makeshift/eve-goons-waitlist/issues/new">HERE</a> to submit a bug report.';
-            }
-            doc.innerHTML += `<div role="alert" class="alert alert-dark global-banner">
-              <strong>INFO: ${infotext}</strong> 
-            </div>`;
-
           </script>
           
           </footer>
