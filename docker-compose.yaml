@@ -2,8 +2,13 @@ version: "2"
 services:
   goon_waitlist:
     container_name: waitlist
-    build: .
-    command: npm start
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PUID: ${PUID}
+        PGID: ${PGID}
+    command: npm run start
     volumes:
       - .:/opt/goon_waitlist/
       - /opt/goon_waitlist/node_modules
@@ -17,6 +22,6 @@ services:
     container_name: mongo
     image: mvertes/alpine-mongo
     volumes:
-      - ./data:/data/db
+      - /data/db:/data/db
     ports:
       - "27017:27017"
