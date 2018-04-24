@@ -20,6 +20,14 @@ exports.index = function(req, res) {
                 return  0;
             });
 
+            activeBans.sort(function(a,b) { 
+                if(a.pilotName > b.pilotName) {
+                    return 1;
+                } else {
+                    return -1;
+                }
+            });
+
             var userProfile = req.user;
             var sideBarSelected = 7;
             var banList = activeBans;

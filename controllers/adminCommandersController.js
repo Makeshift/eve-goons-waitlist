@@ -27,13 +27,17 @@ exports.index = function(req, res) {
             }
             (setup.userPermissions[0] !== null)? roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`: null;
             
-            console.log(roleDropdownContentHtml);
             users.getFCList(function(fcList) {
                 //Sort by role then name.
                 fcList.sort(function(a,b) { 
-                    if(a.roleNumeric < b.roleNumeric) return 1;
-                    if(a.name > b.name) return -1;
-                    return  0;
+                    if(a.roleNumeric < b.roleNumeric) {
+                        return 1;
+                    } else if (a.roleNumeric > b.roleNumeric) {
+                        return -1;
+                    } else {
+                        if(a.name > b.name) return 1;
+                        return -1;
+                    }
                 });
 
                 var sideBarSelected = 7;
