@@ -104,7 +104,7 @@ module.exports = function (setup) {
 						}
 						cb(location);
 					}).catch(function(err) {
-						log.error("users.getLocation: Error GET /universe/systems/{system_id}/", {err, systemObject, user});
+						log.error("users.getLocation: Error GET /universe/systems/{system_id}/", {err, user});
 						cb({id: 0, name: "unknown", lastcheck: Date.now()});
 					})
 				}).catch(function(err) {
