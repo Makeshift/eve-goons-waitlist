@@ -95,6 +95,15 @@ database.connect(() => {
   const routeListen = require('./routes.js');
   app.use(routeListen);
 
+  // Longpolling
+  const longpoll = require('express-longpoll')(app, {
+    DEBUG: false,
+  });
+  // Create longpoll routes
+  longpoll.create('/poll/:id', (req, res, next) => {
+    req.id = req.params.id;
+    next();
+  });
 
   // Configure Express webserver
   app.listen(setup.settings.port, () => {

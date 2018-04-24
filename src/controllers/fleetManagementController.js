@@ -1,6 +1,7 @@
 const setup = require('../setup.js');
 const fleets = require('../fleets.js')(setup);
 const waitlist = require('../globalWaitlist.js')(setup);
+const api = require('./apiController');
 
 const error403Message = `You don't have permission to view this page. If this is in dev, have you edited your data file
  to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>`;
@@ -47,6 +48,26 @@ exports.invitePilot = function invitePilot(req, res) {
         (status, response) => {
           if (status === 200) {
             waitlist.setAsInvited(req.params.tableID, (invStatus, invResponse) => {
+              if (invStatus === 200) {
+                const notificationPackage = {
+                  target: {
+                    id: req.params.characterID,
+                    name: null
+                  },
+                  sender: {
+                    id: req.user.characterID,
+                    name: req.user.name
+                  },
+                  comms: {
+                    name: fleet.comms.name,
+                    url: fleet.comms.url
+                  },
+                  message: `${req.user.name} is trying to invite you to a fleet. Please check your screen and join 
+                  comms: ${fleet.comms.name}`,
+                  sound: '/includes/inviteAlarm.mp3'
+                };
+                api.sendAlarm(notificationPackage, () => {});
+              }
               res.status(invStatus).send(invResponse);
             });
           } else {

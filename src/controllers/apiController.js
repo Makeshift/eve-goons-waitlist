@@ -3,6 +3,7 @@ const cache = require('../cache.js')(setup);
 const fleets = require('../fleets.js')(setup);
 const users = require('../users.js')(setup);
 const log = require('../logger.js')(module);
+const api = require('./apiController');
 
 exports.waypoint = function waypoint(req, res) {
   if (req.isAuthenticated() && typeof req.params.systemID !== 'undefined') {
@@ -91,5 +92,55 @@ module.createShipsHTML = function createShipsHTML(ships, filter, res) {
 };
 
 exports.alarmUser = function alarmUser(req, res) {
-  res.status(200).send();
+  if (req.isAuthenticated && req.user.roleNumeric > 0) {
+    fleets.get(req.params.fleetid, (fleetObject) => {
+      const notificationPackage = {
+        target: {
+          id: req.params.targetid,
+          name: null
+        },
+        sender: {
+          id: req.user.characterID,
+          name: req.user.name
+        },
+        comms: {
+          name: fleetObject.comms.name,
+          url: fleetObject.comms.url
+        },
+        message: `${req.user.name} is trying to get your attention. Please join them on 
+        comms: ${fleetObject.comms.name}`,
+        sound: '/includes/alarm.mp3'
+      };
+
+      api.sendAlarm(notificationPackage, (result) => {
+        if (result === 200) {
+          res.status(200).send();
+        } else {
+          res.status(400).send();
+        }
+      });
+    });
+  } else {
+    res.status(400).send('Forbidden');
+  }
+};
+
+// Send notification package to the user
+exports.sendAlarm = function sendAlarm(notifyPayload, cb) {
+  const notifyPackage = notifyPayload;
+  users.findAndReturnUser(Number(notifyPackage.target.id), (userProfile) => {
+    notifyPackage.appName = 'Goon Incursion Squad';
+    notifyPackage.imgUrl = '/includes/img/gsf-bee.png';
+    notifyPackage.target.name = userProfile.name;
+    notifyPackage.message = `${notifyPackage.message}\n~~ Notification for: ${notifyPackage.target.name} ~~`;
+
+    const longpoll = require('express-longpoll')(require('express'));
+    longpoll.publishToId('/poll/:id', notifyPackage.target.id, {
+      data: notifyPackage
+    });
+  });
+
+  if (typeof cb === 'function') {
+    cb(200);
+  }
 };

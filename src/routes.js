@@ -48,7 +48,7 @@ router.post('/esi/ui/info/:targetID', apiController.showInfo);
 
 // App API endpoints
 router.post('/internal-api/fleetcomp/:fleetid/:filter', apiController.fleetAtAGlance);
-router.post('/internal-api/alarm-user/:targetid', apiController.alarmUser);
+router.post('/internal-api/alarm-user/:targetid/:fleetid', apiController.alarmUser);
 router.post('/internal-api/waitlist/remove-all', fleetManagementController.clearWaitlist);
 
 module.exports = router;

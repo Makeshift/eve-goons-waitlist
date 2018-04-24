@@ -162,7 +162,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -220,7 +220,7 @@
                           </div>
                         </td>
                         <td>
-                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
+                          <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
                           <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
@@ -279,7 +279,7 @@
     setInterval(function()
     { 
       updateFleetGlance();
-    }, 30000);//Every 30 seconds
+    }, 15000);//Every 15 seconds
 
     //Invite a pilot to the fleet
     function invitePilot(characterID, dbRowID) {
@@ -296,6 +296,7 @@
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {
             $(rowClass).removeClass().addClass("invite-failed");
+            console.log(text.responseText);
         });
     }
 
@@ -343,22 +344,23 @@
     }
     
     //Send a notification to a pilot.
-    function alarmUser(targetid, dbRowID) {
+    function alarmUser(targetid, fleetid, dbRowID) {
       var rowClass = "#row-"+dbRowID;
 
       $.ajax({
         type:"POST",
-        url:"/internal-api/alarm-user/"+targetid,
+        url:"/internal-api/alarm-user/"+targetid+"/"+fleetid,
         datatype:"HTML",
         success:function(data)
         {
             $(rowClass).removeClass().addClass("invite-pending");
-            $(rowClass).delay(5000).queue(function(){
-              $(this).removeClass().addClass("invite-default");
-            });
         }
       }).fail(function(err) {
           console.log("Faied to alarm user: ",err);
+      });
+      
+      $(rowClass).delay(5000).queue(function(){
+          $(this).removeClass().addClass("invite-default");
       });
     }
 
