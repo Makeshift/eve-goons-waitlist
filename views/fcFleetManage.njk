@@ -83,7 +83,7 @@
                     </tr>
                     <tr>
                       <td>Fleet System:</td>
-                      <td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.fc.location.id }})">{{ fleet.fc.location.name }}</a></td>
+                      <td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.location.id }})">{{ fleet.location.name }}</a></td>
                       <td><button class="btn btn-sm btn-danger btn-block" data-toggle="modal" data-target="#fleetActions" accesskey="A"><i class="fas fa-exclamation-triangle"></i> More Actions <i class="fas fa-exclamation-triangle"></i></button></td>
                     </tr>
                   </tbody>
@@ -155,7 +155,7 @@
                               <div class="dropdown-menu" role="menu">
                                 {% for squad in squads %}
                                   {% if squad.wingName === 'Active' or squad.wingName === 'active' %}
-                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
+                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
                                   {% endif %}
                                 {% endfor %}
                               </div>
@@ -179,7 +179,7 @@
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
                         </td>
-                        <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="setWaypoint({{ user.user.location.id }})">{{ user.user.location.name }}</a></td>
                         <td>{{ user.signupTime }}</td>
                       </tr>
                       {% endif %}
@@ -246,7 +246,7 @@
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
                         </td>
-                        <td><a href="{{ user.location.id }}">{{ user.location.name }}</a></td>
+                        <td><a href="javascript:void(0);" onclick="setWaypoint({{ user.user.location.id }})">{{ user.user.location.name }}</a></td>
                         <td>{{ user.signupTime }}</td>
                       </tr>
                       {% endif %}
