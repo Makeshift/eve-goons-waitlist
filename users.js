@@ -95,17 +95,14 @@ module.exports = function (setup) {
 			} else {
 				module.updateRefreshToken(user.characterID, newRefreshToken);
 				esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-					esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
-					//cache.get(locationResult.solar_system_id, function(systemObject){
+					//esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
+					cache.get(locationResult.solar_system_id, function(systemObject){
 						var location = {
 							id: systemObject.system_id,
 							name: systemObject.name,
 							lastcheck: Date.now()
 						}
 						cb(location);
-					}).catch(function(err) {
-						log.error("users.getLocation: Error GET /universe/systems/{system_id}/", {err, user});
-						cb({id: 0, name: "unknown", lastcheck: Date.now()});
 					})
 				}).catch(function(err) {
 					log.error("users.getLocation: Error GET /characters/{character_id}/location/", {err, user});
