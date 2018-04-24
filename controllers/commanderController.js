@@ -50,7 +50,7 @@ exports.registerFleet = function(req, res) {
                     backseat: {},
                     type: req.body.type,
                     status: "Not Listed",
-                    location: location.name,
+                    location: null,
                     members: members,
                     url: req.body.url,
                     id: fleetid,
@@ -61,7 +61,7 @@ exports.registerFleet = function(req, res) {
                     if (!success) {
                         res.status(409).send(errTxt + "<br><br><a href='/commander'>Go back</a>")
                     } else {
-                        res.redirect(302, '/commander/')
+                        res.redirect(302, '/commander/'+fleetid)
                     }
                 });
             })
