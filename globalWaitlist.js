@@ -2,6 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const db = require('./dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
+const setup = require('./setup.js');
+const users = require('./users.js')(setup);
 const log = require('./logger.js')(module);
 
 module.exports = function (setup) {
@@ -114,6 +116,27 @@ module.exports = function (setup) {
 		})
 	}
 
-	return module;
 
+	module.timers = function () {
+		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
+		//TODO: Error checking doesn't work due to how ESI module handles errors
+		setTimeout(lookup, 10*1000)
+
+		function lookup() {
+			var checkCache = [];
+				db.find().forEach(function (doc) {
+					//Is user online?
+					//Update Location
+					users.getLocation(doc.user, function(location) {
+						doc.user.location = location;
+						db.updateOne({ '_id': doc._id }, { $set: { "user": doc.user } }, function (err, result) {
+							if (err) log.error("waitlist.getLocation: Error for db.updateOne", { err });
+						});
+					})
+				})
+			module.timers();
+		}
+
+	}
+	return module;
 }

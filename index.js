@@ -34,9 +34,11 @@ database.connect(function () {
 	const users = require('./users.js')(setup);
 	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
 	const fleets = require('./fleets.js')(setup);
+	const waitlist = require('./globalWaitlist.js')(setup);
 
 	//Start timers
 	fleets.timers();
+	waitlist.timers();
 
 	//Configure Passport's oAuth
 	var oauthStrategy = new OAuth2Strategy({

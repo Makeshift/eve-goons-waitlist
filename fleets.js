@@ -240,15 +240,17 @@ module.exports = function (setup) {
 						});
 						//Won't work because we can't hit the endpoint anymore, oops
 						members.forEach(function (member, i) {
-							if (member.role.includes("boss")) {
-								updateFleetCommander(member, fullDoc.id);
-							}
 							checkCache.push(member.ship_type_id);
-							checkCache.push(member.solar_system_id);
 							if (i == members.length - 1) {
 								cache.massQuery(checkCache);
 							}
 						});
+
+						users.getLocation(doc.fc, function(location) {
+							db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
+								if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
+							});
+						})
 					}
 
 					function fleetHasErrored() {
@@ -259,14 +261,6 @@ module.exports = function (setup) {
 							log.warn(`Fleet under ${fullDoc.fc.name} was deleted due to errors.`);
 							module.delete(fleetid);
 						}
-					}
-
-					function updateFleetCommander(member, fleetid) {
-						users.findAndReturnUser(member.character_id, function (user) {
-							db.updateOne({ 'id': fleetid }, { $set: { fc: user } }, function (err, result) {
-								if (err) log.error("updateFleetCommander: Error for db.updateOne", { err, fleetid });
-							})
-						});
 					}
 				});
 			})

@@ -86,42 +86,33 @@ module.exports = function (setup) {
 	}
 
 
-	module.getLocation = function (user, cb, passthrough) {
-		module.findAndReturnUser(user.characterID, function (newUser) {
-			if (Date.now() <= (newUser.location.lastCheck + 30000)) {
-				cb(newUser.location, passthrough);
-				return;
+	//TODO: Use the cache for the systems
+	module.getLocation = function (user, cb) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("users.getLocation: Error for requestNewAccessToken", { err, user });
+				cb(400, err);
+			} else {
+				module.updateRefreshToken(user.characterID, newRefreshToken);
+				esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
+					esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
+					//cache.get(locationResult.solar_system_id, function(systemObject){
+						var location = {
+							id: systemObject.system_id,
+							name: systemObject.name,
+							lastcheck: Date.now()
+						}
+						cb(location);
+					}).catch(function(err) {
+						log.error("users.getLocation: Error GET /universe/systems/{system_id}/", {err, systemObject, user});
+						cb({id: 0, name: "unknown", lastcheck: Date.now()});
+					})
+				}).catch(function(err) {
+					log.error("users.getLocation: Error GET /characters/{character_id}/location/", {err, user});
+					cb({id: 0, name: "unknown", lastcheck: Date.now()});
+				})
 			}
-			refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-				if (err) {
-					log.error("getLocation: Error for requestNewAccessToken", { err, characterID: user.characterID });
-					if (err.data.error.includes("invalid_token")) {
-						log.error("requestNewAccessToken has failed due to invalid token, removing them from waitlist.");
-						waitlist.selfRemove(user.characterID);
-						module.deleteUser(user.characterID)
-						cb({id: 0, name: "Unknown", lastCheck: Date.now()});
-					}
-					cb({id: 0, name: "Unknown", lastCheck: Date.now()})
-				} else {
-					module.updateRefreshToken(user.characterID, newRefreshToken);
-					esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-						cache.get([locationResult.solar_system_id], function (locationName) {
-							var location = {
-								id: locationResult.solar_system_id,
-								name: locationName.name,
-								lastCheck: Date.now()
-							};
-							cb(location, passthrough);
-							db.updateOne({ 'characterID': user.characterID }, { $set: { location: location } }, function (err, result) {
-								if (err) log.error("getLocation: Error for db.updateOne", { err, 'characterID': user.characterID, location });
-							});
-						})
-					}).catch(err => {
-						log.error("users.getLocation: Error for esi.characters", { err, characterID: user.characterID });
-					});
-				}
-			})
-		})
+		})		
 	}
 
 	module.getUserDataFromID = function (id, cb) {
@@ -164,9 +155,7 @@ module.exports = function (setup) {
 					notes: "",
 					ships: [],
 					relatedChars: [],
-					statistics: { sites: {} },
-					notifications: [],
-					location: { lastCheck: 0 }
+					statistics: { sites: {} }
 				}
 				db.insert(newUserTemplate, function (err, result) {
 					if (err) log.error("generateNewUser: Error for db.insert", { err, name: characterDetails.CharacterName });
