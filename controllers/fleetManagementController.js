@@ -31,11 +31,13 @@ exports.index = function(req, res) {
                     })
                 })
             } else { 
-                res.status(403).send("Fleet was deleted<br><br><a href='/'>Go back</a>");
+                req.flash("content", {"class":"info", "title":"Woops!", "message":"That fleet was deleted."});
+                res.status(403).redirect('/commander')
             }
         })
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect('/commander');
     }
 }
 
@@ -152,6 +154,7 @@ exports.updateBackseat = function(req, res) {
 exports.closeFleet = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.delete(req.params.fleetid, function () {
+            req.flash("content", {"class":"success", "title":"The fleet has been closed.", "message":"You can now re-register this fleet."});
             res.redirect('/commander/');
         });
     } else {

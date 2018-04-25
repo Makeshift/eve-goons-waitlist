@@ -34,7 +34,8 @@ exports.index = function(req, res) {
             res.render('adminBan.njk', {userProfile, sideBarSelected, banList});
         })
     } else {
-        res.status(403).send("You don't have permission to view this page");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our Senior FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect("/");
     }
 }
 
@@ -54,15 +55,21 @@ exports.createBan = function(req, res) {
             
             bans.register(banObject, function (success, errTxt) {
                 if (!success) {
-                    res.status(409).send(errTxt + "<br><br><a href='/admin/bans'>Go back</a>")
+                    req.flash("content", {"class":"error", "title":"Woops!", "message": errTxt});
+                    res.status(409).redirect('/admin/bans')
                 } else {
-                    res.redirect(302, '/admin/bans');
+                    req.flash("content", {"class":"success", "title":"Ban Issued", "message":req.body.pilotName+" has been banned."});
+                    res.status(302).redirect('/admin/bans');
                 }
             });
         }).catch(function (err) {
             log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-            res.redirect(`/admin/bans?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+            req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Did you spell the pilots name correctly?"});
+            res.status(409).redirect('/admin/bans');
         })
+    } else {
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to create bans. Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect('/admin/bans')
     }
 }
 
@@ -73,9 +80,11 @@ exports.revokeBan = function(req, res) {
         var banAdmin = req.user.name;
 
         bans.revokeBan(banID, banAdmin, function() {
+            req.flash("content", {"class":"success", "title":"Ban revoked", "message":"The requested ban has been revoked."});
             res.redirect('/admin/bans');
         });
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to revoke bans. Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect('/admin/bans');
     }
 }

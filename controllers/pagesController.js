@@ -9,12 +9,7 @@ const log = require('../logger.js')(module);
 exports.index = function(req, res) {
     if (req.isAuthenticated()) {
         //Grab all fleets			
-        fleets.getFCPageList(function (fleets) {
-            if (!fleets) {
-                res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
-                return;
-            }
-            
+        fleets.getFCPageList(function (fleets) {           
             var fleetCount = 0;
             for (var i = 0; i < fleets.length; i++) {
                 if (fleets[i].status !== "Not Listed") fleetCount++;
@@ -48,7 +43,8 @@ exports.joinWaitlist = function(req, res) {
                 submitAddition();
             }).catch(function (err) {
                 log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-                res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+                req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.name + ". Did you spell your pilot name correctly?"});
+                res.redirect(`/`);
             })
         } else {
             submitAddition();
@@ -64,7 +60,8 @@ exports.joinWaitlist = function(req, res) {
                 signupTime: Date.now()
             }
             waitlist.addToWaitlist(userAdd, function () {
-                res.redirect(`/?info=Character ${req.body.name} added to waitlist.`);
+                req.flash("content", {"class":"success", "title":"You're on the waitlist!", "message":req.body.name + " was added to the waitlist, see you in fleet soon."});
+                res.redirect(`/`);
             });
         }
     }
@@ -74,6 +71,7 @@ exports.joinWaitlist = function(req, res) {
 exports.removeSelf = function(req, res) {
     if (req.isAuthenticated()) {
         waitlist.selfRemove(req.user.characterID, function () {
+            req.flash("content", {"class":"success", "title":"Success!", "message":"You have removed yourself from the waitlist. See you next time."});
             res.redirect('/')
         })
     }
