@@ -1,0 +1,70 @@
+/*
+ * bird-alert
+ * doc: http://markusslima.github.io/bird-alert/
+ * github: https://github.com/markusslima/bird-alert
+ *
+ * Copyright (c) 2018 Markus Vinicius da Silva Lima
+ * Version 1.0.1
+ * Licensed under the MIT license.
+ * Foundation Theme
+ */
+ .birdAlert .container-birdAlert {
+	width: auto;
+	background: #fff;
+	box-shadow: 1px 1px 7px rgba(100,100,100,0.6);
+	padding: 0.77778rem 1.33333rem 0.77778rem 0.77778rem;
+	margin-bottom: 10px;
+	text-align: left;
+	-webkit-transition: 0.7s ease-in-out; 
+	   -moz-transition: 0.7s ease-in-out; 
+		 -o-transition: 0.7s ease-in-out;
+	font-size: 0.82222rem;
+	border: 1px solid;
+	color: #fff;
+	font-family: "Helvetica Neue", "Helvetica", Helvetica, Arial, sans-serif !important;
+}
+
+.birdAlert .container-birdAlert .close-birdAlert {
+	position: absolute;
+    right: 12px;
+    font-size: 24px;
+    margin-top: -12px;
+    cursor: pointer;
+    font-family: monospace !important;
+    font-style: normal;
+    transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+}
+
+.birdAlert .container-birdAlert .close-birdAlert:hover {
+	opacity: 0.5;
+}
+
+.birdAlert .container-birdAlert .title-birdAlert {
+	font-size: 20px;
+	margin-bottom: 7px;
+	font-weight: normal;
+}
+
+/**
+ * Mensages class
+ */
+.birdAlert .container-birdAlert.success {
+	background: #43AC6A;
+	border-color: #3a945b;
+}
+
+.birdAlert .container-birdAlert.error {
+	background: #f04124;
+	border-color: #974a4a;
+}
+
+.birdAlert .container-birdAlert.warning {
+	background: #f08a24;
+	border-color: #de770f;
+}
+
+.birdAlert .container-birdAlert.info {
+	background: #008CBA;
+	border-color: #0078a0;
+}

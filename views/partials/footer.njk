@@ -26,7 +26,15 @@
     <script src="/includes/js/front.js"></script>
     <script>
         //Page Load
+        var nAlert = new BirdAlert({zIndex: 2100});
         $(document).ready(function() {
+            if("{{flash.content}}" !== ""){
+                nAlert.notify({
+                    msg: '{{flash.content.message}}', 
+                    title: '{{flash.content.title}}', 
+                    className: '{{flash.content.class}}'
+                });
+            }
             poll();
         });
         

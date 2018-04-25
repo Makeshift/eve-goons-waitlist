@@ -28,6 +28,8 @@ database.connect(function () {
 	const url = require('url');
 	const session = require('express-session');
 	const mongoStore = require('connect-mongo')(session);
+	const cookieParser = require('cookie-parser');
+	const flash = require('req-flash');
 
 	//Custom imports
 
@@ -84,6 +86,10 @@ database.connect(function () {
     resave: true,
     saveUninitialized: true
 	}))
+
+	app.use(cookieParser());
+	app.use(session({ secret: setup.data.sessionSecret }));
+	app.use(flash({ locals: 'flash' }));
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(bodyParser.urlencoded({ extended: true }));
