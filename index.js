@@ -28,15 +28,19 @@ database.connect(function () {
 	const url = require('url');
 	const session = require('express-session');
 	const mongoStore = require('connect-mongo')(session);
+	const cookieParser = require('cookie-parser');
+	const flash = require('req-flash');
 
 	//Custom imports
 
 	const users = require('./users.js')(setup);
 	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
 	const fleets = require('./fleets.js')(setup);
+	const waitlist = require('./globalWaitlist.js')(setup);
 
 	//Start timers
 	fleets.timers();
+	waitlist.timers();
 
 	//Configure Passport's oAuth
 	var oauthStrategy = new OAuth2Strategy({
@@ -82,6 +86,10 @@ database.connect(function () {
     resave: true,
     saveUninitialized: true
 	}))
+
+	app.use(cookieParser());
+	app.use(session({ secret: setup.data.sessionSecret }));
+	app.use(flash({ locals: 'flash' }));
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(bodyParser.urlencoded({ extended: true }));

@@ -27,13 +27,17 @@ exports.index = function(req, res) {
             }
             (setup.userPermissions[0] !== null)? roleDropdownContentHtml += `<option value="${0}">${setup.userPermissions[0]}</option>`: null;
             
-            console.log(roleDropdownContentHtml);
             users.getFCList(function(fcList) {
                 //Sort by role then name.
                 fcList.sort(function(a,b) { 
-                    if(a.roleNumeric < b.roleNumeric) return 1;
-                    if(a.name > b.name) return -1;
-                    return  0;
+                    if(a.roleNumeric < b.roleNumeric) {
+                        return 1;
+                    } else if (a.roleNumeric > b.roleNumeric) {
+                        return -1;
+                    } else {
+                        if(a.name > b.name) return 1;
+                        return -1;
+                    }
                 });
 
                 var sideBarSelected = 7;
@@ -43,7 +47,8 @@ exports.index = function(req, res) {
             });
         }
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our Senior FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect("/");
     }
 }
 
@@ -53,14 +58,17 @@ exports.updateUser = function(req, res) {
         esi.characters.search.strict(req.body.pilotName).then(function (results) {
             users.updateUserPermission(results[0], req.body.permission, req.user, res)
             {
+                req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
                 res.redirect('/admin/commanders');
             }
         }).catch(function (err) {
             log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-            res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+            req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
+            res.status(409).redirect('/admin/commanders');
         })
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to adjust the permissions of this user. Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect('/admin/commanders');
     }
 }
 
@@ -72,17 +80,20 @@ exports.setTrainee = function(req, res) {
             if (userObject.roleNumeric === 0) {
                 users.updateUserPermission(results[0], 1, req.user, res)
                 {
+                    req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
                     res.redirect('/admin/commanders');
                 }
             } else {
-                res.status(403).send("You could not add this pilot as a trainee, is it possible that they're already an FC?");
+                req.flash("content", {"class":"error", "title":"Woops!", "message":"You could not add this pilot as a trainee, is it possible that they're already an FC?"});
+                res.status(403).redirect('/admin/commanders');
             }
             })
         }).catch(function (err) {
             log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
-            res.redirect(`/?err=Some error happened! Does that character exist? (DEBUG: || ${err.toString().split("\n")[0]} || ${err.toString().split("\n")[1]} || < Show this to Makeshift!`);
+            req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
+            res.status(409).redirect('/admin/commanders');
         })
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 4? <br><br><a href='/'>Go back</a>");
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to adjust the permissions of this user. Think this is an error? Contact a member of leadership."});
     }
 }

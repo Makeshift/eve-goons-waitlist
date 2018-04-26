@@ -63,14 +63,49 @@ module.exports = function (setup) {
 		});
 	}
 
-	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
+	/*
+	* Return an array of squads
+	* Squad {squadID, squadName, wingName}
+	*/
+	module.getSquads = function (fc, fleetid, cb) {
+		refresh.requestNewAccessToken('provider', fc.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("fleets.getSquads: Error for requestNewAccessToken", { err, characterID });
+				// TODO: is it good to throw?
+				throw err;
+			}
+			users.updateRefreshToken(fc.characterID, newRefreshToken);
+			var squads = [];
+			esi.characters(fc.characterID, accessToken).fleet(fleetid).wings().then(function (wings) {
+				for(var w = 0; w < wings.length; w++) {
+					for(var s = 0; s < wings[w].squads.length; s++){
+						var squad = {
+							id: wings[w].squads[s].id,
+							name: wings[w].squads[s].name,
+							wingId: wings[w].id,
+							wingName: wings[w].name
+						}
+						squads.push(squad);
+					}
+				}
+				cb(squads);
+			}).catch(function (err) {
+				log.error("fleets.getSquads: Error for fleet.wings ", { err, fleetid });
+				if (typeof cb === "function") {
+					cb(null);
+				}
+			})
+		});
+	}
+
+	module.invite = function (fcid, refreshToken, fleetid, inviteeid, wingid, squadid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				cb(400, err);
 			} else {
 				users.updateRefreshToken(fcid, newRefreshToken);
-				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member" }).then(result => {
+				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member", "squad_id": squadid, "wing_id": wingid}).then(result => {
 					cb(200, "OK");
 				  }).catch(error => {
 					cb(400, error.message);
@@ -205,15 +240,17 @@ module.exports = function (setup) {
 						});
 						//Won't work because we can't hit the endpoint anymore, oops
 						members.forEach(function (member, i) {
-							if (member.role.includes("boss")) {
-								updateFleetCommander(member, fullDoc.id);
-							}
 							checkCache.push(member.ship_type_id);
-							checkCache.push(member.solar_system_id);
 							if (i == members.length - 1) {
 								cache.massQuery(checkCache);
 							}
 						});
+
+						users.getLocation(doc.fc, function(location) {
+							db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
+								if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
+							});
+						})
 					}
 
 					function fleetHasErrored() {
@@ -224,14 +261,6 @@ module.exports = function (setup) {
 							log.warn(`Fleet under ${fullDoc.fc.name} was deleted due to errors.`);
 							module.delete(fleetid);
 						}
-					}
-
-					function updateFleetCommander(member, fleetid) {
-						users.findAndReturnUser(member.character_id, function (user) {
-							db.updateOne({ 'id': fleetid }, { $set: { fc: user } }, function (err, result) {
-								if (err) log.error("updateFleetCommander: Error for db.updateOne", { err, fleetid });
-							})
-						});
 					}
 				});
 			})
