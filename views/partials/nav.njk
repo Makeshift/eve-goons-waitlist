@@ -35,11 +35,11 @@
         <ul class="list-unstyled">
           <li{{  " class=active" if sideBarSelected === 1 }}><a href="/"><i class="fas fa-hourglass-half"></i> Waitlist</a></li>
           <li{{  " class=active" if sideBarSelected === 2 }}>
-            <a href="#myaccount" aria-expanded="false" data-toggle="collapse" class="collapsed"> <i class="fa fa-user"></i> <strike>My Account <i class="fas fa-sort-down float-right"></i></a></strike>
+            <a href="#myaccount" aria-expanded="false" data-toggle="collapse" class="collapsed"> <i class="fa fa-user"></i> My Account <i class="fas fa-sort-down float-right"></i></a>
             <ul id="myaccount" class="collapse list-unstyled ">
-              <strike><li><a href="#">My Alts & Fits</a></strike></li>
-              <strike><li><a href="#">My Stats</a></strike></li>
-              <strike><li><a href="#">My SRP</a></strike></li>
+              <li><strike><a href="#/my-settings">My Settings</a></strike></li>
+              <strike><li><a href="/#">My Stats</a></strike></li>
+              <strike><li><a href="/#">My SRP</a></strike></li>
             </ul>
           </li>
           <li{{  " class=active" if sideBarSelected === 3 }}>
@@ -63,8 +63,14 @@
                 <i class="fas fa-lock-alt" data-fa-transform="shrink-6 down-2 right-4" style="color:#D6D8D9"></i>
               </span>
               Fleet Management</a>
-            </li>          
-            <li{{  "class=active" if sideBarSelected === 6 }}><strike><a href="#"><i class="fas fa-search"></i> Pilot Lookup</a></strike></li>
+            </li>
+            <li{{  " class=active" if sideBarSelected === 6 }}>
+              <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-compass"></i> FC Tools <i class="fas fa-sort-down float-right"></i></a>
+              <ul id="squadmanagement" class="collapse list-unstyled ">
+                <strike><li><a href="#">Pilot Lookup</a></strike></li>
+                <li><a href="/commander/tools/fits-scan">Fit Scan Tool</a></li>
+                <li><strike><a href="#/commander/tools/waitlist-logs">Waitlist Log</a></strike></li>
+              </ul>                   
             {% if userProfile.roleNumeric >= 4 %}
             <li{{  " class=active" if sideBarSelected === 7 }}>
               <a href="#squadmanagement" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fab fa-strava"></i> Waitlist Admin <i class="fas fa-sort-down float-right"></i></a>

@@ -1,0 +1,53 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
+<div class="page-content">
+<div class="page-header">
+    <div class="container-fluid">
+    <h2 class="h5 no-margin-bottom">Fitting Scan Tool</h2>
+    </div>
+</div>
+<section class="no-padding-top padding-bottom noselect">
+    <div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-3 col-md-6 col-sm-12">
+        <div class="statistic-block block noselect">
+            <label>Ship Selection</label><br>
+            <div class="input-group aform-control" id="ship-selector">   
+                <input type="text" class="form-control typeahead" placeholder="Select a ship" id="ship-selector-value">
+            </div>
+
+            <label>Scan Result</label><br>
+            <textarea class="form-control" rows="1" id="textScan" placeholder="Paste scan result in here"></textarea><br>
+            <span id="scanMsg"></span>
+
+            <label>Status</label><br>
+            <small>High</small>
+            <span id="slotHigh">0 / 0</span>
+            <small>Medium</small>
+            <span id="slotMedium">0 / 0</span>
+            <small>Low</small>
+            <span id="slotLow">0 / 0</span>
+            <small>Rigs</small>
+            <span id="slotRig">0 / 0</span>
+            <small>Scans</small>
+            <span id="scans">0</span>
+
+            <button class="btn btn-danger pull-right my-3" id="btnReset" onclick="reset();">Reset All</button>
+            <span>Fitting tool developed by <a href="https://evewho.com/pilot/kiu+Nakamura">kiu Nakamura</a>.<br/>Tool stolen from <a href="http://fitscan.nakamura-labs.com/">nakamura-labs.com</a>.</span>
+        </div>
+        </div>
+
+        <div class="col-lg-9 col-md-6 col-sm-12">
+        <div class="statistic-block block noselect">
+            <label>Potential Fit</label><br>
+            <textarea class="form-control" rows="40" id="textFit" placeholder="Please select a ship..."></textarea>
+        </div>
+        </div>
+    </div>
+</section>
+
+<script src="/includes/js/fitscan/handlebars-v1.3.0.js"></script>
+<script src="/includes/js/fitscan/typeahead.bundle.js"></script>
+<script src="/includes/js/fitscan/fitscan.js"></script>
+{%- include "./partials/footer.njk" %}        
