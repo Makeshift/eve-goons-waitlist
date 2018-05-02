@@ -154,7 +154,7 @@
                             <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-plus"></i> <i class="ml-2 pr-0 fas fa-caret-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
                                 {% for squad in squads %}
-                                  {% if squad.wingName === 'Active' or squad.wingName === 'active' %}
+                                  {% if squad.wingName.toLowerCase() === 'active' %}
                                   <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
                                   {% endif %}
                                 {% endfor %}

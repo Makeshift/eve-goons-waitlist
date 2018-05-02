@@ -56,22 +56,12 @@
         
         //Enable Notifications at users request
         function enableNotifications() {
-             if (!Notify.needsPermission) {
-                console.log("allowed");
-            } else if (Notify.isSupported()) {
+             if (Notify.needsPermission && Notify.isSupported()) {
                 Notify.requestPermission(enableNotificationsGranted, enableNotificationsDenied);
-            }
-
-            function enableNotificationsGranted() {
-                console.log('Permission has been granted by the user');
-                $( "#noNotify" ).hide();
-            }
-            
-            function enableNotificationsDenied() {
-                console.warn('Permission has been denied by the user');
-            }
+            } 
         }
 
+        var payloadData = null;
         //Longpoll for Notifications
         var poll = function () {
             $.ajax({
@@ -79,7 +69,11 @@
             success: function(data){
                 if (!Notify.needsPermission) {
                     showNotification(data);
+                } else {
+                    payloadData = data;
+                    Notify.requestPermission(enableNotificationsGranted, enableNotificationsDenied);
                 }
+                
                 //repoll
                 poll();
             },
@@ -90,8 +84,19 @@
             });
         };
 
+        function enableNotificationsGranted() {
+            console.log('Permission has been granted by the user');
+            $( "#noNotify" ).hide();
+            if(payloadData !== null) {
+                showNotification(payloadData);
+            }
+        }
+        
+        function enableNotificationsDenied() {
+            console.warn('Permission has been denied by the user');
+        }
+
         function showNotification(payload) {
-            console.log(payload.data);
             var cNotification = new Notify(payload.data.appName, {
                     body: payload.data.message,
                     icon: payload.data.imgUrl,
