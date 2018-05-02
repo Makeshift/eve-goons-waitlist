@@ -35,7 +35,6 @@ function reset() {
     $('#scans').html("0");
 
     ship = false;
-    $('#ship-selector-value').val("");
 
     $('#textScan').val("");
     $('#scanMsg').html("");
@@ -62,10 +61,13 @@ function init() {
 	    alert("Couldn't load ship types");
 	},
 	success: function(json) {
-	    ships = json;
+        ships = json;
+        shipDropdown();
 	    console.log("Ship loading completed.");
 	},
     });
+
+    shipDropdown();
 
     console.log("Loading modules...");
     $.ajax({
@@ -82,18 +84,15 @@ function init() {
 	},
     });
 
-    $('#ship-selector .typeahead').typeahead({
-	hint: false,
-	highlight: true,
-	minLength: 3
-    },{
-	name: 'ship',
-	displayKey: 'name',
-	source: shipMatcher(),
-	templates: {
-	    suggestion: Handlebars.compile('<p class="text-right" style="background-color:#22252A;color:#8A8D93;width:100%;"><strong>{{name}}</strong> <small>({{class}})</small></p>')
-	}
-    }).on('typeahead:selected', function(obj, val){ $('#ship-selector-value').val(val['name']);  ship = val; updateFit(); });
+    $("#fitSelector").change(function() {
+        for(var i = 0; i < ships.length; i++) {
+            if(ships[i].name === $(this).val()){
+                ship = ships[i];
+                continue;
+            }
+        }        
+        updateFit();
+    });
 
     $("#textScan").on('input', function() {
 	console.log("E");
@@ -106,6 +105,15 @@ function init() {
     });
 
     reset();
+}
+
+function shipDropdown() {
+    $.each(ships, function (i, item) {
+        $('#fitSelector').append($('<option>', { 
+            value: item.name,
+            text : item.name 
+        }));
+    });
 }
 
 function findModule(name, haystack) {
@@ -190,8 +198,8 @@ function updateFit() {
     rig = 0;
 
     fit = "";
-    fit = fit + "[" + ship['name'] + ", FitScan]\n";
-
+    fit = fit + "[" + ship['name'] + ", Incursion Squad - Fit Scan]\n";
+    fit = fit + "\n";
     for (x in partial_fit) {
 	if (partial_fit[x]['slot'] != "L") {
 	    continue;
@@ -244,6 +252,12 @@ function updateFit() {
     }
 
     $('#textFit').val(fit);
+}
+
+//Copy the fit to clipboard
+function copy() {
+    $("#textFit").select();
+    document.execCommand('copy');
 }
 
 // ---------------------------------------------------------------

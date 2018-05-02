@@ -13,15 +13,14 @@
         <div class="col-lg-3 col-md-6 col-sm-12">
         <div class="statistic-block block noselect">
             <label>Ship Selection</label><br>
-            <div class="input-group aform-control" id="ship-selector">   
-                <input type="text" class="form-control typeahead" placeholder="Select a ship" id="ship-selector-value">
-            </div>
-
+            <select id="fitSelector" class="form-control">
+            </select>
             <label>Scan Result</label><br>
             <textarea class="form-control" rows="1" id="textScan" placeholder="Paste scan result in here"></textarea><br>
             <span id="scanMsg"></span>
-
-            <label>Status</label><br>
+            <br>
+            <label>Status</label>
+            <br>
             <small>High</small>
             <span id="slotHigh">0 / 0</span>
             <small>Medium</small>
@@ -34,6 +33,7 @@
             <span id="scans">0</span>
 
             <button class="btn btn-danger pull-right my-3" id="btnReset" onclick="reset();">Reset All</button>
+            <button class="btn btn-default pull-right my-3" id="btnCopy" onclick="copy();"><i class="fas fa-copy"></i> Copy to Clipboard</button>
             <span>Fitting tool developed by <a href="https://evewho.com/pilot/kiu+Nakamura">kiu Nakamura</a>.<br/>Tool stolen from <a href="http://fitscan.nakamura-labs.com/">nakamura-labs.com</a>.</span>
         </div>
         </div>
@@ -48,6 +48,5 @@
 </section>
 
 <script src="/includes/js/fitscan/handlebars-v1.3.0.js"></script>
-<script src="/includes/js/fitscan/typeahead.bundle.js"></script>
 <script src="/includes/js/fitscan/fitscan.js"></script>
 {%- include "./partials/footer.njk" %}        
