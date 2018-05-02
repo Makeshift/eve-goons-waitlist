@@ -15,6 +15,7 @@ const database = require('./dbHandler.js');
 process.on('uncaughtException', function(exception) {
 	console.log(exception);
 })
+process.setMaxListeners(0);
 
 database.connect(function () {
 	const db = database.db;

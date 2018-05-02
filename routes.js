@@ -1,11 +1,13 @@
-var express = require('express');
-var router = express.Router();
-var pages_controller = require('./controllers/pagesController.js');
-var commander_controller = require('./controllers/commanderController.js')
-var fleet_management_controller = require('./controllers/fleetManagementController.js')
-var admin_bans_controller = require('./controllers/adminBansController.js')
-var admin_fcs_controller = require('./controllers/adminCommandersController.js')
-var api_controller = require('./controllers/apiController.js')
+const express = require('express');
+const router = express.Router();
+const pages_controller = require('./controllers/pagesController.js');
+const commander_controller = require('./controllers/commanderController.js')
+const fleet_management_controller = require('./controllers/fleetManagementController.js')
+const admin_bans_controller = require('./controllers/adminBansController.js')
+const admin_fcs_controller = require('./controllers/adminCommandersController.js')
+const api_controller = require('./controllers/apiController.js')
+const pilot_settings_controller = require('./controllers/pilotSettingsController.js')
+const fc_tools_controller = require('./controllers/fcToolsController.js')
 
 	//Index pages & user waitlist functions
 	router.get('/', pages_controller.index);
@@ -28,15 +30,20 @@ var api_controller = require('./controllers/apiController.js')
 	router.post('/commander/:fleetid/update/commander', fleet_management_controller.updateCommander);//TODO: DO VALIDATION ON THIS ENDPOINT
 	router.post('/commander/:fleetid/update/backseat', fleet_management_controller.updateBackseat);////TODO: DO VALIDATION ON THIS ENDPOINT
 
+	//Bans Management
 	router.get('/admin/bans', admin_bans_controller.index);
 	router.post('/admin/bans', admin_bans_controller.createBan);
 	router.get('/admin/bans/:banID', admin_bans_controller.revokeBan);
-
+	//FC Management
 	router.get('/admin/commanders', admin_fcs_controller.index);
 	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
 	router.post('/admin/commanders/trainee', admin_fcs_controller.setTrainee);
+	//FC Tools
+	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
+	//router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
+	//Pilot Settings
+	//router.get('/my-settings', pilot_settings_controller.index);
 	
-
 	//Interacts with the users client via ESI.
 	router.post('/esi/ui/waypoint/:systemID', api_controller.waypoint);
 	router.post('/esi/ui/info/:targetID', api_controller.showInfo);
