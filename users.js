@@ -243,7 +243,7 @@ module.exports = function (setup) {
 		})
 	}
 
-	//Open the regional market window for a given typeID.
+	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
 	module.checkSkills = function(user, skillsPackage, cb) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
