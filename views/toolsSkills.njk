@@ -39,7 +39,7 @@
                         </div>                        
                     </div>
                     {% for skill in skills.categories %}
-                        <div role="tabpanel" class="tab-pane" id="{{skill.category.replace(' ','_')}}">
+                        <div role="tabpanel" class="tab-pane" id="{{skill.category | replace(' ','_')}}">
                             <p>{{ skill.category }}.</p>
                             <div class="table-responsive">
                                 <table class="table table-hover table-sm">
@@ -99,7 +99,7 @@
                         </tr>
                         {% for skill in skills.categories %}
                         <tr class="{{ skill.txtclass }}">
-                            <td role="tab" data-toggle="tab" href="#{{skill.category.replace(' ','_')}}"><span>{{ skill.txticon | safe }} {{ skill.category }}</span></td>
+                            <td role="tab" data-toggle="tab" href="#{{skill.category | replace(' ','_')}}"><span>{{ skill.txticon | safe }} {{ skill.category }}</span></td>
                         </tr>
                         {% endfor %}                
                     </tbody>
