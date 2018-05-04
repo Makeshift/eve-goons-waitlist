@@ -295,7 +295,8 @@ module.exports = function (setup) {
 						}
 						skillsPackage.categories[c].Skills = cSkillSet;
 					}			
-
+					//Return the skills package for the view
+					skillsPackage.totalSP = result.total_sp;
 					cb(skillsPackage);
 				}).catch(err => {
 					log.error("users.checkSkills: ", { err });
