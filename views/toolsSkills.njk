@@ -2,112 +2,115 @@
 {% include "./partials/nav.njk" %}
 <!-- Page Content -->
 <div class="page-content">
-<div class="page-header">
-    <div class="container-fluid">
-    <h2 class="h5 no-margin-bottom">Skills List</h2>
+    <div class="page-header">
+        <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Skills List</h2>
+        </div>
     </div>
-</div>
-<div class="container-fluid">
-<div class="row">
-	<!-- Skill Lists -->
-	<div class="col-sm-12 col-md-9">
-		<div class="statistic-block block">
-            <div>
-                <div class="tab-content">
-                    <div role="tabpanel" class="tab-pane active" id="coreskills">
-                        <p>CORE SKILLS</p>
-                        <div class="table-responsive">
-                            <table class="table table-hover table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Skill:</th>
-                                        <th>Required</th>
-                                        <th>Actual</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                
-                                    {% for skill in skills.generalSkills %}
-                                    <tr class="{{ skill.class }}">
-                                        <td><a href="javascript:void(0);" onclick="openMarket({{ skill.id }});">{{ skill.name }}</a></td>
-                                        <td>{{ skill.required }}</td>
-                                        <td>{{ skill.actual }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>                        
-                    </div>
-                    {% for skill in skills.categories %}
-                        <div role="tabpanel" class="tab-pane" id="{{skill.category | replace(' ','_')}}">
-                            <p>{{ skill.category }}.</p>
-                            <div class="table-responsive">
-                                <table class="table table-hover table-sm">
-                                    <thead>
-                                        <tr>
-                                            <th>Skill:</th>
-                                            <th>Required</th>
-                                            <th>Actual</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {% for s in skill.Skills %}
-                                        <tr class="{{ s.class }}">
-                                            <td><a href="javascript:void(0);" onclick="openMarket({{ s.id }});">{{ s.name }}</a></td>
-                                            <td>{{ s.required }}</td>
-                                            <td>{{ s.actual }}</td>
-                                        </tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
+
+        <div class="container-fluid">
+        <div class="row">
+            <!-- Skill Lists -->
+            <div class="col-sm-12 col-md-9">
+                <div class="statistic-block block">
+                    <div>
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="coreskills">
+                                <p>CORE SKILLS</p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Skill:</th>
+                                                <th>Required</th>
+                                                <th>Actual</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        
+                                            {% for skill in skills.generalSkills %}
+                                            <tr class="{{ skill.class }}">
+                                                <td><a href="javascript:void(0);" onclick="openMarket({{ skill.id }});">{{ skill.name }}</a></td>
+                                                <td>{{ skill.required }}</td>
+                                                <td>{{ skill.actual }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>                        
                             </div>
+                            {% for skill in skills.categories %}
+                                <div id="{{skill.category | replace(' ','_')}}" class="tab-pane" role="tabpanel">
+                                    <p>{{ skill.category }}.</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Skill:</th>
+                                                    <th>Required</th>
+                                                    <th>Actual</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for s in skill.Skills %}
+                                                <tr class="{{ s.class }}">
+                                                    <td><a href="javascript:void(0);" onclick="openMarket({{ s.id }});">{{ s.name }}</a></td>
+                                                    <td>{{ s.required }}</td>
+                                                    <td>{{ s.actual }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>	
                 </div>
-            </div>	
-		</div>
-	</div><!-- End Skills Section -->
-	<!-- Select Alts/Skill sets -->
-	<div class="col-sm-12 col-md-3">
-		<div class="statistic-block block">
-			<div class="row pb-2">
-				<div class="col-sm-12 col-md-3">
-					<img src="http://image.eveonline.com/Character/{{ targetUser.characterID }}_64.jpg" class="img-fluid"/>
-				</div>
-				<div class="col-sm-12 col-md-9">
-					<div><a href="javascript:void(0);" onclick="showInfo({{ targetUser.characterID }})">{{ targetUser.name }}</a></div>
-				</div>
-			</div>
-			<select class="form-control mb-0" disabled>
-				<option value="" selected>Select Alt to view skills</option>
-				<option value="">Alt's Name</option>
-				<option value="">Alt's Name</option>
-			</select>
-			<hr>
-			<strong>Select Skill Set:</strong>
-			<select class="form-control mb-0" disabled>
-				<option value="all" selected>All Skills</option>
-				<option value="mainfleet">Main Fleet</option>
-				<option value="arsefleet">ArseFleet</option>
-			</select>
-            <hr />
-            <div class="table-responsive">
-				<table class="table table-hover table-sm">
-                    <tbody>
-                        <tr class="{{ skills.generalSkills.txtclass }}">
-                            <td role="tab" data-toggle="tab" href="#coreskills"><span>{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
-                        </tr>
-                        {% for skill in skills.categories %}
-                        <tr class="{{ skill.txtclass }}">
-                            <td role="tab" data-toggle="tab" href="#{{skill.category | replace(' ','_')}}"><span>{{ skill.txticon | safe }} {{ skill.category }}</span></td>
-                        </tr>
-                        {% endfor %}                
-                    </tbody>
-                </table>
+            </div><!-- End Skills Section -->
+            <!-- Select Alts/Skill sets -->
+            <div class="col-sm-12 col-md-3">
+                <div class="statistic-block block">
+                    <div class="row pb-2">
+                        <div class="col-sm-12 col-md-3">
+                            <img class="img-fluid" src="http://image.eveonline.com/Character/{{ targetUser.characterID }}_64.jpg" alt="{{ targetUser.name }}s avatar"/>
+                        </div>
+                        <div class="col-sm-12 col-md-9">
+                            <div><a href="javascript:void(0);" onclick="showInfo({{ targetUser.characterID }})">{{ targetUser.name }}</a></div>
+                        </div>
+                    </div>
+                    <select class="form-control mb-0" disabled>
+                        <option value="" selected>Select Alt to view skills</option>
+                        <option value="">Alt's Name</option>
+                        <option value="">Alt's Name</option>
+                    </select>
+                    <hr>
+                    <strong>Select Skill Set:</strong>
+                    <select class="form-control mb-0" disabled>
+                        <option value="all" selected>All Skills</option>
+                        <option value="mainfleet">Main Fleet</option>
+                        <option value="arsefleet">ArseFleet</option>
+                    </select>
+                    <hr />
+                    <div class="table-responsive">
+                        <table class="table table-hover table-sm">
+                            <tbody>
+                                <tr class="{{ skills.generalSkills.txtclass }}">
+                                    <td><span role="tab" data-toggle="tab" href="#coreskills">{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
+                                </tr>
+                                {% for skill in skills.categories %}
+                                <tr class="{{ skill.txtclass }}">
+                                    <td><span role="tab" data-toggle="tab" href="#{{skill.category | replace(' ','_')}}">{{ skill.txticon | safe }} {{ skill.category }}</span></td>
+                                </tr>
+                                {% endfor %}                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-		</div>
-	</div>
-	<!-- End Alts/Skill sets -->              
+            <!-- End Alts/Skill sets -->
+        </div>     
+    </div>
 </div>
 <script>
         function openMarket(targetID) {
