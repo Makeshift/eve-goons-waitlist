@@ -98,7 +98,7 @@
                             <table class="table table-hover table-sm">
                                 <tbody>
                                     <tr class="{{ skills.generalSkills.txtclass }}">
-                                        <td><span role="tab" data-toggle="tab" href="#coreskills">{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
+                                        <td><span href="javascript:void();" onclick="switchTab('coreskills')">{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
                                     </tr>
                                     {% for skill in skills.categories %}
                                     <tr class="{{ skill.txtclass }}">
