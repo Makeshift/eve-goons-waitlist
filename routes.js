@@ -41,7 +41,7 @@ const fc_tools_controller = require('./controllers/fcToolsController.js')
 	//FC Tools
 	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
 	//router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
-	router.get('/commander/:pilotname/skill-check', fc_tools_controller.skillsChecker);
+	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
 	//Pilot Settings
 	//router.get('/my-settings', pilot_settings_controller.index);
 	

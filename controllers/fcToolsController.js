@@ -43,7 +43,7 @@ exports.skillsChecker = function(req, res) {
                 res.redirect(`/commander`);
             })
         } else {
-            res.redirect('/commander/'+req.user.name.replace(/\s+/g, '-')+'/skill-check')
+            res.redirect('/commander/'+req.user.name.replace(/\s+/g, '-')+'/skills')
         }
     } else {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
