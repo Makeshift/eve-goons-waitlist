@@ -41,12 +41,14 @@ const fc_tools_controller = require('./controllers/fcToolsController.js')
 	//FC Tools
 	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
 	//router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
+	router.get('/commander/:pilotname/skill-check', fc_tools_controller.skillsChecker);
 	//Pilot Settings
 	//router.get('/my-settings', pilot_settings_controller.index);
 	
 	//Interacts with the users client via ESI.
 	router.post('/esi/ui/waypoint/:systemID', api_controller.waypoint);
 	router.post('/esi/ui/info/:targetID', api_controller.showInfo);
+	router.post('/esi/ui/market/:targetID', api_controller.openMarket);
 
 	//App API endpoints
 	router.post('/internal-api/fleetcomp/:fleetid/:filter', api_controller.fleetAtAGlance);

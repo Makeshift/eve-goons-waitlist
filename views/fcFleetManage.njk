@@ -165,8 +165,8 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item" href="#">View Pilot Profile</a>
-                                <a class="dropdown-item" href="#">View Pilot Skills</a>
+                                <a class="dropdown-item" href="#"><strike>View Pilot Profile</strike></a>
+                                <a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/skill-check">View Pilot Skills</a>
                               </div>
                           </div>
                         </td>
@@ -232,8 +232,8 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item" href="#">View Pilot Profile</a>
-                                <a class="dropdown-item" href="#">View Pilot Skills</a>
+                                <a class="dropdown-item" href="#"><strike>View Pilot Profile</strike></a>
+                                <a class="dropdown-item" href="/commander/{{ user.alt.name | replace(' ','-') }}/skill-check">View Pilot Skills</a>
                               </div>
                           </div>
                         </td>

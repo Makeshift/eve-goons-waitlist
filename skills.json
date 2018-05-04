@@ -1,0 +1,160 @@
+{
+    "generalSkills": [
+        {
+            "name": "EM Armor Compensation",
+            "id": 22806,
+            "required": 3,
+            "failable": true
+        },
+        {
+            "name": "Explosive Armor Compensation",
+            "id": 22807,
+            "required": 3,
+            "failable": true
+        },
+        {
+            "name": "Kinetic Armor Compensation",
+            "id": 22808,
+            "required": 3,
+            "failable": true
+        },
+        {
+            "name": "Thermal Armor Compensation",
+            "id": 22809,
+            "required": 3,
+            "failable": true
+        },
+        {
+            "name": "Target Management",
+            "id": 3429,
+            "required": 2,
+            "failable": false
+        }        
+    ],
+    "queues": [
+        {
+            "QueueName": "Battleships",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "Command Ships",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "Logistics Cruiser",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "Newbee Cruiser",
+            "Skills": [{}]
+        },                
+        {
+            "QueueName": "Carriers",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "Force Auxiliary",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "Super Carriers",
+            "Skills": [{}]
+        },
+        {
+            "QueueName": "ARSEFleet Legion",
+            "Skills": [{
+                "name": "Amarr Core Systems",
+                "id": 30539,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Amarr Defensive Systems",
+                "id": 30532,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Amarr Offensive Systems",
+                "id": 30537,
+                "required": 5,
+                "failable": true
+            },            
+            {
+                "name": "Amarr Propulsion Systems",
+                "id": 30538,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Amarr Strategic Cruiser",
+                "id": 30650,
+                "required": 3,
+                "failable": true
+            },
+            {
+                "name": "Medium Beam Laser Specialization",
+                "id": 12204,
+                "required": 3,
+                "failable": false
+            },
+            {
+                "name": "Armored Command Specialist",
+                "id": 11569,
+                "required": 4,
+                "failable": false
+            }]
+        },
+        {
+            "QueueName": "ARSEFleet Loki",
+            "Skills": [{
+                "name": "Minmatar Core Systems",
+                "id": 30547,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Minmatar Defensive Systems",
+                "id": 30545,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Minmatar Offensive Systems",
+                "id": 30551,
+                "required": 5,
+                "failable": true
+            },            
+            {
+                "name": "Minmatar Propulsion Systems",
+                "id": 30554,
+                "required": 5,
+                "failable": true
+            },
+            {
+                "name": "Minmatar Strategic Cruiser",
+                "id": 30653,
+                "required": 3,
+                "failable": true
+            },
+            {
+                "name": "Skirmish Command Specialist",
+                "id": 11572,
+                "required": 4,
+                "failable": true
+            },
+            {
+                "name": "Information Command Specialist",
+                "id": 3352,
+                "required": 4,
+                "failable": true
+            },            
+            {
+                "name": "Armored Command Specialist",
+                "id": 11569,
+                "required": 4,
+                "failable": true
+            }]
+        }        
+    ]
+}

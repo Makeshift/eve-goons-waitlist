@@ -13,17 +13,30 @@ exports.waypoint = function(req, res) {
         users.setDestination(req.user, req.params.systemID, function(response) {
             res.send(response);
         });
+    } else {
+        res.status(400).send("Not authorised or target ID missing");
     }
 }
 
 exports.showInfo = function(req, res) {
-    if (req.isAuthenticated && typeof req.params.targetID !== "undefined") {
+    if (req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
         users.showInfo(req.user, req.params.targetID, function(response) {
             res.send(response);
         });
+    } else {
+        res.status(400).send("Not authorised or target ID missing");
     }
 }
 
+exports.openMarket = function(req, res) {
+    if(req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
+        users.openMarketWindow(req.user, req.params.targetID, function(response) {
+            res.send(response);
+        });
+    } else {
+        res.status(400).send("Not authorised or target ID missing");
+    }
+}
 //Show the fleet at a glance window.
 exports.fleetAtAGlance = function(req, res) {
 
