@@ -251,8 +251,26 @@ module.exports = function (setup) {
 				cb(err)
 			} else {
 				esi.characters(user.characterID, accessToken).skills().then(result => {
+					//Create ESI Skills Array
+					var esiSkills = [];
+					for(var i = 0; i < result.skills.length; i++) {
+						esiSkills[result.skills[i].skill_id] = result.skills[i];
+					}
+					
+					//Calc General Skills
+					var cSkillSet = skillsPackage.generalSkills;				
+					for(var i = 0; i < cSkillSet.length; i++) {
+						cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
+						//did skill fail?
+						if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
+							cSkillSet[i].class = "skills-failed";
+						} else {
+							cSkillSet[i].class = "skills-pass";
+						}
+					}
+					skillsPackage.generalSkills = cSkillSet;
 				
-				
+
 					cb(skillsPackage);
 				}).catch(err => {
 					log.error("users.checkSkills: ", { err });

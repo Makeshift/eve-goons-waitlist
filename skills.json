@@ -31,37 +31,37 @@
             "failable": false
         }        
     ],
-    "queues": [
+    "categories": [
         {
-            "QueueName": "Battleships",
+            "category": "Battleships",
             "Skills": [{}]
         },
         {
-            "QueueName": "Command Ships",
+            "category": "Command Ships",
             "Skills": [{}]
         },
         {
-            "QueueName": "Logistics Cruiser",
+            "category": "Logistics Cruiser",
             "Skills": [{}]
         },
         {
-            "QueueName": "Newbee Cruiser",
+            "category": "Newbee Cruiser",
             "Skills": [{}]
         },                
         {
-            "QueueName": "Carriers",
+            "category": "Carriers",
             "Skills": [{}]
         },
         {
-            "QueueName": "Force Auxiliary",
+            "category": "Force Auxiliary",
             "Skills": [{}]
         },
         {
-            "QueueName": "Super Carriers",
+            "category": "Super Carriers",
             "Skills": [{}]
         },
         {
-            "QueueName": "ARSEFleet Legion",
+            "category": "ARSEFleet Legion",
             "Skills": [{
                 "name": "Amarr Core Systems",
                 "id": 30539,
@@ -106,7 +106,7 @@
             }]
         },
         {
-            "QueueName": "ARSEFleet Loki",
+            "category": "ARSEFleet Loki",
             "Skills": [{
                 "name": "Minmatar Core Systems",
                 "id": 30547,
