@@ -94,12 +94,12 @@
             <div class="table-responsive">
 				<table class="table table-hover table-sm">
                     <tbody>
-                        <tr class="{{ skills.generalSkills.status }}">
-                            <td role="tab" data-toggle="tab" href="#coreskills"><span>{{ skills.generalSkills.icon | safe }} Core Skills</span></td>
+                        <tr class="{{ skills.generalSkills.txtclass }}">
+                            <td role="tab" data-toggle="tab" href="#coreskills"><span>{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
                         </tr>
                         {% for skill in skills.categories %}
-                        <tr class="text-danger">
-                            <td role="tab" data-toggle="tab" href="#{{skill.category.replace(' ','_')}}"><span><i class="fas fa-times-circle"></i> {{ skill.category }}</span></td>
+                        <tr class="{{ skill.txtclass }}">
+                            <td role="tab" data-toggle="tab" href="#{{skill.category.replace(' ','_')}}"><span>{{ skill.txticon | safe }} {{ skill.category }}</span></td>
                         </tr>
                         {% endfor %}                
                     </tbody>

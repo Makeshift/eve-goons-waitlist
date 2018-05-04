@@ -258,12 +258,17 @@ module.exports = function (setup) {
 					}
 					
 					//Calc General Skills
+					skillsPackage.generalSkills.txtclass = "text-success";
+					skillsPackage.generalSkills.txticon = `<i class="fa fa-check-circle"></i>`;
 					var cSkillSet = skillsPackage.generalSkills;				
 					for(var i = 0; i < cSkillSet.length; i++) {
 						cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
 						//did skill fail?
 						if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
 							cSkillSet[i].class = "skills-failed";
+							//Set Menu Fail Indicator
+							skillsPackage.generalSkills.txtclass = "text-danger";
+							skillsPackage.generalSkills.txticon = `<i class="fa fa-times-circle"></i>`;
 						} else {
 							cSkillSet[i].class = "skills-pass";
 						}
@@ -273,12 +278,16 @@ module.exports = function (setup) {
 
 					//skill categories
 					for(var c = 0; c < skillsPackage.categories.length; c++) {
+						skillsPackage.categories[c].txtclass = "text-success";
+						skillsPackage.categories[c].txticon = `<i class="fa fa-check-circle"></i>`;
 						var cSkillSet = skillsPackage.categories[c].Skills;			
 						for(var i = 0; i < cSkillSet.length; i++) {
 							cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
 							//did skill fail?
 							if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
 								cSkillSet[i].class = "skills-failed";
+								skillsPackage.categories[c].txtclass = "text-danger";
+								skillsPackage.categories[c].txticon = `<i class="fa fa-times-circle"></i>`;
 							} else {
 								cSkillSet[i].class = "skills-pass";
 							}
