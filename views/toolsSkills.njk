@@ -51,11 +51,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for skill in categories.category %}
-                                        <tr class="{{ skill.class }}">
-                                            <td><a href="javascript:void(0);" onclick="openMarket({{ skill.id }});">{{ skill.name }}</a></td>
-                                            <td>{{ skill.required }}</td>
-                                            <td><td>{{ skill.actual }}</td></td>
+                                        {% for s in skill.Skills %}
+                                        <tr class="{{ s.class }}">
+                                            <td><a href="javascript:void(0);" onclick="openMarket({{ s.id }});">{{ s.name }}</a></td>
+                                            <td>{{ s.required }}</td>
+                                            <td>{{ s.actual }}</td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>

@@ -269,7 +269,23 @@ module.exports = function (setup) {
 						}
 					}
 					skillsPackage.generalSkills = cSkillSet;
-				
+
+
+					//skill categories
+					for(var c = 0; c < skillsPackage.categories.length; c++) {
+						var cSkillSet = skillsPackage.categories[c].Skills;			
+						for(var i = 0; i < cSkillSet.length; i++) {
+							cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
+							//did skill fail?
+							if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
+								cSkillSet[i].class = "skills-failed";
+							} else {
+								cSkillSet[i].class = "skills-pass";
+							}
+							
+						}
+						skillsPackage.categories[c].Skills = cSkillSet;
+					}			
 
 					cb(skillsPackage);
 				}).catch(err => {
