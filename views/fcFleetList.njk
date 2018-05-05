@@ -11,7 +11,7 @@
 	<section class="no-padding-top no-padding-bottom">
 		<div class="container-fluid">
 			<!-- Fleet List -->
-			<div class="col-md-12 col-sm-12">
+			<div class="col-lg-12">
 				<div class="statistic-block block">
 					<div class="progress-details d-flex align-items-end justify-content-between">
 						<table class="table table-striped table-hover table-sm">
@@ -19,9 +19,9 @@
 								<tr>
 									<th class="tr35"></th>
 									<th>Active FC</th>
-									<th>Backseat</th>
+									<th class="d-lg-block d-md-none d-sm-none">Backseat</th>
 									<th>Type</th>
-									<th>Status</th>
+									<th class="d-lg-block d-md-none d-sm-none">Status</th>
 									<th>Fleet Location</th>
 									<th>Size</th>
 									<th></th>
@@ -32,9 +32,9 @@
 								<tr>
 									<td><img src="https://image.eveonline.com/Character/{{ fleet.fc.characterID}}_32.jpg" alt="FCs Avatar"></td>
 									<td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
-									<td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
+									<td class="d-lg-block d-md-none d-sm-none"><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
 									<td>{{ fleet.type }}</td>
-									<td>{{ fleet.status }}</td>
+									<td class="d-lg-block d-md-none d-sm-none">{{ fleet.status }}</td>
 									<td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.location.id }})">{{ fleet.location.name }}</a></td>
 									<td>{{ fleet.members.length }}</td>
 									<td><a href="/commander/{{ fleet.id }}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
@@ -48,6 +48,7 @@
 		</div>
 </div>
 </section>
+<!-- Register a fleet -->
 <div class="modal fade" id="newFleet" role="dialog" tabindex="-1" style="display: none;" aria-hidden="true">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -84,4 +85,5 @@
 		</form></div>
 	</div>
 </div>
+<!-- End Fleet Registration -->
 {%- include "./partials/footer.njk" %}
