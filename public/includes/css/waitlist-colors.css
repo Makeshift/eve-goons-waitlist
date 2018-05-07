@@ -25,16 +25,16 @@ table.table-striped>tbody>tr.invite-failed, table.table-hover>tbody>tr.invite-fa
 
 
 /* Skills */
-.skills-pass, .skills-pass a{
-	background-color: #055a05!important;
+.skills-pass{
+	/*background-color: #055a058c!important;*/
 	color:white!important;
 }
 
 .skills-failed{
-	background-color:#dc3545!important;
-	color:#000000!important;
+	background-color:#ef00177d!important;
+	color:white!important;
 }
 
-.skills-failed a{
+.skills-pass a, .skills-failed a{
 	color: #ffffff;
 }

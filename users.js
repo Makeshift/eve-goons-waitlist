@@ -192,7 +192,7 @@ module.exports = function (setup) {
 	module.setDestination = function(user, systemID, cb) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
-				log.error("module.setDestination: Error for requestNewAccessToken", { err, user });
+				log.error("users.setDestination: Error for requestNewAccessToken", { err, user });
 				cb(err);
 			} else {
 				log.debug("Setting "+user.name+"\'s destination to "+systemID);
@@ -210,7 +210,7 @@ module.exports = function (setup) {
 	module.showInfo = function(user, targetID, cb) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
-				log.error("module.showInfo: Error for requestNewAccessToken", { err, user });
+				log.error("users.showInfo: Error for requestNewAccessToken", { err, user });
 				cb(err)
 			} else {
 				log.debug("Opening "+targetID+"\'s information window for "+user.name)
@@ -224,6 +224,87 @@ module.exports = function (setup) {
 			}
 		})
 	}
-	
+
+	//Open the regional market window for a given typeID.
+	module.openMarketWindow = function(user, targetID, cb) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("users.openMarketWindow: Error for requestNewAccessToken", { err, user });
+				cb(err)
+			} else {
+				log.debug("Opening the regional market for typeID: "+targetID+" for: "+user.name)
+				esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
+					cb("OK");
+				}).catch(err => {
+					log.error("users.openMarketWindow: ", { err });
+					cb(err)
+				});			
+			}
+		})
+	}
+
+	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
+	module.checkSkills = function(user, skillsPackage, cb) {
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+			if (err) {
+				log.error("users.checkSkills: Error for requestNewAccessToken", { err, user });
+				cb(err)
+			} else {
+				esi.characters(user.characterID, accessToken).skills().then(result => {
+					//Create ESI Skills Array
+					var esiSkills = [];
+					for(var i = 0; i < result.skills.length; i++) {
+						esiSkills[result.skills[i].skill_id] = result.skills[i];
+					}
+					
+					//Calc General Skills
+					skillsPackage.generalSkills.txtclass = "text-success";
+					skillsPackage.generalSkills.txticon = `<i class="fa fa-check-circle"></i>`;
+					var cSkillSet = skillsPackage.generalSkills;				
+					for(var i = 0; i < cSkillSet.length; i++) {
+						cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
+						//did skill fail?
+						if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
+							cSkillSet[i].class = "skills-failed";
+							//Set Menu Fail Indicator
+							skillsPackage.generalSkills.txtclass = "text-danger";
+							skillsPackage.generalSkills.txticon = `<i class="fa fa-times-circle"></i>`;
+						} else {
+							cSkillSet[i].class = "skills-pass";
+						}
+					}
+					skillsPackage.generalSkills = cSkillSet;
+
+
+					//skill categories
+					for(var c = 0; c < skillsPackage.categories.length; c++) {
+						skillsPackage.categories[c].txtclass = "text-success";
+						skillsPackage.categories[c].txticon = `<i class="fa fa-check-circle"></i>`;
+						var cSkillSet = skillsPackage.categories[c].Skills;			
+						for(var i = 0; i < cSkillSet.length; i++) {
+							cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
+							//did skill fail?
+							if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
+								cSkillSet[i].class = "skills-failed";
+								skillsPackage.categories[c].txtclass = "text-danger";
+								skillsPackage.categories[c].txticon = `<i class="fa fa-times-circle"></i>`;
+							} else {
+								cSkillSet[i].class = "skills-pass";
+							}
+							
+						}
+						skillsPackage.categories[c].Skills = cSkillSet;
+					}			
+					//Return the skills package for the view
+					skillsPackage.totalSP = result.total_sp;
+					cb(skillsPackage);
+				}).catch(err => {
+					log.error("users.checkSkills: ", { err });
+					cb(err)
+				});			
+			}
+		})
+	}
+
 	return module;
 }

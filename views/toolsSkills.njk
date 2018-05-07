@@ -1,0 +1,137 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
+<div class="page-content">
+    <div class="page-header">
+        <div class="container-fluid">
+            <h2 class="h5 no-margin-bottom">Skills List</h2>
+        </div>
+    </div>
+
+    <section class="no-padding-top padding-bottom noselect">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Skill Lists -->
+                <div class="col-sm-12 col-md-9">
+                    <div class="statistic-block block">
+                        <div>
+                            <div class="tab-content">
+                                <div role="tabpanel" class="tab-pane active" id="coreskills">
+                                    <p>CORE SKILLS</p>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th>Skill:</th>
+                                                    <th>Required</th>
+                                                    <th>Actual</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            
+                                                {% for skill in skills.generalSkills %}
+                                                <tr class="{{ skill.class }}">
+                                                    <td><a href="javascript:void(0);" onclick="openMarket({{ skill.id }});">{{ skill.name }}</a></td>
+                                                    <td>{{ skill.required }}</td>
+                                                    <td>{{ skill.actual }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>                        
+                                </div>
+                                {% for skill in skills.categories %}
+                                    <div id="{{skill.category | replace(' ','_')}}" class="tab-pane" role="tabpanel">
+                                        <p>{{ skill.category }}.</p>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Skill:</th>
+                                                        <th>Required</th>
+                                                        <th>Actual</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for s in skill.Skills %}
+                                                    <tr class="{{ s.class }}">
+                                                        <td><a href="javascript:void(0);" onclick="openMarket({{ s.id }});">{{ s.name }}</a></td>
+                                                        <td>{{ s.required }}</td>
+                                                        <td>{{ s.actual }}</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>	
+                    </div>
+                </div><!-- End Skills Section -->
+                <!-- Select Alts/Skill sets -->
+                <div class="col-sm-12 col-md-3">
+                    <div class="statistic-block block">
+                        <div class="row pb-2">
+                            <div class="col-sm-12 col-md-3">
+                                <img class="img-fluid" src="http://image.eveonline.com/Character/{{ targetUser.characterID }}_64.jpg" alt="{{ targetUser.name }}s avatar"/>
+                            </div>
+                            <div class="col-sm-12 col-md-9">
+                                <div><a href="javascript:void(0);" onclick="showInfo({{ targetUser.characterID }})">{{ targetUser.name }}</a>
+                                <p>{{ skills.totalSP.toLocaleString() }} SP</div>
+                            </div>
+                        </div>
+                        <select class="form-control mb-0" disabled>
+                            <option value="" selected>Select Alt to view skills</option>
+                            <option value="">Alt's Name</option>
+                            <option value="">Alt's Name</option>
+                        </select>
+                        <hr>
+                        <strong>Select Skill Set:</strong>
+                        <select class="form-control mb-0" disabled>
+                            <option value="all" selected>All Skills</option>
+                            <option value="mainfleet">Main Fleet</option>
+                            <option value="arsefleet">ArseFleet</option>
+                        </select>
+                        <hr />
+                        <div class="table-responsive">
+                            <table class="table table-hover table-sm">
+                                <tbody>
+                                    <tr class="{{ skills.generalSkills.txtclass }}">
+                                        <td><span href="javascript:void();" onclick="switchTab('coreskills')">{{ skills.generalSkills.txticon | safe }} Core Skills</span></td>
+                                    </tr>
+                                    {% for skill in skills.categories %}
+                                    <tr class="{{ skill.txtclass }}">
+                                        <td><span  href="javascript:void();" onclick="switchTab('{{skill.category | replace(' ','_') }}')">{{ skill.txticon | safe }} {{ skill.category }}</span></td>
+                                    </tr>
+                                    {% endfor %}                
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Alts/Skill sets -->
+            </div>     
+        </div>
+    </section>
+</div>
+<script>
+    function openMarket(targetID) {
+        console.log(targetID)
+        $.ajax({
+            type: "POST",
+            url: "/esi/ui/market/"+targetID
+        });
+    }
+
+    function switchTab(tabID) {
+        console.log(tabID)
+        $('.nav-tabs .active, .tab-content .active').removeClass('active');
+        $('#'+tabID).tab('show');
+    }
+
+$(document).ready(function(){
+    
+});
+</script>
+{%- include "./partials/footer.njk" %}

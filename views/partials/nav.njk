@@ -67,8 +67,9 @@
             <li{{  " class=active" if sideBarSelected === 6 }}>
               <a href="#fctools" aria-expanded="false" data-toggle="collapse" class="collapsed"><i class="fas fa-compass"></i> FC Tools <i class="fas fa-sort-down float-right"></i></a>
               <ul id="fctools" class="collapse list-unstyled ">
-                <strike><li><a href="#">Pilot Lookup</a></strike></li>
                 <li><a href="/commander/tools/fits-scan">Fit Scan Tool</a></li>
+                <strike><li><a href="#">Pilot Lookup</a></strike></li>
+                <li><a href="/commander/tools/skills">Pilot Skills Lookup</a></li>
                 <li><strike><a href="#/commander/tools/waitlist-logs">Waitlist Log</a></strike></li>
               </ul>                   
             {% if userProfile.roleNumeric >= 4 %}
@@ -86,7 +87,7 @@
         <hr>
         
         <ul class="list-unstyled">
-          <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a>
-        </li>
+          <li><a href="#" data-toggle="modal" data-target="#legal">Legal Notices</a></li>
+        </ul>
       </nav>
 {% endblock %}
