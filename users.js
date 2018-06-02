@@ -37,7 +37,6 @@ module.exports = function (setup) {
 					} else {
 						next();
 					}
-					return;
 				});
 			}
 		});
@@ -96,11 +95,10 @@ module.exports = function (setup) {
 				module.updateRefreshToken(user.characterID, newRefreshToken);
 				esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
 					esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
-					//cache.get(locationResult.solar_system_id, function(systemObject){
+						//cache.get(locationResult.solar_system_id, function(systemObject){
 						var location = {
 							id: systemObject.system_id,
 							name: systemObject.name,
-							lastcheck: Date.now()
 						}
 						cb(location);
 					}).catch(function(err) {
