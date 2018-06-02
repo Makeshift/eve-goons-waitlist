@@ -52,5 +52,12 @@ exports.skillsChecker = function(req, res) {
 }
 
 exports.waitlistLog = function(req, res) {
-    res.send("Log of waitlist invites/removals");
+    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+        var userProfile = req.user;
+        var sideBarSelected = 6;
+        res.render('waitlistLogs.njk', {userProfile, sideBarSelected});
+    } else {
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect("/");
+    }
 }
