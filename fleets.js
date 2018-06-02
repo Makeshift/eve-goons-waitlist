@@ -7,30 +7,13 @@ const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('fleets');
 const log = require('./logger.js')(module);
+const wlog = require('./wlog.js');
 var waitlist = require('./globalWaitlist.js')(setup);
+
 
 module.exports = function (setup) {
 	var module = {};
 	module.list = [];
-
-	/*
-	Fleet object format:
-	
-	{
-		fc: user object,
-		backseat: user object,
-		type: "hq",
-		status: "text",
-		location: {
-			id: id,
-			name: "Jita"
-		},
-		members: [user objects],
-		size: members.length,
-		url: "hhttps://esi.tech.ccp.is..."
-	}
-	
-	*/
 
 	module.get = function (id, cb) {
 		db.findOne({ 'id': id }, function (err, doc) {
@@ -165,7 +148,7 @@ module.exports = function (setup) {
 						charName = onWaitlist[i].alt.name;
 					}
 					if (members.includes(charID)) {
-						log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
+						wlog.systemRemoved(charID);
 						waitlist.remove(onWaitlist[i]._id, function(){});
 					}
 				}

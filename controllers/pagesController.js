@@ -4,6 +4,7 @@ var fleets = require('../fleets.js')(setup);
 var esi = require('eve-swagger');
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
 
 //Render Index/login Page
 exports.index = function(req, res) {
@@ -59,6 +60,7 @@ exports.joinWaitlist = function(req, res) {
                 invited: "invite-default",
                 signupTime: Date.now()
             }
+            wlog.joinWl(req.user);
             waitlist.addToWaitlist(userAdd, function () {
                 req.flash("content", {"class":"success", "title":"You're on the waitlist!", "message":req.body.name + " was added to the waitlist, see you in fleet soon."});
                 res.redirect(`/`);
@@ -70,6 +72,7 @@ exports.joinWaitlist = function(req, res) {
 //Leave the waitlist
 exports.removeSelf = function(req, res) {
     if (req.isAuthenticated()) {
+        wlog.selfRemove(req.user);
         waitlist.selfRemove(req.user.characterID, function () {
             req.flash("content", {"class":"success", "title":"Success!", "message":"You have removed yourself from the waitlist. See you next time."});
             res.redirect('/')
