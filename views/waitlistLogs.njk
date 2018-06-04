@@ -1,0 +1,50 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
+<div class="page-content">
+<div class="page-header">
+    <div class="container-fluid">
+    <h2 class="h5 no-margin-bottom">Waitlist Logs</h2>
+    </div>
+</div>
+<section class="no-padding-top padding-bottom noselect">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="statistic-block block noselect">
+                    <table id="example" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Pilot</th>
+                                <th>Action</th>
+                                <th>Admin</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logData %}
+                            <tr>
+                                <td><a href="javascript:void(0);" onclick="showInfo({{ log.pilot.characterID }})">{{ log.pilot.name }}</a></td>
+                                <td>{{ log.action }}</td>
+                                <td><a href="javascript:void(0);" onclick="showInfo({{ log.pilot.characterID }})">{{ log.admin.name }}</a></td>
+                                <td>{{ log.time.toISOString() }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>         
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/fh-3.1.3/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/fh-3.1.3/datatables.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#example').DataTable({
+        "paging":   false,
+        "ordering": false
+    });
+})
+</script>
+{%- include "./partials/footer.njk" %}

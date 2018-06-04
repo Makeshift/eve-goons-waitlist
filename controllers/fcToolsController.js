@@ -5,6 +5,7 @@ var setup = require('../setup.js');
 var users = require('../users.js')(setup);
 var refresh = require('passport-oauth2-refresh');
 const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
 
 //Renders the page for Fit Scanning
 exports.fitTool = function(req, res) { 
@@ -53,9 +54,11 @@ exports.skillsChecker = function(req, res) {
 
 exports.waitlistLog = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-        var userProfile = req.user;
-        var sideBarSelected = 6;
-        res.render('waitlistLogs.njk', {userProfile, sideBarSelected});
+        wlog.getWeek(function(logData){
+            var userProfile = req.user;
+            var sideBarSelected = 6;
+            res.render('waitlistLogs.njk', {userProfile, sideBarSelected, logData});
+        });
     } else {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
         res.status(403).redirect("/");

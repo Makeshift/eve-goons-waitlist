@@ -12,23 +12,21 @@ exports.index = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
             if (fleet) {
-                fleets.getSquads(fleet.fc, fleet.id, function(squads) {
-                    waitlist.get(function(usersOnWaitlist) {
-                        //Display the wait time in a nice format.
-                        for(var i = 0; i < usersOnWaitlist.length; i++) {
-                            var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
-                            var signupHours = 0;
-                            while (signuptime > 59) {
-                                signuptime -= 60;
-                                signupHours++;
-                            }
-                            usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                waitlist.get(function(usersOnWaitlist) {
+                    //Display the wait time in a nice format.
+                    for(var i = 0; i < usersOnWaitlist.length; i++) {
+                        var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+                        var signupHours = 0;
+                        while (signuptime > 59) {
+                            signuptime -= 60;
+                            signupHours++;
                         }
-                        var userProfile = req.user;
-                        var comms = setup.fleet.comms;
-                        var sideBarSelected = 5;
-                        res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist, squads, comms});
-                    })
+                        usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                    }
+                    var userProfile = req.user;
+                    var comms = setup.fleet.comms;
+                    var sideBarSelected = 5;
+                    res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist, comms});
                 })
             } else { 
                 req.flash("content", {"class":"info", "title":"Woops!", "message":"That fleet was deleted."});
@@ -45,7 +43,7 @@ exports.index = function(req, res) {
 exports.invitePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, req.params.wingID, req.params.squadID, function (status, response) {
+            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
                 if(status == 200) {
                     waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
                         if (invStatus == 200) {
