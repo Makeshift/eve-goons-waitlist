@@ -5,6 +5,7 @@ var setup = require('../setup.js');
 var users = require('../users.js')(setup);
 var refresh = require('passport-oauth2-refresh');
 const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
 
 //Renders the page for Fit Scanning
 exports.fitTool = function(req, res) { 
@@ -52,5 +53,39 @@ exports.skillsChecker = function(req, res) {
 }
 
 exports.waitlistLog = function(req, res) {
-    res.send("Log of waitlist invites/removals");
+    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+        wlog.getWeek(function(logData){
+            
+            for(var i = 0; i < logData.length; i++){
+                let timestamp = logData[i].time;                
+                
+                month = timestamp.getMonth()+1;
+                dt = timestamp.getDate();
+                hh = timestamp.getHours();
+                mm = timestamp.getMinutes()
+
+                if (dt < 10) {
+                dt = '0' + dt;
+                }
+                if (month < 10) {
+                month = '0' + month;
+                }
+                if (hh < 10) {
+                    hh = '0' + hh;
+                }
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                
+                logData[i].time = hh + ":" + mm + " " +month + '/' +dt;
+            }
+            
+            var userProfile = req.user;
+            var sideBarSelected = 6;
+            res.render('waitlistLogs.njk', {userProfile, sideBarSelected, logData});
+        });
+    } else {
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect("/");
+    }
 }

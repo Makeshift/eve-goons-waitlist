@@ -150,16 +150,7 @@
                           <p><strike>Newbee</strike></p>
                         </td>
                         <td>
-                          <div class="dropdown">
-                            <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-plus"></i> <i class="ml-2 pr-0 fas fa-caret-down" style="margin-right:-50%"></i></button>
-                              <div class="dropdown-menu" role="menu">
-                                {% for squad in squads %}
-                                  {% if squad.wingName.toLowerCase() === 'active' %}
-                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
-                                  {% endif %}
-                                {% endfor %}
-                              </div>
-                          </div>
+                          <button class="btn btn-sm btn-success" title="Invite Pilot" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -174,7 +165,7 @@
                           <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
-                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}','{{ user.user.characterID }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                         </td>
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
@@ -217,16 +208,7 @@
                           <p class="mb-0">Alt of: {{ user.user.name }}</p>
                         </td>
                         <td>
-                          <div class="dropdown">
-                            <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fa fa-plus"></i> <i class="ml-2 pr-0 fas fa-caret-down" style="margin-right:-50%"></i></button>
-                              <div class="dropdown-menu" role="menu">
-                                {% for squad in squads %}
-                                  {% if squad.wingName.toLowerCase() === 'active' %}
-                                  <a class="dropdown-item" href="javascript:void(0)" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}','{{ squad.wingId }}','{{ squad.id }}');">{{ squad.name }}</a>
-                                  {% endif %}
-                                {% endfor %}
-                              </div>
-                          </div>
+                          <button class="btn btn-sm btn-success" title="Invite Pilot" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -241,7 +223,7 @@
                           <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
-                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}','{{ user.alt.id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                         </td>
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
@@ -309,7 +291,7 @@
         
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID+"/"+wingID+"/"+squadID}).done(function() {
+            url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID}).done(function() {
                 $(rowClass).removeClass().addClass("invite-sent");
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {
@@ -319,7 +301,7 @@
     }
 
     //Remove a pilot from the waitlist
-    function removePilot(id) {
+    function removePilot(id, characterID) {
         console.log(id);
         var dbRowID = id;
         var rowClass = "#row-"+id;
@@ -327,7 +309,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/remove/"+dbRowID
+            url: "/commander/{{ fleet.id }}/remove/"+dbRowID+"/"+characterID
         });
 
         $("#fleetWaitlistCount").text(count-1);

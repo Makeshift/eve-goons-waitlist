@@ -7,30 +7,13 @@ const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('fleets');
 const log = require('./logger.js')(module);
+const wlog = require('./wlog.js');
 var waitlist = require('./globalWaitlist.js')(setup);
+
 
 module.exports = function (setup) {
 	var module = {};
 	module.list = [];
-
-	/*
-	Fleet object format:
-	
-	{
-		fc: user object,
-		backseat: user object,
-		type: "hq",
-		status: "text",
-		location: {
-			id: id,
-			name: "Jita"
-		},
-		members: [user objects],
-		size: members.length,
-		url: "hhttps://esi.tech.ccp.is..."
-	}
-	
-	*/
 
 	module.get = function (id, cb) {
 		db.findOne({ 'id': id }, function (err, doc) {
@@ -98,14 +81,14 @@ module.exports = function (setup) {
 		});
 	}
 
-	module.invite = function (fcid, refreshToken, fleetid, inviteeid, wingid, squadid, cb) {
+	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				cb(400, err);
 			} else {
 				users.updateRefreshToken(fcid, newRefreshToken);
-				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member", "squad_id": squadid, "wing_id": wingid}).then(result => {
+				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member"}).then(result => {
 					cb(200, "OK");
 				  }).catch(error => {
 					cb(400, error.message);
@@ -165,7 +148,7 @@ module.exports = function (setup) {
 						charName = onWaitlist[i].alt.name;
 					}
 					if (members.includes(charID)) {
-						log.debug(`Character ${charName} found in fleet and removed from waitlist.`);
+						wlog.systemRemoved(charID);
 						waitlist.remove(onWaitlist[i]._id, function(){});
 					}
 				}

@@ -188,6 +188,9 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
     border-radius: 0;
 }
 
+.badge {
+	width: 90%;
+}
 /* No Select */
 .noselect, .global-banner, img, footer, nav{
   -webkit-touch-callout: none; /* iOS Safari */

@@ -6,29 +6,28 @@ var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
 
 //Render Fleet Management Page
 exports.index = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
             if (fleet) {
-                fleets.getSquads(fleet.fc, fleet.id, function(squads) {
-                    waitlist.get(function(usersOnWaitlist) {
-                        //Display the wait time in a nice format.
-                        for(var i = 0; i < usersOnWaitlist.length; i++) {
-                            var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
-                            var signupHours = 0;
-                            while (signuptime > 59) {
-                                signuptime -= 60;
-                                signupHours++;
-                            }
-                            usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                waitlist.get(function(usersOnWaitlist) {
+                    //Display the wait time in a nice format.
+                    for(var i = 0; i < usersOnWaitlist.length; i++) {
+                        var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+                        var signupHours = 0;
+                        while (signuptime > 59) {
+                            signuptime -= 60;
+                            signupHours++;
                         }
-                        var userProfile = req.user;
-                        var comms = setup.fleet.comms;
-                        var sideBarSelected = 5;
-                        res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist, squads, comms});
-                    })
+                        usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                    }
+                    var userProfile = req.user;
+                    var comms = setup.fleet.comms;
+                    var sideBarSelected = 5;
+                    res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist, comms});
                 })
             } else { 
                 req.flash("content", {"class":"info", "title":"Woops!", "message":"That fleet was deleted."});
@@ -45,7 +44,7 @@ exports.index = function(req, res) {
 exports.invitePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, req.params.wingID, req.params.squadID, function (status, response) {
+            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
                 if(status == 200) {
                     waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
                         if (invStatus == 200) {
@@ -66,14 +65,14 @@ exports.invitePilot = function(req, res) {
                                 sound: '/includes/inviteAlarm.mp3'
                             }
                             api.sendAlarm(notificationPackage, function(noteResponse){
-                                
+                                wlog.invited(req.params.characterID, req.user.characterID);
                             });
                         }
                         res.status(invStatus).send(invResponse);
                     });
                     
                 } else {
-                    res.status(status).send(response)
+                    res.status(status).send(response);
                 }
             });
            
@@ -88,6 +87,7 @@ exports.invitePilot = function(req, res) {
 exports.removePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         waitlist.remove(req.params.tableID, function (status, response) {
+            wlog.removed(req.params.characterID, req.user.characterID);
             res.status(status).send(response);
         });
     } else {

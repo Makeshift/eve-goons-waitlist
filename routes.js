@@ -21,8 +21,8 @@ const fc_tools_controller = require('./controllers/fcToolsController.js')
 
 	//FC Waitlist Management
 	router.get('/commander/:fleetid/', fleet_management_controller.index);
-	router.post('/commander/:fleetid/invite/:characterID/:tableID/:wingID/:squadID', fleet_management_controller.invitePilot);
-	router.post('/commander/:fleetid/remove/:tableID', fleet_management_controller.removePilot);
+	router.post('/commander/:fleetid/invite/:characterID/:tableID', fleet_management_controller.invitePilot);
+	router.post('/commander/:fleetid/remove/:tableID/:characterID', fleet_management_controller.removePilot);
 	router.get('/commander/:fleetid/delete', fleet_management_controller.closeFleet);
 	router.post('/commander/:fleetid/update/comms', fleet_management_controller.updateComms);//TODO: DO VALIDATION ON THIS ENDPOINT
 	router.post('/commander/:fleetid/update/type', fleet_management_controller.updateType);//TODO: DO VALIDATION ON THIS ENDPOINT
@@ -40,7 +40,7 @@ const fc_tools_controller = require('./controllers/fcToolsController.js')
 	router.post('/admin/commanders/trainee', admin_fcs_controller.setTrainee);
 	//FC Tools
 	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
-	//router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
+	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
 	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
 	//Pilot Settings
 	//router.get('/my-settings', pilot_settings_controller.index);
