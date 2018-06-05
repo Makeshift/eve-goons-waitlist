@@ -87,7 +87,6 @@ exports.invitePilot = function(req, res) {
 exports.removePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         waitlist.remove(req.params.tableID, function (status, response) {
-            console.log(req.params.characterID);
             wlog.removed(req.params.characterID, req.user.characterID);
             res.status(status).send(response);
         });
