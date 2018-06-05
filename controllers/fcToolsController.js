@@ -55,6 +55,31 @@ exports.skillsChecker = function(req, res) {
 exports.waitlistLog = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         wlog.getWeek(function(logData){
+            
+            for(var i = 0; i < logData.length; i++){
+                let timestamp = logData[i].time;                
+                
+                month = timestamp.getMonth()+1;
+                dt = timestamp.getDate();
+                hh = timestamp.getHours();
+                mm = timestamp.getMinutes()
+
+                if (dt < 10) {
+                dt = '0' + dt;
+                }
+                if (month < 10) {
+                month = '0' + month;
+                }
+                if (hh < 10) {
+                    hh = '0' + hh;
+                }
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                
+                logData[i].time = hh + ":" + mm + " " +month + '/' +dt;
+            }
+            
             var userProfile = req.user;
             var sideBarSelected = 6;
             res.render('waitlistLogs.njk', {userProfile, sideBarSelected, logData});

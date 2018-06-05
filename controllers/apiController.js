@@ -1,12 +1,13 @@
-var path = require('path');
-var setup = require('../setup.js');
-var cache = require('../cache.js')(setup);
-var fleets = require('../fleets.js')(setup);
-var users = require('../users.js')(setup);
-var refresh = require('passport-oauth2-refresh');
-var waitlist = require('../globalWaitlist.js')(setup);
+const path = require('path');
+const setup = require('../setup.js');
+const cache = require('../cache.js')(setup);
+const fleets = require('../fleets.js')(setup);
+const users = require('../users.js')(setup);
+const refresh = require('passport-oauth2-refresh');
+const waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
-var api = require('./apiController');
+const wlog = require('../wlog.js');
+const api = require('./apiController');
 
 exports.waypoint = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
@@ -138,6 +139,7 @@ exports.alarmUser = function(req, res) {
 
             api.sendAlarm(notificationPackage, function(result) {
                 if (result == 200){
+                    wlog.alarm(req.params.targetid, req.user.characterID);
                     res.status(200).send();
                 } else {
                     res.status(400).send();

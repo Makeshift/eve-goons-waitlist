@@ -165,7 +165,7 @@
                           <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
-                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}','{{ user.user.characterID }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                         </td>
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
@@ -223,7 +223,7 @@
                           <button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.alt.id }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
                         </td>
                         <td>
-                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+                          <button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}','{{ user.alt.id }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
                         </td>
                         <td>
                           <a href="#"><!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}</a>
@@ -301,7 +301,7 @@
     }
 
     //Remove a pilot from the waitlist
-    function removePilot(id) {
+    function removePilot(id, characterID) {
         console.log(id);
         var dbRowID = id;
         var rowClass = "#row-"+id;
@@ -309,7 +309,7 @@
 
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/remove/"+dbRowID
+            url: "/commander/{{ fleet.id }}/remove/"+dbRowID+"/"+characterID
         });
 
         $("#fleetWaitlistCount").text(count-1);

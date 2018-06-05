@@ -6,6 +6,7 @@ var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
 
 //Render Fleet Management Page
 exports.index = function(req, res) {
@@ -64,14 +65,14 @@ exports.invitePilot = function(req, res) {
                                 sound: '/includes/inviteAlarm.mp3'
                             }
                             api.sendAlarm(notificationPackage, function(noteResponse){
-                                
+                                wlog.invited(req.params.characterID, req.user.characterID);
                             });
                         }
                         res.status(invStatus).send(invResponse);
                     });
                     
                 } else {
-                    res.status(status).send(response)
+                    res.status(status).send(response);
                 }
             });
            
@@ -86,6 +87,8 @@ exports.invitePilot = function(req, res) {
 exports.removePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         waitlist.remove(req.params.tableID, function (status, response) {
+            console.log(req.params.characterID);
+            wlog.removed(req.params.characterID, req.user.characterID);
             res.status(status).send(response);
         });
     } else {

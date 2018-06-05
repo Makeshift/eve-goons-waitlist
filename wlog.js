@@ -26,6 +26,7 @@ wlog.joinWl = function(user){
             "name": user.name
         },
         "action": "Joined",
+        "class": "info",
         "time": new Date()
     }
     db.insert(logObject);
@@ -42,6 +43,7 @@ wlog.selfRemove = function(user){
             "name": user.name
         },
         "action": "S Removed",
+        "class": "info",
         "time": new Date()
     }
     db.insert(logObject);
@@ -64,9 +66,88 @@ wlog.systemRemoved = function(userID){
                 "name": "SYSTEM"
             },
             "action": "Removed",
+            "class": "danger",
             "time": new Date()
         }
         db.insert(logObject);
+    })
+}
+
+/*
+* Log: FC removed user
+* @params: userID, adminID
+* @function: get user objects from id
+*/
+wlog.removed = function(userID, adminID){
+    users.findAndReturnUser(Number(userID), function(userObject){ 
+        users.findAndReturnUser(Number(adminID), function(adminObject){
+            var logObject = {
+                "pilot": {
+                    "characterID": userObject.characterID,
+                    "name": userObject.name
+                },
+                "admin": {
+                    "characterID": adminObject.characterID,
+                    "name": adminObject.name
+                },
+                "action": "Removed",
+                "class": "danger",
+                "time": new Date()
+            }
+            db.insert(logObject);        
+        })
+    })
+}
+
+/*
+* Log: FC invited user
+* @params: userID, adminID
+* @function: get user objects from id
+*/
+wlog.invited = function(userID, adminID){
+    users.findAndReturnUser(Number(userID), function(userObject){ 
+        users.findAndReturnUser(Number(adminID), function(adminObject){
+            var logObject = {
+                "pilot": {
+                    "characterID": userObject.characterID,
+                    "name": userObject.name
+                },
+                "admin": {
+                    "characterID": adminObject.characterID,
+                    "name": adminObject.name
+                },
+                "action": "Invited",
+                "class": "success",
+                "time": new Date()
+            }
+            db.insert(logObject);        
+        })
+    })
+}
+
+/*
+* Log: FC alarmed user
+* @params: userID, adminID
+* @function: get user objects from id
+*/
+wlog.alarm = function(userID, adminID){
+    users.findAndReturnUser(Number(userID), function(userObject){ 
+        users.findAndReturnUser(Number(adminID), function(adminObject){
+            var logObject = {
+                "pilot": {
+                    "characterID": userObject.characterID,
+                    "name": userObject.name
+                },
+                "admin": {
+                    "characterID": adminObject.characterID,
+                    "name": adminObject.name
+                },
+                "action": "Alarmed",
+                "class": "warning",
+                "time": new Date()
+            }
+            db.insert(logObject);
+        })
     })
 }
 module.exports = wlog;
