@@ -3,6 +3,7 @@ const path = require('path');
 const db = require('./dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
 const setup = require('./setup.js');
+const user = require('./user.js')(setup);
 const users = require('./users.js')(setup);
 const log = require('./logger.js')(module);
 
@@ -127,7 +128,7 @@ module.exports = function (setup) {
 				db.find().forEach(function (doc) {
 					//Is user online?
 					//Update Location
-					users.getLocation(doc.user, function(location) {
+					user.getLocation(doc.user, function(location) {
 						doc.user.location = location;
 						db.updateOne({ '_id': doc._id }, { $set: { "user": doc.user } }, function (err, result) {
 							if (err) log.error("waitlist.getLocation: Error for db.updateOne", { err });

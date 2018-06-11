@@ -2,6 +2,7 @@ const path = require('path');
 const setup = require('../setup.js');
 const cache = require('../cache.js')(setup);
 const fleets = require('../fleets.js')(setup);
+const user = require('../user.js')(setup);
 const users = require('../users.js')(setup);
 const refresh = require('passport-oauth2-refresh');
 const waitlist = require('../globalWaitlist.js')(setup);
@@ -11,7 +12,7 @@ const api = require('./apiController');
 
 exports.waypoint = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
-        users.setDestination(req.user, req.params.systemID, function(response) {
+        user.setDestination(req.user, req.params.systemID, function(response) {
             res.send(response);
         });
     } else {
@@ -21,7 +22,7 @@ exports.waypoint = function(req, res) {
 
 exports.showInfo = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
-        users.showInfo(req.user, req.params.targetID, function(response) {
+        user.showInfo(req.user, req.params.targetID, function(response) {
             res.send(response);
         });
     } else {
@@ -31,7 +32,7 @@ exports.showInfo = function(req, res) {
 
 exports.openMarket = function(req, res) {
     if(req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
-        users.openMarketWindow(req.user, req.params.targetID, function(response) {
+        user.openMarketWindow(req.user, req.params.targetID, function(response) {
             res.send(response);
         });
     } else {

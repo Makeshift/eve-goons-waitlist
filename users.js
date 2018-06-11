@@ -14,7 +14,6 @@ module.exports = function (setup) {
 	module.updateUserSession = function (req, res, next) {
 		if (typeof req.session.passport === "undefined" || typeof req.session.passport.user === "undefined") {
 			next();
-			return;
 		}
 		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
 			if (!userData) {
@@ -71,48 +70,6 @@ module.exports = function (setup) {
 		});
 	};
 
-	module.deleteUser = function(checkID, cb) {
-		db.deleteOne({'characterID': checkID}, function(err, results) {
-			log.info("A user has been deleted: " + checkID);
-			if (cb) cb();
-		})
-	}
-
-	module.updateRefreshToken = function (checkID, token) {
-		db.updateOne({ 'characterID': checkID }, { $set: { refreshToken: token } }, function (err, result) {
-			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': checkID });
-		})
-	}
-
-
-	//TODO: Use the cache for the systems
-	module.getLocation = function (user, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("users.getLocation: Error for requestNewAccessToken", { err, user });
-				cb(400, err);
-			} else {
-				module.updateRefreshToken(user.characterID, newRefreshToken);
-				esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-					esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
-						//cache.get(locationResult.solar_system_id, function(systemObject){
-						var location = {
-							id: systemObject.system_id,
-							name: systemObject.name,
-						}
-						cb(location);
-					}).catch(function(err) {
-						log.error("users.getLocation: Error GET /universe/systems/{system_id}/", {err, user});
-						cb({id: 0, name: "unknown", lastcheck: Date.now()});
- 					})
-				}).catch(function(err) {
-					log.error("users.getLocation: Error GET /characters/{character_id}/location/", {err, user});
-					cb({id: 0, name: "unknown", lastcheck: Date.now()});
-				})
-			}
-		})		
-	}
-
 	module.getUserDataFromID = function (id, cb) {
 		esi.characters(id).info().then(function (data) {
 			var allianceID = data.alliance_id || 0;
@@ -133,7 +90,6 @@ module.exports = function (setup) {
 		}).catch(err => {
 			log.error("users.getUserDataFromID: Error for esi.characters.info", { err, id });
 		});
-
 	}
 
 	generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
@@ -184,61 +140,6 @@ module.exports = function (setup) {
 				if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + setup.userPermissions[permission]);
 			})
 		}
-	}
-
-	//Set a users destination
-	module.setDestination = function(user, systemID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("users.setDestination: Error for requestNewAccessToken", { err, user });
-				cb(err);
-			} else {
-				log.debug("Setting "+user.name+"\'s destination to "+systemID);
-				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("users.setDestination: ", { err });
-					cb(err);
-				});
-			}
-		})
-	}
-
-	//Open the info window of an alliance, corporation or pilot.
-	module.showInfo = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("users.showInfo: Error for requestNewAccessToken", { err, user });
-				cb(err)
-			} else {
-				log.debug("Opening "+targetID+"\'s information window for "+user.name)
-				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("users.showInfo: ", { err });
-					cb(err)
-				});
-				
-			}
-		})
-	}
-
-	//Open the regional market window for a given typeID.
-	module.openMarketWindow = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("users.openMarketWindow: Error for requestNewAccessToken", { err, user });
-				cb(err)
-			} else {
-				log.debug("Opening the regional market for typeID: "+targetID+" for: "+user.name)
-				esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("users.openMarketWindow: ", { err });
-					cb(err)
-				});			
-			}
-		})
 	}
 
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.

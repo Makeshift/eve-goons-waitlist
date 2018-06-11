@@ -3,6 +3,7 @@ const path = require('path');
 const esi = require('eve-swagger');
 const refresh = require('passport-oauth2-refresh');
 const setup = require('./setup.js');
+const user = require('./user.js')(setup);
 const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('fleets');
@@ -34,7 +35,7 @@ module.exports = function (setup) {
 				// TODO: is it good to throw?
 				throw err;
 			}
-			users.updateRefreshToken(characterID, newRefreshToken);
+			user.updateRefreshToken(characterID, newRefreshToken);
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function (members) {
 				cb(members, fleetid, fullDoc)
 			}).catch(function (err) {
@@ -46,40 +47,6 @@ module.exports = function (setup) {
 		});
 	}
 
-	/*
-	* Return an array of squads
-	* Squad {squadID, squadName, wingName}
-	*/
-	module.getSquads = function (fc, fleetid, cb) {
-		refresh.requestNewAccessToken('provider', fc.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("fleets.getSquads: Error for requestNewAccessToken", { err, characterID });
-				// TODO: is it good to throw?
-				throw err;
-			}
-			users.updateRefreshToken(fc.characterID, newRefreshToken);
-			var squads = [];
-			esi.characters(fc.characterID, accessToken).fleet(fleetid).wings().then(function (wings) {
-				for(var w = 0; w < wings.length; w++) {
-					for(var s = 0; s < wings[w].squads.length; s++){
-						var squad = {
-							id: wings[w].squads[s].id,
-							name: wings[w].squads[s].name,
-							wingId: wings[w].id,
-							wingName: wings[w].name
-						}
-						squads.push(squad);
-					}
-				}
-				cb(squads);
-			}).catch(function (err) {
-				log.error("fleets.getSquads: Error for fleet.wings ", { err, fleetid });
-				if (typeof cb === "function") {
-					cb(null);
-				}
-			})
-		});
-	}
 
 	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
@@ -87,7 +54,7 @@ module.exports = function (setup) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				cb(400, err);
 			} else {
-				users.updateRefreshToken(fcid, newRefreshToken);
+				user.updateRefreshToken(fcid, newRefreshToken);
 				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member"}).then(result => {
 					cb(200, "OK");
 				  }).catch(error => {
@@ -229,7 +196,7 @@ module.exports = function (setup) {
 							}
 						});
 
-						users.getLocation(doc.fc, function(location) {
+						user.getLocation(doc.fc, function(location) {
 							db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
 								if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
 							});
