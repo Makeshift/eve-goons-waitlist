@@ -42,7 +42,7 @@ wlog.selfRemove = function(user){
             "characterID": user.characterID,
             "name": user.name
         },
-        "action": "S Removed",
+        "action": "Self Removed",
         "class": "info",
         "time": new Date()
     }
