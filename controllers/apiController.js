@@ -2,8 +2,10 @@ const path = require('path');
 const setup = require('../setup.js');
 const cache = require('../cache.js')(setup);
 const fleets = require('../fleets.js')(setup);
+const user = require('../user.js')(setup);
 const users = require('../users.js')(setup);
 const refresh = require('passport-oauth2-refresh');
+const banner = require('../waitlistBanner.js')(setup);
 const waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
@@ -11,7 +13,7 @@ const api = require('./apiController');
 
 exports.waypoint = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.systemID !== "undefined") {
-        users.setDestination(req.user, req.params.systemID, function(response) {
+        user.setDestination(req.user, req.params.systemID, function(response) {
             res.send(response);
         });
     } else {
@@ -21,7 +23,7 @@ exports.waypoint = function(req, res) {
 
 exports.showInfo = function(req, res) {
     if (req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
-        users.showInfo(req.user, req.params.targetID, function(response) {
+        user.showInfo(req.user, req.params.targetID, function(response) {
             res.send(response);
         });
     } else {
@@ -31,7 +33,7 @@ exports.showInfo = function(req, res) {
 
 exports.openMarket = function(req, res) {
     if(req.isAuthenticated() && typeof req.params.targetID !== "undefined") {
-        users.openMarketWindow(req.user, req.params.targetID, function(response) {
+        user.openMarketWindow(req.user, req.params.targetID, function(response) {
             res.send(response);
         });
     } else {
@@ -59,6 +61,28 @@ exports.fleetAtAGlance = function(req, res) {
             res.status(400).send("No fleet found");
         }
     });     
+}
+
+//Store a new banner
+exports.addBanner = function(req, res){
+    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+        banner.createNew(req.user, req.body.text, req.body.type, function(status){
+            res.status(status).send();
+        })
+    } else {
+        res.status(400).send("Not authorised");
+    }
+}
+
+//Hide last banner
+exports.removeBanner = function(req, res){
+    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+        banner.hideLast(function(status){
+            res.status(status).send();
+        })
+    } else {
+        res.status(400).send("Not authorised");
+    }
 }
 
 //Count the total number of each ship and make the table.

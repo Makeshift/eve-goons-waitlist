@@ -44,37 +44,45 @@ exports.index = function(req, res) {
 exports.invitePilot = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
         fleets.get(req.params.fleetid, function (fleet) {
-            fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
-                if(status == 200) {
-                    waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
-                        if (invStatus == 200) {
-                            var notificationPackage = {
-                                target: {
-                                    id: req.params.characterID,
-                                    name: null
-                                },
-                                sender: {
-                                    id: req.user.characterID,
-                                    name: req.user.name
-                                },
-                                comms: {
-                                    name: fleet.comms.name,
-                                    url: fleet.comms.url
-                                },
-                                message: req.user.name + ` is trying to invite you to a fleet. Please check your screen and join comms: ` + fleet.comms.name,
-                                sound: '/includes/inviteAlarm.mp3'
+            if(fleet.fc.characterID){
+                fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
+                    if(status == 200) {
+                        waitlist.setAsInvited(req.params.tableID, function(invStatus, invResponse) {
+                            if (invStatus == 200) {
+                                var notificationPackage = {
+                                    target: {
+                                        id: req.params.characterID,
+                                        name: null
+                                    },
+                                    sender: {
+                                        id: req.user.characterID,
+                                        name: req.user.name
+                                    },
+                                    comms: {
+                                        name: fleet.comms.name,
+                                        url: fleet.comms.url
+                                    },
+                                    message: req.user.name + ` is trying to invite you to a fleet. Please check your screen and join comms: ` + fleet.comms.name,
+                                    sound: '/includes/inviteAlarm.mp3'
+                                }
+                                api.sendAlarm(notificationPackage, function(noteResponse){
+                                    wlog.invited(req.params.characterID, req.user.characterID);
+                                });
                             }
-                            api.sendAlarm(notificationPackage, function(noteResponse){
-                                wlog.invited(req.params.characterID, req.user.characterID);
-                            });
+                            res.status(invStatus).send(invResponse);
+                        });
+                    } else {
+                        var resStr = response.split("'")[3];
+                        if(!resStr){
+                            resStr = response.split("\"")[3];
                         }
-                        res.status(invStatus).send(invResponse);
-                    });
-                    
-                } else {
-                    res.status(status).send(response);
-                }
-            });
+                        
+                        res.status(status).send(resStr);
+                    }
+                });
+            } else {
+                res.status(400).send("ESI Error: Offline Waitlist Mode.");
+            }
            
         })
 

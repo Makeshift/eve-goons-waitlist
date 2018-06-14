@@ -101,7 +101,23 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
 	background-color: #dc3545;
 	border-color: white;
 }
+/* Waitlist Info Banner */
+.banner-info{
+	background-color:#06577d;
+	color: white;
+	margin-left: 1.5%;
+	margin-right: 1.5%;
+	border-radius: 0px;
+}
 
+/* Waitlist Warning Banner */
+.banner-warning{
+	background-color:#dc3545;
+	color: white;
+	margin-left: 1.5%;
+	margin-right: 1.5%;
+	border-radius: 0px;
+}		
 
 /* Fit selection buttons */
 .fit-selected, .fit:hover, .fit:focus{

@@ -1,8 +1,9 @@
-var path = require('path');
-var setup = require('../setup.js');
-var fleets = require('../fleets.js')(setup);
-var users = require('../users.js')(setup);
-var refresh = require('passport-oauth2-refresh');
+const path = require('path');
+const setup = require('../setup.js');
+const fleets = require('../fleets.js')(setup);
+const user = require('../user.js')(setup);
+const users = require('../users.js')(setup);
+const refresh = require('passport-oauth2-refresh');
 const log = require('../logger.js')(module);
 
 
@@ -29,7 +30,7 @@ exports.index = function(req, res) {
 //Registers a fleet
 exports.registerFleet = function(req, res) {
     if (req.isAuthenticated() && req.user.roleNumeric > 0) {
-        users.getLocation(req.user, function (location) {
+        user.getLocation(req.user, function (location) {
             var fleetid = 0;
             try {
                 fleetid = req.body.url.split("fleets/")[1].split("/")[0];

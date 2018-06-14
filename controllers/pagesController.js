@@ -1,29 +1,32 @@
-var path = require('path');
-var setup = require('../setup.js');
-var fleets = require('../fleets.js')(setup);
-var esi = require('eve-swagger');
-var waitlist = require('../globalWaitlist.js')(setup);
+const path = require('path');
+const setup = require('../setup.js');
+const fleets = require('../fleets.js')(setup);
+const esi = require('eve-swagger');
+const banner = require('../waitlistBanner.js')(setup);
+const waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
 
 //Render Index/login Page
 exports.index = function(req, res) {
     if (req.isAuthenticated()) {
-        //Grab all fleets			
-        fleets.getFCPageList(function (fleets) {           
-            var fleetCount = 0;
-            for (var i = 0; i < fleets.length; i++) {
-                if (fleets[i].status !== "Not Listed") fleetCount++;
-            }
-            
-            waitlist.getUserPosition(req.user.characterID, function(position, found, name) {
-                waitlist.getCharsOnWaitlist(req.user.characterID, function(charList) {
-                    var userProfile = req.user;
-                    var sideBarSelected = 1;
-                    res.render('waitlist.njk', {userProfile, sideBarSelected, fleets, fleetCount, charList, position});
+        banner.getLast(function (banner){
+            //Grab all fleets			
+            fleets.getFCPageList(function (fleets) {           
+                var fleetCount = 0;
+                for (var i = 0; i < fleets.length; i++) {
+                    if (fleets[i].status !== "Not Listed") fleetCount++;
+                }
+                
+                waitlist.getUserPosition(req.user.characterID, function(position, found, name) {
+                    waitlist.getCharsOnWaitlist(req.user.characterID, function(charList) {
+                        var userProfile = req.user;
+                        var sideBarSelected = 1;
+                        res.render('waitlist.njk', {userProfile, sideBarSelected, banner, fleets, fleetCount, charList, position});
+                    })
                 })
             })
-        });
+        })
     } else {
         res.render('login.html');
     }

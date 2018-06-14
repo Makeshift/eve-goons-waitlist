@@ -3,6 +3,7 @@ const path = require('path');
 const esi = require('eve-swagger');
 const refresh = require('passport-oauth2-refresh');
 const setup = require('./setup.js');
+const user = require('./user.js')(setup);
 const users = require('./users.js')(setup);
 const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('fleets');
@@ -34,7 +35,7 @@ module.exports = function (setup) {
 				// TODO: is it good to throw?
 				throw err;
 			}
-			users.updateRefreshToken(characterID, newRefreshToken);
+			user.updateRefreshToken(characterID, newRefreshToken);
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function (members) {
 				cb(members, fleetid, fullDoc)
 			}).catch(function (err) {
@@ -46,40 +47,6 @@ module.exports = function (setup) {
 		});
 	}
 
-	/*
-	* Return an array of squads
-	* Squad {squadID, squadName, wingName}
-	*/
-	module.getSquads = function (fc, fleetid, cb) {
-		refresh.requestNewAccessToken('provider', fc.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("fleets.getSquads: Error for requestNewAccessToken", { err, characterID });
-				// TODO: is it good to throw?
-				throw err;
-			}
-			users.updateRefreshToken(fc.characterID, newRefreshToken);
-			var squads = [];
-			esi.characters(fc.characterID, accessToken).fleet(fleetid).wings().then(function (wings) {
-				for(var w = 0; w < wings.length; w++) {
-					for(var s = 0; s < wings[w].squads.length; s++){
-						var squad = {
-							id: wings[w].squads[s].id,
-							name: wings[w].squads[s].name,
-							wingId: wings[w].id,
-							wingName: wings[w].name
-						}
-						squads.push(squad);
-					}
-				}
-				cb(squads);
-			}).catch(function (err) {
-				log.error("fleets.getSquads: Error for fleet.wings ", { err, fleetid });
-				if (typeof cb === "function") {
-					cb(null);
-				}
-			})
-		});
-	}
 
 	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
 		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
@@ -87,7 +54,7 @@ module.exports = function (setup) {
 				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
 				cb(400, err);
 			} else {
-				users.updateRefreshToken(fcid, newRefreshToken);
+				user.updateRefreshToken(fcid, newRefreshToken);
 				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member"}).then(result => {
 					cb(200, "OK");
 				  }).catch(error => {
@@ -127,6 +94,17 @@ module.exports = function (setup) {
 			if (err) log.error("fleet.delete: Error for db.deleteOne", { err, id });
 			if (typeof cb === "function") cb();
 		})
+	}
+
+	module.revokeFC = function(id, cb){
+		if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
+			log.debug("Special dev fleet, not deleting", { id });
+			if (typeof cb === "function") cb();
+			return;
+		}
+		db.updateOne({'id': id}, {$set: {fc: {}}}, function(err, result) {
+			if (typeof cb === "function") cb();
+		});
 	}
 
 	module.checkForDuplicates = function () {
@@ -213,39 +191,47 @@ module.exports = function (setup) {
 		function lookup() {
 			var checkCache = [];
 			db.find().forEach(function (doc) {
-				module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function (members, fleetid, fullDoc) {
-					if (members == null) {
-						fleetHasErrored();
-					} else {
-						db.updateOne({ 'id': fleetid }, { $set: { "members": members, "errors": 0 } }, function (err, result) {
-							if (err) log.error("fleet.timers: Error for db.updateOne", { err, fleetid });
-							module.checkForDuplicates();
-						});
-						//Won't work because we can't hit the endpoint anymore, oops
-						members.forEach(function (member, i) {
-							checkCache.push(member.ship_type_id);
-							if (i == members.length - 1) {
-								cache.massQuery(checkCache);
-							}
-						});
-
-						users.getLocation(doc.fc, function(location) {
-							db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
-								if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
-							});
-						})
-					}
-
-					function fleetHasErrored() {
-						if (doc.errors < 5) {
-							log.warn(`Fleet under ${fullDoc.fc.name} caused an error.`);
-							db.updateOne({ 'id': fleetid }, { $set: { "errors": fullDoc.errors + 1 || 1 } });
+				/*
+				* Check to see if we have an FC object.
+				* If there is no FC the waitlist is in manual mode.
+				* Skip and check the next.
+				*/
+				if(doc.fc.characterID){
+					module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function (members, fleetid, fullDoc) {
+						if (members == null) {
+							fleetHasErrored();
 						} else {
-							log.warn(`Fleet under ${fullDoc.fc.name} was deleted due to errors.`);
-							module.delete(fleetid);
+							db.updateOne({ 'id': fleetid }, { $set: { "members": members, "errors": 0 } }, function (err, result) {
+								if (err) log.error("fleet.timers: Error for db.updateOne", { err, fleetid });
+								module.checkForDuplicates();
+							});
+							//Won't work because we can't hit the endpoint anymore, oops
+							members.forEach(function (member, i) {
+								checkCache.push(member.ship_type_id);
+								if (i == members.length - 1) {
+									cache.massQuery(checkCache);
+								}
+							});
+
+							user.getLocation(doc.fc, function(location) {
+								db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
+									if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
+								});
+							})
 						}
-					}
-				});
+
+						function fleetHasErrored() {
+							if (doc.errors < 10) {
+								log.warn(`Fleet under ${fullDoc.fc.name} caused an error.`);
+								db.updateOne({ 'id': fleetid }, { $set: { "errors": fullDoc.errors + 1 || 1 } });
+							} else {
+								log.warn(`Fleet under ${fullDoc.fc.name} has been put into ESI Offline mode. ${fullDoc.fc.name} is no longer the listed FC.`);
+								db.updateOne({ 'id': fleetid }, { $set: { "errors": 0 } });
+								module.revokeFC(fleetid);
+							}
+						}
+					});
+				}
 			})
 			module.timers();
 		}
