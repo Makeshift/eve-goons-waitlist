@@ -10,6 +10,11 @@
           <strong>This fleet is not listed:</strong> Pilots cannot see this fleet. If this is the only fleet pilots will be unable to join the waitlist!
       </div>
       {% endif %}
+      {% if fleet.fc.characterID == undefined %}
+      <div role="alert" class="alert alert-primary global-banner-inactive noselect">
+          <strong>ESI Fleet Disabled |</strong> You must set a new FC (Boss) before you can send invites.<br/>Use !esi in FC Jabber. If esi-fleets is yellow or red this issue may persist.
+      </div>
+      {% endif %}      
       <section class="no-padding-top no-padding-bottom">
         <div class="container-fluid">
           <!-- Upper Fleet Panel -->
@@ -147,10 +152,10 @@
                         </td>
                         <td>
                           <a href="javascript:void(0);" onclick="showInfo({{ user.user.characterID }})">{{ user.user.name }}</a>
-                          <p><strike>Newbee</strike></p>
+                          <p id="{{ user.user.characterID }}-status"></p>
                         </td>
                         <td>
-                          <button class="btn btn-sm btn-success" title="Invite Pilot" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
+                          <button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -205,10 +210,10 @@
                         </td>
                         <td>
                           <a href="javascript:void(0);" onclick="showInfo({{ user.alt.id }})">{{ user.alt.name }}</a>
-                          <p class="mb-0">Alt of: {{ user.user.name }}</p>
+                          <p id="{{ user.alt.id }}-status" class="mb-0">Alt of: {{ user.user.name }}</p>
                         </td>
                         <td>
-                          <button class="btn btn-sm btn-success" title="Invite Pilot" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
+                          <button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.alt.id }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
                         </td>
                         <td>
                           <div class="dropdown">
@@ -282,7 +287,7 @@
     }, 15000);//Every 15 seconds
 
     //Invite a pilot to the fleet
-    function invitePilot(characterID, dbRowID, wingID, squadID) {
+    function invitePilot(characterID, dbRowID) {
         var dbRowID = dbRowID;
         var rowClass = "#row-"+dbRowID;
         var count = Number($("#fleetWaitlistCount").text());
@@ -296,7 +301,7 @@
                 $("#fleetWaitlistCount").text(count-1);
         }).fail(function(text) {
             $(rowClass).removeClass().addClass("invite-failed");
-            console.log(text.responseText);
+            $("#"+characterID+"-status").text(text.responseText);
         });
     }
 

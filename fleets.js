@@ -96,6 +96,17 @@ module.exports = function (setup) {
 		})
 	}
 
+	module.revokeFC = function(id, cb){
+		if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
+			log.debug("Special dev fleet, not deleting", { id });
+			if (typeof cb === "function") cb();
+			return;
+		}
+		db.updateOne({'id': id}, {$set: {fc: {}}}, function(err, result) {
+			if (typeof cb === "function") cb();
+		});
+	}
+
 	module.checkForDuplicates = function () {
 		db.find({}).toArray(function (err, docs) {
 			if (err) log.error("fleet.checkForDuplicates: Error for db.find", { err });
@@ -180,39 +191,47 @@ module.exports = function (setup) {
 		function lookup() {
 			var checkCache = [];
 			db.find().forEach(function (doc) {
-				module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function (members, fleetid, fullDoc) {
-					if (members == null) {
-						fleetHasErrored();
-					} else {
-						db.updateOne({ 'id': fleetid }, { $set: { "members": members, "errors": 0 } }, function (err, result) {
-							if (err) log.error("fleet.timers: Error for db.updateOne", { err, fleetid });
-							module.checkForDuplicates();
-						});
-						//Won't work because we can't hit the endpoint anymore, oops
-						members.forEach(function (member, i) {
-							checkCache.push(member.ship_type_id);
-							if (i == members.length - 1) {
-								cache.massQuery(checkCache);
-							}
-						});
-
-						user.getLocation(doc.fc, function(location) {
-							db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
-								if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
-							});
-						})
-					}
-
-					function fleetHasErrored() {
-						if (doc.errors < 5) {
-							log.warn(`Fleet under ${fullDoc.fc.name} caused an error.`);
-							db.updateOne({ 'id': fleetid }, { $set: { "errors": fullDoc.errors + 1 || 1 } });
+				/*
+				* Check to see if we have an FC object.
+				* If there is no FC the waitlist is in manual mode.
+				* Skip and check the next.
+				*/
+				if(doc.fc.characterID){
+					module.getMembers(doc.fc.characterID, doc.fc.refreshToken, doc.id, doc, function (members, fleetid, fullDoc) {
+						if (members == null) {
+							fleetHasErrored();
 						} else {
-							log.warn(`Fleet under ${fullDoc.fc.name} was deleted due to errors.`);
-							module.delete(fleetid);
+							db.updateOne({ 'id': fleetid }, { $set: { "members": members, "errors": 0 } }, function (err, result) {
+								if (err) log.error("fleet.timers: Error for db.updateOne", { err, fleetid });
+								module.checkForDuplicates();
+							});
+							//Won't work because we can't hit the endpoint anymore, oops
+							members.forEach(function (member, i) {
+								checkCache.push(member.ship_type_id);
+								if (i == members.length - 1) {
+									cache.massQuery(checkCache);
+								}
+							});
+
+							user.getLocation(doc.fc, function(location) {
+								db.updateOne({ 'id': doc.id }, { $set: { "location": location } }, function (err, result) {//{$set: {backseat: user}}
+									if (err) log.error("fleet.getLocation: Error for db.updateOne", { err });
+								});
+							})
 						}
-					}
-				});
+
+						function fleetHasErrored() {
+							if (doc.errors < 10) {
+								log.warn(`Fleet under ${fullDoc.fc.name} caused an error.`);
+								db.updateOne({ 'id': fleetid }, { $set: { "errors": fullDoc.errors + 1 || 1 } });
+							} else {
+								log.warn(`Fleet under ${fullDoc.fc.name} has been put into ESI Offline mode. ${fullDoc.fc.name} is no longer the listed FC.`);
+								db.updateOne({ 'id': fleetid }, { $set: { "errors": 0 } });
+								module.revokeFC(fleetid);
+							}
+						}
+					});
+				}
 			})
 			module.timers();
 		}
