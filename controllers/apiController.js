@@ -5,6 +5,7 @@ const fleets = require('../fleets.js')(setup);
 const user = require('../user.js')(setup);
 const users = require('../users.js')(setup);
 const refresh = require('passport-oauth2-refresh');
+const banner = require('../waitlistBanner.js')(setup);
 const waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
@@ -60,6 +61,28 @@ exports.fleetAtAGlance = function(req, res) {
             res.status(400).send("No fleet found");
         }
     });     
+}
+
+//Store a new banner
+exports.addBanner = function(req, res){
+    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+        banner.createNew(req.user, req.body.text, req.body.type, function(status){
+            res.status(status).send();
+        })
+    } else {
+        res.status(400).send("Not authorised");
+    }
+}
+
+//Hide last banner
+exports.removeBanner = function(req, res){
+    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+        banner.hideLast(function(status){
+            res.status(status).send();
+        })
+    } else {
+        res.status(400).send("Not authorised");
+    }
 }
 
 //Count the total number of each ship and make the table.

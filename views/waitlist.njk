@@ -12,6 +12,12 @@
 					<section>
 						<!-- No Fleet -->
 						<div id="alertarea">
+							{% if banner %}
+							<div id="topbanner" role="alert" class="alert alert-primary {{ banner.class }} noselect mb-4">
+								<strong><i class="fas fa-info-circle"></i></strong> {{ banner.text }}
+								<p class="mt-0 mb-0" style="font-size:small;">Message set by: {{ banner.admin.name }}. {% if userProfile.roleNumeric > 0 %}| <a href="#" class="font-weight-bold" style="color:white!important;" onclick="hideBanner('{{banner._id}}')">admin delete</a>{% endif %}</p>
+							</div>
+							{% endif %}
 							{% if fleetCount <= 0 %}
 							<div role="alert" class="alert alert-primary global-banner-inactive noselect">
 								<strong>Waitlist Inactive:</strong> There is either no fleets, or the waitlist is not being used. Check our in-game channel for more information!

@@ -77,7 +77,6 @@ module.exports = function (setup) {
 	}
 	//Temporary - This will delete the first alt it finds on the waitlist, it can be pressed multiple times to remove all of them
 	module.selfRemove = function(characterID, cb) {
-		log.debug(`User removed themselves from waitlist: ${characterID}`);
 		db.deleteOne({ 'user.characterID': characterID }, function(err, result) {
 			if (err) log.error("selfRemove: Error for db.deleteOne", { err, 'characterID': characterID });
 			if (cb) cb();

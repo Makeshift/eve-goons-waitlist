@@ -1,4 +1,64 @@
 {% block footer %}
+
+    {% if userProfile.roleNumeric > 0 %}
+    <!-- Legal Notices  Modal -->
+    <div role="dialog" tabindex="-1" class="modal fade" id="waitlistBanner">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><strong>Waitlist Banner Management</strong></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="test">
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea id="bannermessage" name="text" class="form-control" max-length="200" placeholder="max 200 characters" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bannertype">Banner Type</label>
+                            <select id="bannertype" name="type" class="form-control">
+                                <option value="banner-info">Information</option>
+                                <option value="banner-warning">Warning</option>
+                            </select>
+                        </div>
+                        <button id="go" class="btn btn-success btn-sm pull-right" type="submit">Set Banner</button>
+                    </form>
+                    <hr />
+                    <p class="text-center mb-0" style="font-size:x-small">Only one banner can be displayed at a time, all banners are logged.</p>
+                </div>
+            </div>
+        </div>
+        <script>
+        //Create the new banner
+        $(function() {
+            $("#go").click(function() {
+                var dataString = 'text='+ $("#bannermessage").val() + '&type=' + $("#bannertype").val();
+                 $.ajax({
+                    type: "POST",
+                    url: "/internal-api/banner",
+                    data: dataString,
+                    success: function() {
+                        location.reload();
+                    }
+                });
+            })
+        })
+
+        //Hide active banner
+        function hideBanner(_id) {
+            $.ajax({
+                type: "POST",
+                url: `/internal-api/banner/:`+_id}).done(function() {
+                    $('#topbanner').hide();
+            }).fail(function(err) {
+                console.log(err.responseText);
+            });
+        }
+        </script>
+    </div>
+    {% endif %}    
+    
     <!-- Legal Notices  Modal -->
     <div role="dialog" tabindex="-1" class="modal fade" id="legal">
         <div class="modal-dialog" role="document">
