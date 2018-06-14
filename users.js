@@ -14,6 +14,7 @@ module.exports = function (setup) {
 	module.updateUserSession = function (req, res, next) {
 		if (typeof req.session.passport === "undefined" || typeof req.session.passport.user === "undefined") {
 			next();
+			return;
 		}
 		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
 			if (!userData) {
