@@ -10,7 +10,7 @@ module.exports = function (setup) {
 
 	module.query = function (id, cb) {
 		if (typeof id === "number" || typeof id === "string") {
-			id = new Array(id);
+			id = Array.of(id);
 		}
 		esi.names(id).then(function (item) {
 			cb(item[0]);
