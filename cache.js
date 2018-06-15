@@ -26,8 +26,8 @@ module.exports = function (setup) {
 		}
 	}
 
-	module.addToDb = function (data, cb) {
-		db.update({ id: data.id }, data, { upsert: true }, function (err, result) {
+	module.addToDb = function (data, expiresIn, cb) {
+		db.update({ id: data.id, expires: epoch() + expiresIn }, data, { upsert: true }, function (err, result) {
 			if (err) {
 				log.error("addToDb: Error for db.update", { err, id: data.id });
 				// TODO: should this continue?
@@ -36,13 +36,26 @@ module.exports = function (setup) {
 		})
 	}
 	//Duplicate key errors are caused by trying to 'get' stuff too quickly. NEED to make getting a background process
-	module.get = function (id, cb) {
-		db.findOne({ 'id': id }, function (err, doc) {
+	module.get = function (id, expiresIn, cb) {
+		var query = {
+			'id': id
+		};
+
+		if (!!expiresIn) {
+			// Lets add the expiration to the query if they request
+			query.assign({
+				"expire": {
+					$gt: epoch()
+				}
+			})
+		}
+
+		db.findOne(query, function (err, doc) {
 			if (err) log.error("get: Error for db.findOne", { err, id });
 			if (doc === null) {
 				if (!cachetemp.includes(id)) {
 					cachetemp.push(id);
-					module.query(id, function (item) {
+					module.query(id, expiresIn, function (item) {
 						module.addToDb(item);
 						cb(item);
 						module.removeFromCacheTemp(id);
@@ -57,6 +70,10 @@ module.exports = function (setup) {
 
 		});
 
+	}
+
+	function epoch() {
+		return Math.round((new Date()).getTime() / 1000);
 	}
 
 	function uniq(list) {
