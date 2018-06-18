@@ -53,9 +53,11 @@ module.exports = function (setup) {
 				fetch(id, expiresIn, cb);
 			} else {
 				// Check to see if document has expired
-				if(!!doc.expires && doc.expires < epoch()) {
+				if(!!doc.expires && !!expiresIn && doc.expires < epoch()) {
 					fetch(id, expiresIn, cb);
 				} else {
+					// if we didn't need to expire or didn't expire, lets just 
+					// return the doc as is
 					cb(doc)
 					module.removeFromCacheTemp(id);
 				}
