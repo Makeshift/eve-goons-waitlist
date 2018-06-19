@@ -23,7 +23,7 @@ module.exports = function() {
                 module.updateRefreshToken(user.characterID, newRefreshToken);
                 esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
                     // esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
-                    cache.get(locationResult.solar_system_id, function(systemObject){
+                    cache.get(locationResult.solar_system_id, null, function(systemObject){
                         var location = {
                             id: systemObject.system_id,
                             name: systemObject.name,
