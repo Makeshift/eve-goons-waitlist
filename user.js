@@ -1,7 +1,5 @@
-const path = require('path');
 const fs = require('fs');
 const setup = require('./setup.js');
-const bans = require('./bans.js')(setup)
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const cache = require('./cache.js')(setup);

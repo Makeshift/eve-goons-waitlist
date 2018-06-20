@@ -1,6 +1,5 @@
-var path = require('path');
 var setup = require('../setup.js');
-var bans = require('../bans.js')(setup);
+var bans = require('../models/bans.js')(setup);
 var esi = require('eve-swagger');
 const log = require('../logger.js')(module);
 

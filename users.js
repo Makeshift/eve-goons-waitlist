@@ -1,10 +1,7 @@
-const path = require('path');
-const fs = require('fs');
 const setup = require('./setup.js');
-const bans = require('./bans.js')(setup)
+const bans = require('./models/bans.js')(setup)
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
-const cache = require('./cache.js')(setup);
 const db = require('./dbHandler.js').db.collection('users');
 const log = require('./logger.js')(module);
 
