@@ -1,15 +1,12 @@
-const fs = require('fs');
-const path = require('path');
 const esi = require('eve-swagger');
 const refresh = require('passport-oauth2-refresh');
-const setup = require('./setup.js');
-const user = require('./user.js')(setup);
-const users = require('./users.js')(setup);
-const cache = require('./cache.js')(setup);
-const db = require('./dbHandler.js').db.collection('fleets');
-const log = require('./logger.js')(module);
-const wlog = require('./wlog.js');
-var waitlist = require('./globalWaitlist.js')(setup);
+const setup = require('../setup.js');
+const user = require('../user.js')(setup);
+const cache = require('../cache.js')(setup);
+const db = require('../dbHandler.js').db.collection('fleets');
+const log = require('../logger.js')(module);
+const wlog = require('../wlog.js');
+var waitlist = require('../globalWaitlist.js')(setup);
 
 
 module.exports = function (setup) {

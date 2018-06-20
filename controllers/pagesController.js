@@ -1,6 +1,6 @@
 const path = require('path');
 const setup = require('../setup.js');
-const fleets = require('../fleets.js')(setup);
+const fleets = require('../models/fleets.js')(setup);
 const esi = require('eve-swagger');
 const banner = require('../waitlistBanner.js')(setup);
 const waitlist = require('../globalWaitlist.js')(setup);
