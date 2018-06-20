@@ -6,7 +6,6 @@ const user = require('../user.js')(setup);
 const users = require('../users.js')(setup);
 const refresh = require('passport-oauth2-refresh');
 const banner = require('../waitlistBanner.js')(setup);
-const waitlist = require('../globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
 const api = require('./apiController');

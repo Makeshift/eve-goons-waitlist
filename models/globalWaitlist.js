@@ -1,11 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const db = require('./dbHandler.js').db.collection('waitlist');
+const db = require('../dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
-const setup = require('./setup.js');
-const user = require('./user.js')(setup);
-const users = require('./users.js')(setup);
-const log = require('./logger.js')(module);
+const setup = require('../setup.js');
+const user = require('../user.js')(setup);
+const log = require('../logger.js')(module);
 
 module.exports = function (setup) {
 	var module = {};

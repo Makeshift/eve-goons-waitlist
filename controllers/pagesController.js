@@ -3,7 +3,7 @@ const setup = require('../setup.js');
 const fleets = require('../models/fleets.js')(setup);
 const esi = require('eve-swagger');
 const banner = require('../waitlistBanner.js')(setup);
-const waitlist = require('../globalWaitlist.js')(setup);
+const waitlist = require('../models/globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
 

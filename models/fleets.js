@@ -6,7 +6,7 @@ const cache = require('../cache.js')(setup);
 const db = require('../dbHandler.js').db.collection('fleets');
 const log = require('../logger.js')(module);
 const wlog = require('../wlog.js');
-var waitlist = require('../globalWaitlist.js')(setup);
+var waitlist = require('./globalWaitlist.js')(setup);
 
 
 module.exports = function (setup) {
