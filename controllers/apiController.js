@@ -49,7 +49,7 @@ exports.fleetAtAGlance = function(req, res) {
             
             var counter = 0;
             for(var i = 0; i < fleet.members.length; i++) { //where the fuck is shipID coming from? I'm bad
-                cache.get(fleet.members[i].ship_type_id, function(ship) {
+                cache.get(fleet.members[i].ship_type_id, null, function(ship) {
                 ships.push(ship); //<<<<<
                 counter++;
                     if(counter === fleet.members.length) {

@@ -65,3 +65,5 @@ typings/
 # dotenv environment variables file
 .env
 
+# For any scratch files to run little tests
+scratch/

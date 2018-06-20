@@ -10,7 +10,7 @@ module.exports = function (setup) {
 
 	module.query = function (id, cb) {
 		if (typeof id === "number" || typeof id === "string") {
-			id = new Array(id);
+			id = Array.of(id);
 		}
 		esi.names(id).then(function (item) {
 			cb(item[0]);
@@ -26,8 +26,18 @@ module.exports = function (setup) {
 		}
 	}
 
-	module.addToDb = function (data, cb) {
-		db.update({ id: data.id }, data, { upsert: true }, function (err, result) {
+	module.addToDb = function (data, expiresIn, cb) {
+		var doc = {
+			id: data.id
+		}
+
+		if(!!expiresIn) {
+			Object.assign(data, {
+				expires: epoch() + expiresIn
+			});
+		}
+
+		db.update(doc, data, { upsert: true }, function (err, result) {
 			if (err) {
 				log.error("addToDb: Error for db.update", { err, id: data.id });
 				// TODO: should this continue?
@@ -36,27 +46,41 @@ module.exports = function (setup) {
 		})
 	}
 	//Duplicate key errors are caused by trying to 'get' stuff too quickly. NEED to make getting a background process
-	module.get = function (id, cb) {
+	module.get = function (id, expiresIn, cb) {
 		db.findOne({ 'id': id }, function (err, doc) {
 			if (err) log.error("get: Error for db.findOne", { err, id });
 			if (doc === null) {
-				if (!cachetemp.includes(id)) {
-					cachetemp.push(id);
-					module.query(id, function (item) {
-						module.addToDb(item);
-						cb(item);
-						module.removeFromCacheTemp(id);
-					})
-				} else {
-					cb(id);
-				}
+				fetch(id, expiresIn, cb);
 			} else {
-				cb(doc)
-				module.removeFromCacheTemp(id);
+				// Check to see if document has expired
+				if(!!doc.expires && !!expiresIn && doc.expires < epoch()) {
+					fetch(id, expiresIn, cb);
+				} else {
+					// if we didn't need to expire or didn't expire, lets just 
+					// return the doc as is
+					cb(doc)
+					module.removeFromCacheTemp(id);
+				}
 			}
-
 		});
 
+	}
+
+	function fetch(id, expiresIn, cb) {
+		if (!cachetemp.includes(id)) {
+			cachetemp.push(id);
+			module.query(id, function (item) {
+				module.addToDb(item, expiresIn);
+				cb(item);
+				module.removeFromCacheTemp(id);
+			})
+		} else {
+			cb(id);
+		}
+	}
+
+	function epoch() {
+		return Math.round((new Date()).getTime() / 1000);
 	}
 
 	function uniq(list) {

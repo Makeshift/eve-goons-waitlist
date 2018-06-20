@@ -22,16 +22,12 @@ module.exports = function() {
             } else {
                 module.updateRefreshToken(user.characterID, newRefreshToken);
                 esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-                    esi.solarSystems(locationResult.solar_system_id).info().then(function(systemObject) { 
-                        //cache.get(locationResult.solar_system_id, function(systemObject){
+                    cache.get(locationResult.solar_system_id, null, function(systemObject){
                         var location = {
                             id: systemObject.system_id,
                             name: systemObject.name,
                         }
                         cb(location);
-                    }).catch(function(err) {
-                        log.error("user.getLocation: Error GET /universe/systems/{system_id}/", {err, user});
-                        cb({id: 0, name: "unknown", lastcheck: Date.now()});
                     })
                 }).catch(function(err) {
                     log.error("user.getLocation: Error GET /characters/{character_id}/location/", {err, user});
