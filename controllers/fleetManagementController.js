@@ -1,7 +1,6 @@
 var path = require('path');
 var setup = require('../setup.js');
 var fleets = require('../models/fleets.js')(setup);
-var users = require('../users.js')(setup);
 var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../models/globalWaitlist.js')(setup);

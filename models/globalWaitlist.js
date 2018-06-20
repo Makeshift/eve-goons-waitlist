@@ -1,7 +1,7 @@
 const db = require('../dbHandler.js').db.collection('waitlist');
 const ObjectId = require('mongodb').ObjectID;
 const setup = require('../setup.js');
-const user = require('../user.js')(setup);
+const user = require('./user.js')(setup);
 const log = require('../logger.js')(module);
 
 module.exports = function (setup) {

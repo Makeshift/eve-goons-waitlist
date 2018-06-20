@@ -1,8 +1,7 @@
 const path = require('path');
 const setup = require('../setup.js');
 const fleets = require('../models/fleets.js')(setup);
-const user = require('../user.js')(setup);
-const users = require('../users.js')(setup);
+const user = require('../models/user.js')(setup);
 const refresh = require('passport-oauth2-refresh');
 const log = require('../logger.js')(module);
 

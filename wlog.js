@@ -1,6 +1,6 @@
 const db = require('./dbHandler.js').db.collection('waitlistlog');
 const setup = require('./setup.js');
-const users = require('./users.js')(setup);
+const users = require('./models/users')(setup);
 var wlog = exports.wlog = {};
 
 /*

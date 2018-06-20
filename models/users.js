@@ -1,9 +1,9 @@
-const setup = require('./setup.js');
-const bans = require('./models/bans.js')(setup)
+const setup = require('../setup.js');
+const bans = require('./bans.js')(setup)
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
-const db = require('./dbHandler.js').db.collection('users');
-const log = require('./logger.js')(module);
+const db = require('../dbHandler.js').db.collection('users');
+const log = require('../logger.js')(module);
 
 module.exports = function (setup) {
 	var module = {};

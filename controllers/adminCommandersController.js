@@ -1,6 +1,6 @@
 var path = require('path');
 var setup = require('../setup.js');
-var users = require('../users.js')(setup);
+var users = require('../models/users.js')(setup);
 var esi = require('eve-swagger');
 const log = require('../logger.js')(module);
 
