@@ -5,7 +5,7 @@ var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
 var waitlist = require('../models/globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
-const wlog = require('../wlog.js');
+const wlog = require('../models/wlog.js');
 
 //Render Fleet Management Page
 exports.index = function(req, res) {

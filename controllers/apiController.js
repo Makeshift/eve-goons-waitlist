@@ -1,13 +1,10 @@
-const path = require('path');
 const setup = require('../setup.js');
 const cache = require('../cache.js')(setup);
 const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
-const refresh = require('passport-oauth2-refresh');
-const banner = require('../waitlistBanner.js')(setup);
-const log = require('../logger.js')(module);
-const wlog = require('../wlog.js');
+const banner = require('../models/waitlistBanner.js')(setup);
+const wlog = require('../models/wlog');
 const api = require('./apiController');
 
 exports.waypoint = function(req, res) {
