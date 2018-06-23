@@ -62,6 +62,6 @@ const statsController = require('./controllers/statisticsController.js');
 	//External - APIs
 	router.get('/api/sstats/members', statsController.getMemberList);
 	router.get('/api/sstats/corporations', statsController.getCorporationList);
-	router.get('/api/sstats/member-registration', statsController.getMontlySignups);
+	router.get('/api/sstats/member-registration', statsController.getMontlySignups);//Todo make object array with monthName and count.
 
 	module.exports = router;
