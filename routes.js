@@ -1,19 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const pages_controller = require('./controllers/pagesController.js');
-const commander_controller = require('./controllers/commanderController.js')
-const fleet_management_controller = require('./controllers/fleetManagementController.js')
-const admin_bans_controller = require('./controllers/adminBansController.js')
-const admin_fcs_controller = require('./controllers/adminCommandersController.js')
-const api_controller = require('./controllers/apiController.js')
-const pilot_settings_controller = require('./controllers/pilotSettingsController.js')
-const fc_tools_controller = require('./controllers/fcToolsController.js')
+const commander_controller = require('./controllers/commanderController.js');
+const fleet_management_controller = require('./controllers/fleetManagementController.js');
+const admin_bans_controller = require('./controllers/adminBansController.js');
+const admin_fcs_controller = require('./controllers/adminCommandersController.js');
+const api_controller = require('./controllers/apiController.js');
+const pilot_settings_controller = require('./controllers/pilotSettingsController.js');
+const fc_tools_controller = require('./controllers/fcToolsController.js');
+const statsController = require('./controllers/statisticsController.js');
 
 	//Index pages & user waitlist functions
 	router.get('/', pages_controller.index);
 	router.post('/', pages_controller.joinWaitlist);
 	router.get('/remove', pages_controller.removeSelf);
 	router.get('/logout', pages_controller.logout);
+	router.get('/squad-statistics', statsController.index);
 	
 	//Fleets (List and Register)
 	router.get('/commander', commander_controller.index);
@@ -57,4 +59,9 @@ const fc_tools_controller = require('./controllers/fcToolsController.js')
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);
 	
+	//External - APIs
+	router.get('/api/sstats/members', statsController.getMemberList);
+	router.get('/api/sstats/corporations', statsController.getCorporationList);
+	router.get('/api/sstats/member-registration', statsController.getMontlySignups);
+
 	module.exports = router;

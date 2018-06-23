@@ -1,0 +1,133 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
+<div class="page-content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<h2 class="h5 no-margin-bottom d-inline">Squad Statistics</h2>
+		</div>
+	</div>
+	<section class="no-padding-top no-padding-bottom noselect">
+		<div class="container-fluid">
+			<section id="usersSection">
+                <div class="row statistic-block block">
+                    <!-- No of User Accounts and Newest User -->
+                    <div class="col-md-2 text-center" style="color:white">
+                       <i class="fas fa-users fa-4x"></i>
+                       <span id="noUserAccountsclass" class="h4 text-center"><i class="fal fa-spinner-third fa-3x fa-spin d-block" style="margin-left:auto;margin-right:auto;"></i></span>
+                        <hr />
+                       <span class="text-center">Our Newest Member</span>
+                       <img id="newestAvatar" class="pt-2">
+                       <span class="text-center"><a id="newestName">Tame Viliana</a></span>
+                    </div>
+                    <!-- Corporation Member Count Chart -->
+                    <div class="col-md-5">
+                        <span class="text-center" style="color:white">Corporations with the most Members</span>
+                        <canvas id="corporationChart" height="150"></canvas>
+                    </div>
+                    <!-- New Members per Month -->
+                    <div class="col-md-5">
+                        <span class="text-center" style="color:white">New members per month</span>
+                        <canvas id="myChart" height="150"></canvas>
+                    </div>                    
+                </div>
+            </section>
+		</div>
+    </section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script>
+$.get( "/api/sstats/members?sort=desc", function(data) {
+    $('#noUserAccountsclass').text(data.length);
+    $('#newestAvatar').attr('src','https://image.eveonline.com/Character/'+data[0].characterID+'_128.jpg');
+    $('#newestName').attr('href', 'javascript:void(0);').attr('onclick', 'showInfo('+data[0].characterID+')').text(data[0].name);
+});
+
+$.get('/api/sstats/corporations?sort=desc', function(data){
+    try{
+        var data = {
+            datasets: [{
+                data: [data[0].count],
+                backgroundColor: ['#b70909'],
+                label: data[0]._id.corpName
+            },{
+                data: [data[1].count],
+                backgroundColor: ['#D8BFD8'],
+                label: data[1]._id.corpName
+            },{
+                data: [data[2].count],
+                backgroundColor: ['#0580b5'],
+                label: data[2]._id.corpName
+            },{
+                data: [data[3].count],
+                backgroundColor: ['#0cd348'],
+                label: data[3]._id.corpName
+            },{
+                data: [data[4].count],
+                backgroundColor: ['#ffe83d'],
+                label: data[4]._id.corpName
+            }]
+        };        
+        var ctx = $("#corporationChart");
+        new Chart(ctx, {
+            data: data,
+            type: 'bar',
+            options: options = { 
+                responsive: true,
+                legend: {position: 'bottom', labels: {
+                    fontColor: "white",
+                    fontSize: 14
+                }},
+                label: {fontColor: 'white'},
+                scales: { 
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "white",
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    }catch(err){
+        console.error("At least five corporations are required before this graph can render");
+    }               
+})
+
+$.get('/api/sstats/member-registration', function(data){
+    new Chart($("#myChart"), {
+    type: 'line',
+    data: {
+        labels: [data[5].abbr,data[4].abbr,data[3].abbr,data[2].abbr,data[1].abbr,data[0].abbr],
+        datasets: [{ 
+            data: [data[0].count,data[1].count,data[2].count,data[3].count,data[4].count,data[5].count],
+            label: "Monthly Registrations",
+            borderColor: "#3e95cd",
+            fill: false
+        }]
+    },
+    options: options = { 
+            responsive: true,
+            legend: {
+                position: 'bottom',
+                display: false, 
+                labels: {
+                    fontColor: "white",
+                    fontSize: 14                
+                }
+            },
+            label: {fontColor: 'white'},
+            scales: { 
+                yAxes: [{
+                    ticks: {
+                        fontColor: "white",
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+console.log(data);
+})
+</script>
+{%- include "./partials/footer.njk" %}
