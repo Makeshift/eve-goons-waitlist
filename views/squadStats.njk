@@ -98,12 +98,12 @@ $.get('/api/sstats/member-registration', function(data){
     new Chart($("#myChart"), {
     type: 'line',
     data: {
-        labels: [data[5].abbr,data[4].abbr,data[3].abbr,data[2].abbr,data[1].abbr,data[0].abbr],
+        labels: ["5 Months Ago", "4 Months Ago", "3 Months Ago", "2 Months Ago", "1 Month Ago", "This Month"],
         datasets: [{ 
-            data: [data[0].count,data[1].count,data[2].count,data[3].count,data[4].count,data[5].count],
+            data: [data[0] || 0, data[1] || 0, data[2] || 0, data[3] || 0, data[4] || 0, data[5] || 0],
             label: "Monthly Registrations",
             borderColor: "#3e95cd",
-            fill: false
+            fill: true
         }]
     },
     options: options = { 
@@ -116,7 +116,7 @@ $.get('/api/sstats/member-registration', function(data){
                     fontSize: 14                
                 }
             },
-            label: {fontColor: 'white'},
+            label: {fontColor: "white"},
             scales: { 
                 yAxes: [{
                     ticks: {
@@ -127,7 +127,6 @@ $.get('/api/sstats/member-registration', function(data){
             }
         }
     });
-console.log(data);
 })
 </script>
 {%- include "./partials/footer.njk" %}

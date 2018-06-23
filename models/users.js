@@ -70,7 +70,6 @@ module.exports = function (setup) {
 
 	module.getUserDataFromID = function (id, cb) {
 		esi.characters(id).info().then(function (data) {
-			console.log(data);
 			var allianceID = data.alliance_id || 0;
 			var corporationID = data.corporation_id || 0;
 			esi.corporations(corporationID).info().then(function (corporation) {

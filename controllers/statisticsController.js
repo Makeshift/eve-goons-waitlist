@@ -71,14 +71,11 @@ exports.getMontlySignups = function(req, res){
     if(req.isAuthenticated()){
         
         var lastSix = new Date();
-        
         lastSix.setMonth(lastSix.getMonth() - 5);
         db.find({ 
             'registrationDate': {
-                "$in": [
-                    lastSix,
-                    new Date()
-                ]
+                $gte: lastSix,
+                $lt: new Date()
             } 
         }).sort({'registrationDate': -1}).toArray( (err, docs) => {
             if (!!err) {
@@ -90,9 +87,8 @@ exports.getMontlySignups = function(req, res){
             var counts = {};
 
             for(let i = 0; i < docs.length; i++) {
-                console.log(docs[i]);
+                
                 let d = docs[i];
-
                 let m = d.registrationDate.getMonth()
 
                 if(!counts[m]) {
@@ -100,13 +96,9 @@ exports.getMontlySignups = function(req, res){
                 }
                 counts[m] += 1;
             }
-            console.log(counts);
             res.status(200).send(counts);
         });
     } else {
         res.status(401).send("API Requires authentication");
     }//End Authentication Check
 }
-
-
-//db.getCollection("COLLECTION_NAME").find({"createdAt":{$gt:new Date(Date.now() - 24*60*60 * 1000)}})
