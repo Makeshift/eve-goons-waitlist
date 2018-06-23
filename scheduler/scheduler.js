@@ -10,7 +10,7 @@ class Scheduler {
     constructor(resolution) {
         this.jobs = [];
         this.tasks = [];
-        this.resolution = 1000; // in ms
+        this.resolution = resolution || 1000; // in ms
 
         // Allow for overrides
         if(!!process.env.SCHEDULE_RESOLUTION) {
@@ -25,8 +25,8 @@ class Scheduler {
 
     // Only use this function if you *really* need something to kick off
     // on a specific time, otherwise, the every() function is better
-    reoccuring(hours, minutes, seconds, name, func) {
-        let j = new Job(hours, minutes, seconds, name, func);
+    scheduled(hours, minutes, name, func) {
+        let j = new Job(hours, minutes, name, func);
         this.jobs.push(j);
     }
 

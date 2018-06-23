@@ -5,22 +5,22 @@ class Task {
         this.name = name;
         this.interval = interval;
         this.func = func;
-        this.lastRan = Date.UTC();
+        this.lastRan = new Date();
     }
 
     canRun() {
         let nextRun = this.lastRan.setSeconds(this.lastRan.getSeconds() + this.interval);
-        return Date.UTC() > nextRun;
+        return new Date() > nextRun;
     }
 
     async run() {
-        this.lastRan = Date.UTC(); // hack to protect from reentry, might need a state on this class
+        this.lastRan = new Date(); // hack to protect from reentry, might need a state on this class
         try {
-            func();
+            this.func();
         } catch(e) {
             console.log(e);
         } finally {
-            this.lastRan = Date.UTC();
+            this.lastRan = new Date();
         }
     }
 }
