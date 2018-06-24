@@ -1,3 +1,5 @@
+'use strict'
+
 import Scheduler from './scheduler/Scheduler';
 
 let scheduler = new Scheduler(1000);
