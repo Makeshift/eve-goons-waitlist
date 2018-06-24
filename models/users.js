@@ -72,10 +72,10 @@ module.exports = function (setup) {
 		esi.characters(id).info().then(function (data) {
 			var allianceID = data.alliance_id || 0;
 			var corporationID = data.corporation_id || 0;
-			esi.corporations.names(corporationID).then(function (corporation) {
-				if (allianceID !== 0) {
-					esi.alliances.names(allianceID).then(function (alliance) {
-						cb(alliance[0], corporation[0]);
+			esi.corporations(corporationID).info().then(function (corporation) {
+				if (allianceID !== 0) {	
+                	esi.alliances(allianceID).info().then(function (alliance) {
+						cb(alliance, corporation);
 					}).catch(err => {
 						log.error("users.getUserDataFromID: Error for esi.alliances.names", { err, userId: id, allianceID });
 					});
@@ -92,7 +92,7 @@ module.exports = function (setup) {
 
 	generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		module.getUserDataFromID(characterDetails.CharacterID, function (alliance, corporation) {
-			if (alliance && setup.permissions.alliances.includes(alliance.name)) {
+			if (alliance && setup.permissions.alliances.includes(alliance.alliance_name)) {
 				log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.name}`)
 				var newUserTemplate = {
 					characterID: characterDetails.CharacterID,
