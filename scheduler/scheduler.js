@@ -37,12 +37,10 @@ class Scheduler {
     }
 
     loop() {
-        console.log("Checking jobs")
         for(let i = 0; i < this.tasks.length; i++) {
             let task = this.tasks[i];
 
             if(task.canRun()) {
-                console.log("Running task: " + task.name);
                 task.run();
             }
         }
@@ -51,7 +49,6 @@ class Scheduler {
             let job = this.jobs[i];
 
             if(job.canRun()) {
-                console.log("running job: " + job.name);
                 job.run();
             }
         }
