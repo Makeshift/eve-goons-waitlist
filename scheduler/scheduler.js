@@ -33,20 +33,29 @@ class Scheduler {
     process() {
         // Loop and check to see if we need to run anything ever second
         // this should keep the processing very low
-        setInterval( () => {
-            for(let i = 0; i < this.tasks.length; i++) {
-                let task = this.tasks[i];
+        setInterval(this.loop.bind(this), this.resolution);
+    }
 
-                if(task.canRun()) {
-                    task.run();
-                }
+    loop() {
+        console.log("Checking jobs")
+        for(let i = 0; i < this.tasks.length; i++) {
+            let task = this.tasks[i];
+
+            if(task.canRun()) {
+                console.log("Running task: " + task.name);
+                task.run();
             }
+        }
 
-            for(let i = 0; i < this.jobs.length; i++) {
-                
+        for(let i = 0; i < this.jobs.length; i++) {
+            let job = this.jobs[i];
+
+            if(job.canRun()) {
+                console.log("running job: " + job.name);
+                job.run();
             }
+        }
 
-        }, this.resolution);
     }
 }
 

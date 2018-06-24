@@ -24,7 +24,7 @@ describe('canRun', () => {
     test('when next run is not available yet', () => {
         let futureDate = new Date();
         futureDate.setSeconds(futureDate.getSeconds() + interval);
-        task.lastRun = futureDate;
+        task.lastRan = futureDate;
 
         expect(task.canRun()).toEqual(false);
     });
@@ -32,7 +32,7 @@ describe('canRun', () => {
     test('when run is in the past', () => {
         let pastDate = new Date();
         pastDate.setSeconds(pastDate.getSeconds() - interval);
-        task.lastRun = pastDate;
+        task.lastRan = pastDate;
 
         expect(task.canRun()).toEqual(true);
     });

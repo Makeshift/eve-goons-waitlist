@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "scheduler": "babel-node scheduler_index.js",
     "build:docker": "docker build -t waitlist .",
     "start:docker": "docker run -it -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
     "start:dockercmp": "docker-compose up",

@@ -9,7 +9,7 @@ class Task {
     }
 
     canRun() {
-        let nextRun = this.lastRun;
+        let nextRun = new Date(this.lastRan.valueOf());
         nextRun.setSeconds(nextRun.getSeconds() + this.interval);
         return new Date() >= nextRun;
     }
