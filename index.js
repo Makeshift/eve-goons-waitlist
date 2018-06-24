@@ -34,10 +34,10 @@ database.connect(function () {
 
 	//Custom imports
 
-	const users = require('./users.js')(setup);
+	const users = require('./models/users.js')(setup);
 	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
-	const fleets = require('./fleets.js')(setup);
-	const waitlist = require('./globalWaitlist.js')(setup);
+	const fleets = require('./models/fleets.js')(setup);
+	const waitlist = require('./models/globalWaitlist.js')(setup);
 
 	//Start timers
 	fleets.timers();

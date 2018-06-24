@@ -1,11 +1,11 @@
 const path = require('path');
 const setup = require('../setup.js');
-const fleets = require('../fleets.js')(setup);
+const fleets = require('../models/fleets.js')(setup);
 const esi = require('eve-swagger');
-const banner = require('../waitlistBanner.js')(setup);
-const waitlist = require('../globalWaitlist.js')(setup);
+const banner = require('../models/waitlistBanner.js')(setup);
+const waitlist = require('../models/globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
-const wlog = require('../wlog.js');
+const wlog = require('../models/wlog');
 
 //Render Index/login Page
 exports.index = function(req, res) {

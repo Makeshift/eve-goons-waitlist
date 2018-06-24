@@ -1,11 +1,9 @@
-var path = require('path');
 var fs = require('fs');
 var esi = require('eve-swagger');
 var setup = require('../setup.js');
-var users = require('../users.js')(setup);
-var refresh = require('passport-oauth2-refresh');
+var users = require('../models/users.js')(setup);
 const log = require('../logger.js')(module);
-const wlog = require('../wlog.js');
+const wlog = require('../models/wlog.js');
 
 //Renders the page for Fit Scanning
 exports.fitTool = function(req, res) { 

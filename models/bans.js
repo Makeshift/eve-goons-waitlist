@@ -1,11 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const esi = require('eve-swagger');
-const refresh = require('passport-oauth2-refresh');
-const setup = require('./setup.js');
-const db = require('./dbHandler.js').db.collection('bans');
 const ObjectId = require('mongodb').ObjectID;
-const log = require('./logger.js')(module);
+const db = require('../dbHandler.js').db.collection('bans');
+const log = require('../logger.js')(module);
 
 module.exports = function (setup) {
 	var module = {};

@@ -1,12 +1,11 @@
 var path = require('path');
 var setup = require('../setup.js');
-var fleets = require('../fleets.js')(setup);
-var users = require('../users.js')(setup);
+var fleets = require('../models/fleets.js')(setup);
 var api  = require('./apiController');
 var refresh = require('passport-oauth2-refresh');
-var waitlist = require('../globalWaitlist.js')(setup);
+var waitlist = require('../models/globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
-const wlog = require('../wlog.js');
+const wlog = require('../models/wlog.js');
 
 //Render Fleet Management Page
 exports.index = function(req, res) {
