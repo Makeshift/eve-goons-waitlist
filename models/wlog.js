@@ -100,6 +100,27 @@ wlog.removed = function(userID, adminID){
 }
 
 /*
+* Log: Scheduled clean of waitlist
+* @params: 
+*/
+wlog.clean = function(){
+    var logObject = {
+        "pilot": {
+            "characterID": null,
+            "name": null
+        },
+        "admin": {
+            "characterID": null,
+            "name": null
+        },
+        "action": "Cleared Waitlist",
+        "class": "danger",
+        "time": new Date()
+    }
+    db.insert(logObject);    
+}
+
+/*
 * Log: FC invited user
 * @params: userID, adminID
 * @function: get user objects from id

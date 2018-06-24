@@ -3,7 +3,8 @@
 class Job {
     constructor(hours, minutes, name, func) {
         this.hours = hours;
-        this.minutes = minutes;
+        var minuteOffset = new Date().getTimezoneOffset()
+        this.minutes = minutes + minuteOffset;
         this.name = name;
         this.func = func;
 
