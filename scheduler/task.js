@@ -9,8 +9,9 @@ class Task {
     }
 
     canRun() {
-        let nextRun = this.lastRan.setSeconds(this.lastRan.getSeconds() + this.interval);
-        return new Date() > nextRun;
+        let nextRun = this.lastRun;
+        nextRun.setSeconds(nextRun.getSeconds() + this.interval);
+        return new Date() >= nextRun;
     }
 
     async run() {

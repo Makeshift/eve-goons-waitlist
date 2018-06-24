@@ -67,16 +67,16 @@ describe('run', () => {
     });
 
     test('it should capture exception', () => {
-        const myMock = () => {
-            throw "test";
-        }
+        const myMock = jest
+            .fn()
+            .mockImplementationOnce(() => { throw "test"})
 
         expect.assertions(1)
         job = new Job(hour, minute, name, myMock);
 
         return job.run().then(() => {
             // make sure an exception didn't happen
-            expect(true).toEqual(true);
+            expect(myMock).toBeCalled();
         });
     });
 });
