@@ -5,7 +5,7 @@ const db = require('../dbHandler.js').db.collection('users');
 exports.index = function(req,res){
     if(req.isAuthenticated()){
         var userProfile = req.user;
-        var sideBarSelected = 7;
+        var sideBarSelected = 3;
         res.render('squadStats.njk', {userProfile, sideBarSelected});
     } else {
         res.status(401).redirect("/");

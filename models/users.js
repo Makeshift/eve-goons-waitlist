@@ -93,7 +93,7 @@ module.exports = function (setup) {
 	generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		module.getUserDataFromID(characterDetails.CharacterID, function (alliance, corporation) {
 			if (alliance && setup.permissions.alliances.includes(alliance.alliance_name)) {
-				log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.name}`)
+				log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.alliance_name}`)
 				var newUserTemplate = {
 					characterID: characterDetails.CharacterID,
 					name: characterDetails.CharacterName,
