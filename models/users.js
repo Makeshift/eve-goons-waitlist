@@ -45,7 +45,12 @@ module.exports = function (setup) {
 		module.findAndReturnUser(characterDetails.CharacterID, function (userProfile) {
 			//We found the user, return it back to the callback
 			if (userProfile) {
-				log.debug(`Known user ${userProfile.name} has logged in.`);
+				//Lets remove this old field
+				/*if(userProfile.relatedChars != null){
+					db.updateOne({ 'characterID': userProfile.characterID }, { $unset: {relatedChars}}, function (err) {
+						if(err) console.log(err);
+				  	});
+				}*/
 				cb(userProfile);
 			} else {
 				//We didn't find the user, create them as a master account
@@ -106,8 +111,8 @@ module.exports = function (setup) {
 					registrationDate: new Date(),
 					notes: "",
 					ships: [],
-					relatedChars: [],
-					statistics: { sites: {} }
+					statistics: { sites: {} },
+					account: { main: true, linkedCharIDs: []}
 				}
 				db.insert(newUserTemplate, function (err, result) {
 					if (err) log.error("generateNewUser: Error for db.insert", { err, name: characterDetails.CharacterName });
@@ -200,6 +205,41 @@ module.exports = function (setup) {
 					cb(err)
 				});			
 			}
+		})
+	}
+
+	/*
+	* Log: Link the  alt account to the users master account.
+	* @params: userObject
+	*/
+	module.linkPilots = function(user, alt, status){
+		module.findOrCreateUser(null, alt.refreshToken, alt, function(AltUser){
+			//If the alt belongs to someone - abort.
+			if(AltUser.account != null && !AltUser.account.main) {
+				status({"type": "error", "message": "This alt already belongs to someone, think this is an error? Contact leadership."});
+				return;
+			}
+			//Stop a main account from linking to itself
+			if(user.characterID == AltUser.characterID){
+				status({"type": "error", "message": "Error, you cannot link your main to itself."});
+				return;
+			}
+
+			//Remove master account fields, set main to false and associate to a master account
+			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
+			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, roleNumeric:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
+				if(err) console.log("users.linkPilots - error updating alt account: ", err);
+				if(!err){
+					let newAltArray = user.account.linkedCharIDs;
+					newAltArray.push(Number((user.account.main)? user.characterID: user.account.mainID));
+					db.updateOne({'characterID': user.characterID}, {$set: {"account.linkedCharIDs": newAltArray}}, function(err) {
+						if(err) console.log("users.linkPilots - error updating main account: ", err);
+					})
+				}
+				
+			})
+
+			status({"type": "success", "message": alt.CharacterName + " has been added to your account as an alt."});			
 		})
 	}
 
