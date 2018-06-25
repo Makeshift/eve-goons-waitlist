@@ -45,7 +45,7 @@ const statsController = require('./controllers/statisticsController.js');
 	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
 	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
 	//Pilot Settings
-	//router.get('/my-settings', pilot_settings_controller.index);
+	router.get('/my-settings', pilot_settings_controller.index);
 	
 	//Interacts with the users client via ESI.
 	router.post('/esi/ui/waypoint/:systemID', api_controller.waypoint);
