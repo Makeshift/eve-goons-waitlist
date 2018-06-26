@@ -1,5 +1,9 @@
 'use strict'
 
+import moment from 'moment';
+import momenttz from 'moment-timezone';
+momenttz.tz.setDefault("Etc/UTC");
+
 import Job from '../scheduler/job';
 
 // should they go here?
@@ -36,7 +40,7 @@ describe('determineNextRun', () => {
         job.lastRun = new Date();
         job.determineNextRun();
 
-        expect(job.nextRun.getTime()).toBeGreaterThan(nextRun.getTime());
+        expect(job.nextRun.isAfter(nextRun)).toEqual(true);
     });
 });
 

@@ -1,39 +1,41 @@
 'use strict'
 
+import moment from 'moment';
+
 class Job {
     constructor(hours, minutes, name, func) {
         this.hours = hours;
-        var minuteOffset = new Date().getTimezoneOffset()
-        this.minutes = minutes + minuteOffset;
+        this.minutes = minutes;
         this.name = name;
         this.func = func;
 
         this.determineNextRun();
-        this.lastRan = new Date();
+        this.lastRan = moment();
     }
 
     determineNextRun() {
-        this.nextRun = new Date();
-        this.nextRun.setHours(this.hours, this.minutes, 0, 0);
+        this.nextRun = moment();
+        this.nextRun.hours(this.hours);
+        this.nextRun.minutes(this.minutes)
         if(!!this.lastRan) {
             // todo: this might be subject to errors if this takes a REALLY long time and is on a day edge
             // advance by one day.
-            this.nextRun.setDate(this.nextRun.getDate() + 1)
+            this.nextRun.add(1, 'days');
         }
     }
 
     canRun() {
-        return new Date() >= this.nextRun;
+        return moment() >= this.nextRun;
     }
 
     async run() {
-        this.lastRan = new Date(); // hack to protect from reentry, might need a state on this class
+        this.lastRan = moment(); // hack to protect from reentry, might need a state on this class
         try {
             this.func();
         } catch(e) {
             console.log(e);
         } finally {
-            this.lastRan = new Date();
+            this.lastRan = moment();
             this.determineNextRun();
         }
     }

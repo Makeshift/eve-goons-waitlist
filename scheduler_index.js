@@ -4,10 +4,14 @@ import Scheduler from './scheduler/Scheduler';
 import database from './dbHandler';
 import { data } from './setup';
 import log from './logger';
+import momenttz from 'moment-timezone'
+
+// Set global timezone for application
+momenttz.tz.setDefault("Etc/UTC");
 
 database.connect(() => {
     const wlog = require('./models/wlog');
-    const db = data.db;
+    const db = database.db;
 
     let scheduler = new Scheduler(1000);
     
@@ -15,7 +19,7 @@ database.connect(() => {
     //     console.log("I'm doing something important right now");
     // });
     
-    scheduler.scheduled(7, 34, "Waitlist Cleanup", () => {
+    scheduler.scheduled(3, 10, "Waitlist Cleanup", () => {
         const collections = ['waitlist', 'fleets'];
 
         for(let i = 0; i < collections.length; i++) {
@@ -29,7 +33,7 @@ database.connect(() => {
                 }
 
                 console.log("Everything was fine.");
-            })
+            });
         }
 
         wlog.clean();
