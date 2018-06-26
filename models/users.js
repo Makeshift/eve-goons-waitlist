@@ -22,9 +22,9 @@ module.exports = function (setup) {
 				
 				module.getMain(userData.characterID, function(mainUserData){
 					module.getAlts(mainUserData.characterID, function(pilotArray){
-						console.log(pilotArray)
 						userData.role = mainUserData.role;
 						userData.roleNumeric = mainUserData.roleNumeric;
+						userData.account.pilots = pilotArray;
 						req.session.passport.user = userData;
 						req.session.save(function (err) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
@@ -162,7 +162,7 @@ module.exports = function (setup) {
 
 	/*
 	* Link the  alt account to the users master account.
-	* @params: userObject
+	* @params: user{}, alt{}
 	*/
 	module.linkPilots = function(user, alt, status){
 		module.findOrCreateUser(null, alt.refreshToken, alt, function(AltUser){
@@ -182,9 +182,7 @@ module.exports = function (setup) {
 			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, roleNumeric:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
 				if(err) console.log("users.linkPilots - error updating alt account: ", err);
 				if(!err){
-					let newAltArray = user.account.linkedCharIDs;
-					newAltArray.push(Number((user.account.main)? user.characterID: user.account.mainID));
-					db.updateOne({'characterID': user.characterID}, {$set: {"account.linkedCharIDs": newAltArray}}, function(err) {
+					db.updateOne({'characterID': account.mainID}, {$push: {"account.linkedCharIDs": AltUser.characterID}}, function(err) {
 						if(err) console.log("users.linkPilots - error updating main account: ", err);
 					})
 				}
