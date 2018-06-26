@@ -21,12 +21,15 @@ module.exports = function (setup) {
 			} else {
 				
 				module.getMain(userData.characterID, function(mainUserData){
-					userData.role = mainUserData.role;
-					userData.roleNumeric = mainUserData.roleNumeric;
-					req.session.passport.user = userData;
-					req.session.save(function (err) {
-						if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-						
+					module.getAlts(mainUserData.characterID, function(pilotArray){
+						console.log(pilotArray)
+						userData.role = mainUserData.role;
+						userData.roleNumeric = mainUserData.roleNumeric;
+						req.session.passport.user = userData;
+						req.session.save(function (err) {
+							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
+							
+						})
 					})
 				})
 
@@ -209,6 +212,33 @@ module.exports = function (setup) {
 				mainPilot(userObject);
 			})
 		});
+	}
+
+	/*
+	* Return an array of linked characters.
+	* @params: userID (int)
+	* @return: returnCharacters[ {characterID, name} ]
+	*/
+	module.getAlts = function(userID, returnCharacters){
+		let knownPilots = [];
+		
+		db.findOne({characterID: userID}).then(function(mainObject){
+			knownPilots.push({"characterID": mainObject.characterID, "name": mainObject.name});
+
+				db.find(
+                    {
+                        characterID: {
+                            $in: mainObject.account.linkedCharIDs
+                        }
+                    }
+                ).toArray(function(err, altObjects) {
+                    var xformed = altObjects.map( item => {
+                        return { "characterID": item.characterID, "name": item.name };
+                    });
+                    knownPilots = knownPilots.concat(xformed);
+                    returnCharacters(knownPilots);
+                });
+		})
 	}
 
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
