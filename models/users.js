@@ -176,6 +176,11 @@ module.exports = function (setup) {
 				status({"type": "error", "message": "Error, you cannot link your main to itself."});
 				return;
 			}
+			//Stop the user from linking a pilot that is a main with alts to another account.
+			if(AltUser.account.main && AltUser.account.linkedCharIDs.length >= 0){
+				status({"type": "error", "message": "Error, you cannot link " + AltUser.name + " to your account as it' i's already a master account. To link these accounts, logout and into " + AltUser.name + " and then add this pilot as an alt."});
+				return;
+			}
 
 			//Remove master account fields, set main to false and associate to a master account
 			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
