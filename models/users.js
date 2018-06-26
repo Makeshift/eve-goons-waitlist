@@ -60,7 +60,7 @@ module.exports = function (setup) {
 			} else {
 				//We didn't find the user, create them as a master account
 				log.info(`Creating a new user for ${characterDetails.CharacterName}.`);
-				generateNewUser(refreshToken, characterDetails, null, null, function (userProfile, err) {
+				module.generateNewUser(refreshToken, characterDetails, null, null, function (userProfile, err) {
 					cb(userProfile, err);
 				});
 			}
@@ -100,7 +100,7 @@ module.exports = function (setup) {
 		});
 	}
 
-	generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
+	module.generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
 		module.getUserDataFromID(characterDetails.CharacterID, function (alliance, corporation) {
 			if (alliance && setup.permissions.alliances.includes(alliance.alliance_name)) {
 				log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.alliance_name}`)

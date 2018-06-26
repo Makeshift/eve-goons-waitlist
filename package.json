@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "scheduler": "babel-node scheduler_index.js",
     "build:docker": "docker build -t waitlist .",
     "start:docker": "docker run -it -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
     "start:dockercmp": "docker-compose up",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [
     "eve",
@@ -25,6 +26,8 @@
     "express": "^4.16.2",
     "express-longpoll": "0.0.4",
     "express-session": "^1.15.6",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.21",
     "mongodb": "3.0.5",
     "notifyjs": "^3.0.0",
     "nunjucks": "^3.1.2",
@@ -38,5 +41,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Makeshift/eve-goons-waitlist.git"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-2": "^6.24.1",
+    "jest": "^23.1.0"
   }
 }
