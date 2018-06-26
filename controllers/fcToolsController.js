@@ -24,11 +24,14 @@ exports.skillsChecker = function(req, res) {
             esi.characters.search.strict(req.params.pilotname.replace(/-/g,' ')).then(function (results) { 
                 users.findAndReturnUser(Number(results), function(targetUser){
                     if(targetUser) {
-                        var userProfile = req.user;
-                        var sideBarSelected = 6;
-                        var skillsPackage =  JSON.parse(fs.readFileSync('skills.json', 'utf8'));
-                        users.checkSkills(targetUser, skillsPackage, function(skills) {
-                            res.render('toolsSkills.njk', {userProfile, sideBarSelected, skills, targetUser});
+                        users.getAlts(targetUser.characterID, function(Alts){
+                            var userProfile = req.user;
+                            targetUser.account.pilots = Alts;
+                            var sideBarSelected = 6;
+                            var skillsPackage =  JSON.parse(fs.readFileSync('skills.json', 'utf8'));
+                            users.checkSkills(targetUser, skillsPackage, function(skills) {
+                                res.render('toolsSkills.njk', {userProfile, sideBarSelected, skills, targetUser});
+                            })
                         })
                     } else {
                         log.error("fcTools.skillsChecker: Error for users.findAndReturnUser: ", { name: req.params.pilotname });

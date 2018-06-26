@@ -219,24 +219,22 @@ module.exports = function (setup) {
 	*/
 	module.getAlts = function(userID, returnCharacters){
 		let knownPilots = [];
-		
-		db.findOne({characterID: userID}).then(function(mainObject){
+		module.getMain(userID, function(mainObject){
 			knownPilots.push({"characterID": mainObject.characterID, "name": mainObject.name});
-
 				db.find(
-                    {
-                        characterID: {
-                            $in: mainObject.account.linkedCharIDs
-                        }
-                    }
-                ).toArray(function(err, altObjects) {
-                    var xformed = altObjects.map( item => {
-                        return { "characterID": item.characterID, "name": item.name };
-                    });
-                    knownPilots = knownPilots.concat(xformed);
-                    returnCharacters(knownPilots);
-                });
-		})
+					{
+						characterID: {
+							$in: mainObject.account.linkedCharIDs
+						}
+					}
+				).toArray(function(err, altObjects) {
+					var xformed = altObjects.map( item => {
+						return { "characterID": item.characterID, "name": item.name };
+					});
+					knownPilots = knownPilots.concat(xformed);
+					returnCharacters(knownPilots);
+				});
+		})	
 	}
 
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.

@@ -39,10 +39,13 @@ exports.index = function(req, res) {
                     }
                 });
 
-                var sideBarSelected = 7;
-                var userProfile = req.user;
-                var fcs = fcList;
-                res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml});	
+                users.getAlts(manageUser.characterID, function(Alts){
+                    manageUser.account.pilots = Alts;
+                    var sideBarSelected = 7;
+                    var userProfile = req.user;
+                    var fcs = fcList;
+                    res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml});	
+                })
             });
         }
     } else {

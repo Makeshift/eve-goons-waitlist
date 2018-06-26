@@ -192,6 +192,13 @@
                 url: "/esi/ui/waypoint/"+systemID
         });
     }
+
+    function openMarket(targetID) {
+        $.ajax({
+            type: "POST",
+            url: "/esi/ui/market/"+targetID
+        });
+    }
     </script>
   </body>
 </html>

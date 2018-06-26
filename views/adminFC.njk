@@ -69,11 +69,13 @@
 								</tr>
 							</thead>
 							<tbody>
+								{% for pilot in manageUser.account.pilots %}
 								<tr>
-									<td><img src="https://image.eveonline.com/Character/96304094_32.jpg" alt="Pilot Avatar"></td>
-									<td class="strike"><a href="#">Caitlin Viliana</a></td>
+									<td><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="Pilot Avatar"></td>
+									<td class="strike"><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }})">{{ pilot.name }}</a></td>
 									<td class="strike">Something Useful</td>
 								</tr>
+								{% endfor %}
 							</tbody>
 						</table>
 					</div>
