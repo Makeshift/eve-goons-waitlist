@@ -39,7 +39,6 @@ const statsController = require('./controllers/statisticsController.js');
 	//FC Management
 	router.get('/admin/commanders', admin_fcs_controller.index);
 	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
-	router.post('/admin/commanders/trainee', admin_fcs_controller.setTrainee);
 	//FC Tools
 	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
 	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);

@@ -19,10 +19,15 @@ module.exports = function (setup) {
 				res.redirect('/');
 				next();
 			} else {
-				req.session.passport.user = userData;
-				req.session.save(function (err) {
-					if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-					
+				
+				module.getMain(userData.characterID, function(mainUserData){
+					userData.role = mainUserData.role;
+					userData.roleNumeric = mainUserData.roleNumeric;
+					req.session.passport.user = userData;
+					req.session.save(function (err) {
+						if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
+						
+					})
 				})
 
 				//check for ban
@@ -133,16 +138,77 @@ module.exports = function (setup) {
 		})
 	}
 
+	/*
+	* Change the permission of a user
+	* @params characterID, permission (int), admin{}
+	* @return null
+	*/
 	//Update a users permission and title.
 	module.updateUserPermission = function(characterID, permission, adminUser, cb) {
 		//Stop a user from adjusting their own access.
 		if(characterID !== adminUser.characterID)
 		{
-			db.updateOne({ 'characterID': characterID }, { $set: { roleNumeric: Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
-				if (err) log.error("Error updating user permissions ", { err, 'characterID': characterID });
-				if (!err) log.debug(adminUser.Name + " changed the role of " + characterID + " to " + setup.userPermissions[permission]);
+			module.getMain(Number(characterID), function(targetUser){
+				db.updateOne({ 'characterID': targetUser.characterID }, { $set: { roleNumeric: Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
+					if (err) log.error("Error updating user permissions ", { err, 'characterID': targetUser.character });
+					if (!err) log.debug(adminUser.name + " changed the role of " + targetUser.name + " to " + setup.userPermissions[permission]);
+				})
 			})
 		}
+	}
+
+	/*
+	* Link the  alt account to the users master account.
+	* @params: userObject
+	*/
+	module.linkPilots = function(user, alt, status){
+		module.findOrCreateUser(null, alt.refreshToken, alt, function(AltUser){
+			//If the alt belongs to someone - abort.
+			if(AltUser.account != null && !AltUser.account.main) {
+				status({"type": "error", "message": "This alt already belongs to someone, think this is an error? Contact leadership."});
+				return;
+			}
+			//Stop a main account from linking to itself
+			if(user.characterID == AltUser.characterID){
+				status({"type": "error", "message": "Error, you cannot link your main to itself."});
+				return;
+			}
+
+			//Remove master account fields, set main to false and associate to a master account
+			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
+			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, roleNumeric:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
+				if(err) console.log("users.linkPilots - error updating alt account: ", err);
+				if(!err){
+					let newAltArray = user.account.linkedCharIDs;
+					newAltArray.push(Number((user.account.main)? user.characterID: user.account.mainID));
+					db.updateOne({'characterID': user.characterID}, {$set: {"account.linkedCharIDs": newAltArray}}, function(err) {
+						if(err) console.log("users.linkPilots - error updating main account: ", err);
+					})
+				}
+				
+			})
+
+			status({"type": "success", "message": alt.CharacterName + " has been added to your account as an alt."});			
+		})
+	}
+
+	/*
+	* Link userID (int).
+	* @params: users main{}
+	*/
+	module.getMain = function(userID, mainPilot){
+		db.findOne({"characterID": userID}).then(function(userObject){
+			//User is main
+			if(userObject.account.main){
+				mainPilot(userObject);
+				return;
+			}
+
+			//Lookup and return master account
+			db.findOne({"characterID": Number(userObject.account.mainID)}).then(function(userObject){
+				mainPilot(userObject);
+			})
+		});
 	}
 
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
@@ -205,41 +271,6 @@ module.exports = function (setup) {
 					cb(err)
 				});			
 			}
-		})
-	}
-
-	/*
-	* Log: Link the  alt account to the users master account.
-	* @params: userObject
-	*/
-	module.linkPilots = function(user, alt, status){
-		module.findOrCreateUser(null, alt.refreshToken, alt, function(AltUser){
-			//If the alt belongs to someone - abort.
-			if(AltUser.account != null && !AltUser.account.main) {
-				status({"type": "error", "message": "This alt already belongs to someone, think this is an error? Contact leadership."});
-				return;
-			}
-			//Stop a main account from linking to itself
-			if(user.characterID == AltUser.characterID){
-				status({"type": "error", "message": "Error, you cannot link your main to itself."});
-				return;
-			}
-
-			//Remove master account fields, set main to false and associate to a master account
-			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
-			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, roleNumeric:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
-				if(err) console.log("users.linkPilots - error updating alt account: ", err);
-				if(!err){
-					let newAltArray = user.account.linkedCharIDs;
-					newAltArray.push(Number((user.account.main)? user.characterID: user.account.mainID));
-					db.updateOne({'characterID': user.characterID}, {$set: {"account.linkedCharIDs": newAltArray}}, function(err) {
-						if(err) console.log("users.linkPilots - error updating main account: ", err);
-					})
-				}
-				
-			})
-
-			status({"type": "success", "message": alt.CharacterName + " has been added to your account as an alt."});			
 		})
 	}
 
