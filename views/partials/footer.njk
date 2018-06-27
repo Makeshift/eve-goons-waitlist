@@ -1,6 +1,6 @@
 {% block footer %}
 
-    {% if userProfile.roleNumeric > 0 %}
+    {% if userProfile.role.numeric > 0 %}
     <!-- Legal Notices  Modal -->
     <div role="dialog" tabindex="-1" class="modal fade" id="waitlistBanner">
         <div class="modal-dialog" role="document">
@@ -59,7 +59,7 @@
     </div>
     {% endif %}    
 
-    {% if userProfile.roleNumeric > 0 %}
+    {% if userProfile.role.numeric > 0 %}
     <div id="pilotSearchOverlay" class="overlay">
         <span class="closebtn" onclick="closeSearch()" title="Cancel Search">x</span>
         <div class="overlay-content">

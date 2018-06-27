@@ -15,7 +15,7 @@
 							{% if banner %}
 							<div id="topbanner" role="alert" class="alert alert-primary {{ banner.class }} noselect mb-4">
 								<strong><i class="fas fa-info-circle"></i></strong> {{ banner.text }}
-								<p class="mt-0 mb-0" style="font-size:small;">Message set by: {{ banner.admin.name }}. {% if userProfile.roleNumeric > 0 %}| <a href="#" class="font-weight-bold" style="color:white!important;" onclick="hideBanner('{{banner._id}}')">admin delete</a>{% endif %}</p>
+								<p class="mt-0 mb-0" style="font-size:small;">Message set by: {{ banner.admin.name }}. {% if userProfile.role.numeric > 0 %}| <a href="#" class="font-weight-bold" style="color:white!important;" onclick="hideBanner('{{banner._id}}')">admin delete</a>{% endif %}</p>
 							</div>
 							{% endif %}
 							{% if fleetCount <= 0 %}

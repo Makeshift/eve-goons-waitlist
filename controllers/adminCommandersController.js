@@ -5,7 +5,7 @@ const log = require('../logger.js')(module);
 
 //Render FC Management Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric >= 4) {
+    if (req.isAuthenticated() && req.user.role.numeric >= 4) {
         var userProfile = {};
         if (typeof req.query.user != "undefined") {
             users.findAndReturnUser(Number(req.query.user), function(profile) {
@@ -29,9 +29,9 @@ exports.index = function(req, res) {
             users.getFCList(function(fcList) {
                 //Sort by role then name.
                 fcList.sort(function(a,b) { 
-                    if(a.roleNumeric < b.roleNumeric) {
+                    if(a.role.numeric < b.role.numeric) {
                         return 1;
-                    } else if (a.roleNumeric > b.roleNumeric) {
+                    } else if (a.role.numeric > b.role.numeric) {
                         return -1;
                     } else {
                         if(a.name > b.name) return 1;
@@ -56,14 +56,14 @@ exports.index = function(req, res) {
 
 //Updates a users permission level.
 exports.updateUser = function(req, res) {
-    if(req.isAuthenticated() && !req.user.roleNumeric >= 4)
+    if(req.isAuthenticated() && !req.user.role.numeric >= 4)
     {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to adjust the permissions of this user. Think this is an error? Contact a member of leadership."});
         res.status(403).redirect('/admin/commanders');
         return;
     }
     //Only allow senior FC to make people trainees
-    if(req.user.roleNumeric == 4){
+    if(req.user.role.numeric == 4){
         req.body.permission = 1;
     }
 

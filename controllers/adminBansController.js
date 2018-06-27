@@ -5,7 +5,7 @@ const log = require('../logger.js')(module);
 
 //Render Ban Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 3) {
+    if (req.isAuthenticated() && req.user.role.numeric > 3) {
         bans.getBans(function(activeBans) {
             
             for ( var i = 0; i < activeBans.length; i++) {
@@ -40,7 +40,7 @@ exports.index = function(req, res) {
 
 //Add a Ban
 exports.createBan = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 4) {
+    if (req.isAuthenticated() && req.user.role.numeric > 4) {
         esi.characters.search.strict(req.body.pilotName).then(function (results) {
             var banObject = {
                 characterID: results[0],
@@ -74,7 +74,7 @@ exports.createBan = function(req, res) {
 
 //Revoke a ban
 exports.revokeBan = function(req, res) {
-    if(req.isAuthenticated() && req.user.roleNumeric > 4) {
+    if(req.isAuthenticated() && req.user.role.numeric > 4) {
         var banID = req.params.banID;
         var banAdmin = req.user.name;
 

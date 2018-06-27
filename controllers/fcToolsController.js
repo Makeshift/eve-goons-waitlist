@@ -7,7 +7,7 @@ const wlog = require('../models/wlog.js');
 
 //Renders the page for Fit Scanning
 exports.fitTool = function(req, res) { 
-    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+    if (req.isAuthenticated() && req.user.role.numeric > 0) {
             var userProfile = req.user;
             var sideBarSelected = 6;
             res.render('toolsFits.njk', {userProfile, sideBarSelected});
@@ -23,7 +23,7 @@ exports.fitTool = function(req, res) {
 * @return Renders view
 */
 exports.pilotSearch = function(req, res){
-    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.roleNumeric < 1){
+    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.role.numeric < 1){
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
         res.status(403).redirect("/");
         return;
@@ -55,7 +55,7 @@ exports.pilotSearch = function(req, res){
 * @return res{} url for pilot page || error
 */
 exports.searchForPilot = function(req, res){
-    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+    if (req.isAuthenticated() && req.user.role.numeric > 0) {
         esi.characters.search.strict(req.body.search).then(function (results) {
             //ESI cannot find pilot
             if(results == undefined){
@@ -86,7 +86,7 @@ exports.searchForPilot = function(req, res){
 * @return Renders view
 */
 exports.skillsChecker = function(req, res) {
-    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.roleNumeric < 1){
+    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.role.numeric < 1){
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
         res.status(403).redirect("/");
         return;
@@ -128,7 +128,7 @@ exports.skillsChecker = function(req, res) {
 * @return Renders view
 */
 exports.waitlistLog = function(req, res) {
-    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.roleNumeric < 1){
+    if(!req.isAuthenticated() || req.isAuthenticated() && req.user.role.numeric < 1){
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
         res.status(403).redirect("/");
         return;

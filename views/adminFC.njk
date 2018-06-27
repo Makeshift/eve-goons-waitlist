@@ -31,7 +31,7 @@
 										<td><img src="https://image.eveonline.com/Character/{{commander.characterID}}_32.jpg" alt="{{commander.name}}s Avatar"></td>
 										<td><a href="javascript:void(0);" onclick="showInfo({{ commander.characterID }})">{{ commander.name }}</a></td>
 										<td><a href="javascript:void(0);" onclick="showInfo({{ commander.alliance.id }})">{{ commander.alliance.name }}</a></td>
-										<td>{{commander.role}}</td>
+										<td>{{commander.role.title }}</td>
 										<td><a class="btn btn-sm btn-default" href="/admin/commanders/?user={{commander.characterID}}" style="color:black"><i class="fa fa-info-circle"></i> Manage</a></td>
 									</tr>
 									{% endfor %}
@@ -46,7 +46,7 @@
 					<div class="statistic-block block">
 						<ul class="list-unstyled">
 							<li><a href="javascript:void(0);" onclick="showInfo({{ manageUser.characterID }})">{{manageUser.name}}</a></li>
-							<li>{{manageUser.role}}</li>
+							<li>{{manageUser.role.title }}</li>
 							<li class="strike">FCed for:</li>
 						</ul>
 						<form  method="post" action="/admin/commanders/update">
@@ -105,7 +105,7 @@
 						{{ roleDropdownContentHtml | safe  }}
 						</select>
 					</div>
-					{% if userProfile.roleNumeric == 4 %}  
+					{% if userProfile.role.numeric == 4 %}  
 					<span>Account Restrictions:</span>
 					<ul>
 						<li>You can only assign the Trainee permission.</li>

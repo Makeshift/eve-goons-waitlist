@@ -61,7 +61,7 @@ exports.fleetAtAGlance = function(req, res) {
 
 //Store a new banner
 exports.addBanner = function(req, res){
-    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+    if(req.isAuthenticated() && req.user.role.numeric > 0){
         banner.createNew(req.user, req.body.text, req.body.type, function(status){
             res.status(status).send();
         })
@@ -72,7 +72,7 @@ exports.addBanner = function(req, res){
 
 //Hide last banner
 exports.removeBanner = function(req, res){
-    if(req.isAuthenticated() && req.user.roleNumeric > 0){
+    if(req.isAuthenticated() && req.user.role.numeric > 0){
         banner.hideLast(function(status){
             res.status(status).send();
         })
@@ -138,7 +138,7 @@ module.createShipsHTML = function (ships, filter, res) {
 
 //Create a notification for the user.
 exports.alarmUser = function(req, res) {   
-    if(req.isAuthenticated && req.user.roleNumeric > 0) {
+    if(req.isAuthenticated && req.user.role.numeric > 0) {
         fleets.get(req.params.fleetid, function(fleetObject) {
             var notificationPackage = {
                 target: {

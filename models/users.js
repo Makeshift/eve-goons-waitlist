@@ -1,5 +1,6 @@
 const setup = require('../setup.js');
 const bans = require('./bans.js')(setup)
+const cache = require('../cache.js')(setup);
 const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const db = require('../dbHandler.js').db.collection('users');
@@ -23,7 +24,6 @@ module.exports = function (setup) {
 				module.getMain(userData.characterID, function(mainUserData){
 					module.getAlts(mainUserData.characterID, function(pilotArray){
 						userData.role = mainUserData.role;
-						userData.roleNumeric = mainUserData.roleNumeric;
 						userData.account.pilots = pilotArray;
 						req.session.passport.user = userData;
 						req.session.save(function (err) {
@@ -53,17 +53,11 @@ module.exports = function (setup) {
 		module.findAndReturnUser(characterDetails.CharacterID, function (userProfile) {
 			//We found the user, return it back to the callback
 			if (userProfile) {
-				//Lets remove this old field
-				/*if(userProfile.relatedChars != null){
-					db.updateOne({ 'characterID': userProfile.characterID }, { $unset: {relatedChars}}, function (err) {
-						if(err) console.log(err);
-				  	});
-				}*/
 				cb(userProfile);
 			} else {
 				//We didn't find the user, create them as a master account
 				log.info(`Creating a new user for ${characterDetails.CharacterName}.`);
-				module.generateNewUser(refreshToken, characterDetails, null, null, function (userProfile, err) {
+				module.generateNewUser(refreshToken, characterDetails, function (userProfile, err) {
 					cb(userProfile, err);
 				});
 			}
@@ -81,61 +75,65 @@ module.exports = function (setup) {
 		});
 	};
 
-	module.getUserDataFromID = function (id, cb) {
+
+	/*
+	* Get the corporation and alliance of a pilot
+	* @params characterID
+	* @return cb(alliance{}, corp{})
+	*/
+	module.getPilotAffiliation = function (id, cb) {
 		esi.characters(id).info().then(function (data) {
 			var allianceID = data.alliance_id || 0;
-			var corporationID = data.corporation_id || 0;
-			esi.corporations(corporationID).info().then(function (corporation) {
-				if (allianceID !== 0) {	
-                	esi.alliances(allianceID).info().then(function (alliance) {
-						cb(alliance, corporation);
-					}).catch(err => {
-						log.error("users.getUserDataFromID: Error for esi.alliances.names", { err, userId: id, allianceID });
-					});
-				} else {
-					cb(null, corporation[0])
+	
+			//Get Corporation Info
+			cache.get(data.corporation_id, 86400, function(corporation){
+				var corporation = {"corporationID": corporationID, "name": corporation.name};
+				
+				//Return null if pilot isn't in an alliance
+				if(allianceID == 0){
+					cb(null, corporation);
+					return;
 				}
-			}).catch(err => {
-				log.error("users.getUserDataFromID: Error for esi.corporations.names", { err, userId: id, corporationID });
-			});
+				
+				//Get Alliance Info
+				cache.get(allianceID, 86400, function(alliance){
+					var alliance = {"allianceID": allianceID, "name": alliance.name};
+					
+					cb(alliance, corporation);
+				})
+			})
 		}).catch(err => {
-			log.error("users.getUserDataFromID: Error for esi.characters.info", { err, id });
+			log.error("users.getPilotAffiliation: Error for esi.characters.info", { err, id });
 		});
 	}
 
-	module.generateNewUser = function (refreshToken, characterDetails, masterAccount, associatedMasterAccount, cb) {
-		module.getUserDataFromID(characterDetails.CharacterID, function (alliance, corporation) {
-			if (alliance && setup.permissions.alliances.includes(alliance.alliance_name)) {
-				log.debug(`${characterDetails.CharacterName} is in alliance ${alliance.alliance_name}`)
-				var newUserTemplate = {
-					characterID: characterDetails.CharacterID,
-					name: characterDetails.CharacterName,
-					scopes: characterDetails.Scopes,
-					alliance: alliance,
-					corporation: corporation,
-					refreshToken: refreshToken,
-					role: "Member",
-					roleNumeric: 0,
-					registrationDate: new Date(),
-					notes: "",
-					ships: [],
-					statistics: { sites: {} },
-					account: { main: true, linkedCharIDs: []}
-				}
-				db.insert(newUserTemplate, function (err, result) {
-					if (err) log.error("generateNewUser: Error for db.insert", { err, name: characterDetails.CharacterName });
-					cb(newUserTemplate);
-				})
-			} else {
-				log.warn(`${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance ? alliance.name : 'null'})`)
-				cb(false, `${characterDetails.CharacterName} is not in a whitelisted alliance (${alliance ? alliance.name : 'null'})`);
+	module.generateNewUser = function (refreshToken, characterDetails, cb) {
+		module.getPilotAffiliation(characterDetails.CharacterID, function (alliance, corporation) {
+			var newUserTemplate = {
+				characterID: characterDetails.CharacterID,
+				name: characterDetails.CharacterName,
+				alliance: alliance,
+				corporation: corporation,
+				role: {
+					"title": setup.userPermissions[0],
+					"numeric": 0
+				},
+				notes: [],
+				statistics: { sites: {} },
+				account: { main: true, linkedCharIDs: []},
+				refreshToken: refreshToken,
+				registrationDate: new Date()
 			}
+			db.insert(newUserTemplate, function (err, result) {
+				if (err) log.error("generateNewUser: Error for db.insert", { err, name: characterDetails.CharacterName });
+				cb(newUserTemplate);
+			})
 		})
 	};
 
 	//Return a list of all users with a permission higher than 0.
 	module.getFCList = function(cb) {
-		db.find( { roleNumeric: {$gt: 0}}).toArray(function (err, docs) {
+		db.find( { "role.numeric": {$gt: 0}}).toArray(function (err, docs) {
 			if (err) log.error("fleet.getFCPageList: Error for db.find", { err });
 			cb(docs);
 		})
@@ -152,7 +150,7 @@ module.exports = function (setup) {
 		if(characterID !== adminUser.characterID)
 		{
 			module.getMain(Number(characterID), function(targetUser){
-				db.updateOne({ 'characterID': targetUser.characterID }, { $set: { roleNumeric: Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
+				db.updateOne({ 'characterID': targetUser.characterID }, { $set: { "role.numeric": Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
 					if (err) log.error("Error updating user permissions ", { err, 'characterID': targetUser.character });
 					if (!err) log.debug(adminUser.name + " changed the role of " + targetUser.name + " to " + setup.userPermissions[permission]);
 				})
@@ -184,7 +182,7 @@ module.exports = function (setup) {
 
 			//Remove master account fields, set main to false and associate to a master account
 			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
-			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, roleNumeric:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
+			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, "role.numeric":1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
 				if(err) console.log("users.linkPilots - error updating alt account: ", err);
 				if(!err){
 					db.updateOne({'characterID': account.mainID}, {$push: {"account.linkedCharIDs": AltUser.characterID}}, function(err) {

@@ -8,7 +8,7 @@ const log = require('../logger.js')(module);
 
 //Render FC Dashboard Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+    if (req.isAuthenticated() && req.user.role.numeric > 0) {
         fleets.getFCPageList(function (fleets) {
             if (!fleets) {
                 res.status(403).send("No fleets found<br><br><a href='/'>Go back</a>");
@@ -28,7 +28,7 @@ exports.index = function(req, res) {
 
 //Registers a fleet
 exports.registerFleet = function(req, res) {
-    if (req.isAuthenticated() && req.user.roleNumeric > 0) {
+    if (req.isAuthenticated() && req.user.role.numeric > 0) {
         user.getLocation(req.user, function (location) {
             var fleetid = 0;
             try {
@@ -72,6 +72,6 @@ exports.registerFleet = function(req, res) {
         })
 
     } else {
-        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your roleNumeric > 0? <br><br><a href='/'>Go back</a>");
+        res.status(403).send("You don't have permission to view this page. If this is in dev, have you edited your data file to make your role.numeric > 0? <br><br><a href='/'>Go back</a>");
     }
 }
