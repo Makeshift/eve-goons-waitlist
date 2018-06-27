@@ -87,7 +87,7 @@ module.exports = function (setup) {
 	
 			//Get Corporation Info
 			cache.get(data.corporation_id, 86400, function(corporation){
-				var corporation = {"corporationID": corporationID, "name": corporation.name};
+				var corporation = {"corporationID": corporation.id, "name": corporation.name};
 				
 				//Return null if pilot isn't in an alliance
 				if(allianceID == 0){
@@ -97,7 +97,7 @@ module.exports = function (setup) {
 				
 				//Get Alliance Info
 				cache.get(allianceID, 86400, function(alliance){
-					var alliance = {"allianceID": allianceID, "name": alliance.name};
+					var alliance = {"allianceID": alliance.id, "name": alliance.name};
 					
 					cb(alliance, corporation);
 				})
@@ -145,15 +145,17 @@ module.exports = function (setup) {
 	* @return null
 	*/
 	//Update a users permission and title.
-	module.updateUserPermission = function(characterID, permission, adminUser, cb) {
+	module.updateUserPermission = function(characterID, permission, adminUser) {
 		//Stop a user from adjusting their own access.
 		if(characterID !== adminUser.characterID)
 		{
 			module.getMain(Number(characterID), function(targetUser){
-				db.updateOne({ 'characterID': targetUser.characterID }, { $set: { "role.numeric": Number(permission), role: setup.userPermissions[permission]} }, function (err, result) {
-					if (err) log.error("Error updating user permissions ", { err, 'characterID': targetUser.character });
-					if (!err) log.debug(adminUser.name + " changed the role of " + targetUser.name + " to " + setup.userPermissions[permission]);
-				})
+				if(targetUser !== null){
+					db.updateOne({ 'characterID': targetUser.characterID }, { $set: { "role.numeric": Number(permission), "role.title": setup.userPermissions[permission]} }, function (err, result) {
+						if (err) log.error("Error updating user permissions ", { err, 'characterID': targetUser.character });
+						if (!err) log.debug(adminUser.name + " changed the role of " + targetUser.name + " to " + setup.userPermissions[permission]);
+					})
+				}
 			})
 		}
 	}
@@ -175,14 +177,14 @@ module.exports = function (setup) {
 				return;
 			}
 			//Stop the user from linking a pilot that is a main with alts to another account.
-			if(AltUser.account.main && AltUser.account.linkedCharIDs.length >= 0){
-				status({"type": "error", "message": "Error, you cannot link " + AltUser.name + " to your account as it' i's already a master account. To link these accounts, logout and into " + AltUser.name + " and then add this pilot as an alt."});
+			if(AltUser.account.main && AltUser.account.linkedCharIDs.length > 0){
+				status({"type": "error", "message": "Error, you cannot link " + AltUser.name + " to your account as it's already a master account. To link these accounts, logout and into " + AltUser.name + " and then add this pilot as an alt."});
 				return;
 			}
 
 			//Remove master account fields, set main to false and associate to a master account
 			var account = {"main": false, "mainID": (user.account.main)? user.characterID: user.account.mainID};
-			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, "role.numeric":1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
+			db.updateOne({ 'characterID': AltUser.characterID }, { $unset: {role:1, notes:1, ships:1, statistics:1}, $set: { account: account}}, function (err) {
 				if(err) console.log("users.linkPilots - error updating alt account: ", err);
 				if(!err){
 					db.updateOne({'characterID': account.mainID}, {$push: {"account.linkedCharIDs": AltUser.characterID}}, function(err) {
@@ -202,6 +204,13 @@ module.exports = function (setup) {
 	*/
 	module.getMain = function(userID, mainPilot){
 		db.findOne({"characterID": userID}).then(function(userObject){
+			//No user detected
+			if(userObject == null)
+			{
+				mainPilot(null);
+				return;
+			}
+
 			//User is main
 			if(userObject.account.main){
 				mainPilot(userObject);
