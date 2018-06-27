@@ -1,0 +1,40 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+<!-- Page Content -->
+<div class="page-content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<button class="btn btn-sm btn-dark" onclick="openSearch()">Search for Pilot</button>
+		</div>
+	</div>
+	<section class="no-padding-top no-padding-bottom">
+		<div class="container-fluid">
+			<!-- Fleet List -->
+			<div class="col-md-4">
+				<div class="statistic-block block">
+					<div class="progress-details align-items-end justify-content-between">
+						<img class="d-block mx-auto" src="https://image.eveonline.com/Character/{{ targetUser.characterID }}_128.jpg" alt="users avatar">
+						<span class="text-center">
+							<a href="javascript:void();" onclick="showInfo('{{ targetUser.characterID }}')">{{ targetUser.name }}</a>, 
+							<a href="javascript:void();" onclick="showInfo('{{ targetUser.corporation.id }}')">{{ targetUser.corporation.name }}</a>
+						</span>
+						<span class="text-center">{{ targetUser.role }}</span>
+						<span class="text-center mt-3 mb-0" style="color:white">All Pilots</span>
+						<hr />
+						<table class="table table-sm">
+							<tbody>
+								{% for pilot in userProfile.account.pilots %}
+								<tr>
+									<td class="tr35"><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="pilot avatar" height="28px"></td>
+									<td><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }}">{{ pilot.name }}</a></td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+{%- include "./partials/footer.njk" %}

@@ -43,6 +43,11 @@ const statsController = require('./controllers/statisticsController.js');
 	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
 	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
 	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
+	
+	//Search for pilot
+	router.get('/commander/:pilotname/info', fc_tools_controller.pilotSearch);
+	router.post('/search', fc_tools_controller.searchForPilot);
+
 	//Pilot Settings
 	router.get('/my-settings', pilot_settings_controller.index);
 	

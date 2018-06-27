@@ -58,7 +58,65 @@
         </script>
     </div>
     {% endif %}    
-    
+
+    {% if userProfile.roleNumeric > 0 %}
+    <div id="pilotSearchOverlay" class="overlay">
+        <span class="closebtn" onclick="closeSearch()" title="Cancel Search">x</span>
+        <div class="overlay-content">
+            <form id="searchForm">
+                <h4 class="modal-title text-uppercase noselect" style="color:white"><strong class="text-primary">Goon</strong><strong>Incursions</strong> - Pilot Search</h4>
+                <input id="pilotSearchName" type="text" placeholder="Search pilot name..." autocomplete="off">
+                <button id="searchButton" type="button" onclick="searchGo()"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    <script>
+    // Open the full screen search box 
+    function openSearch() {
+        document.getElementById("pilotSearchOverlay").style.display = "block";
+        $(".navbar").attr("style", "display: none !important;");
+        $("#pilotSearchName").focus();
+    }
+
+    // Close the full screen search box 
+    function closeSearch() {
+        document.getElementById("pilotSearchOverlay").style.display = "none";
+        $(".navbar").removeAttr("style");
+    }
+
+    //Stop the form from submitting via normal http request
+    $("#searchForm").submit(function(e){
+        e.preventDefault();
+    });
+
+    function searchGo(){
+            $("#searchButton").empty().append('<i class="fas fa-spinner-third fa-spin"></i>');
+            var dataString = 'search='+ $("#pilotSearchName").val();
+            $.ajax({
+                type: "POST",
+                url: "/search",
+                data: dataString,
+                statusCode: {
+                    404: function(data) {
+                        $("#pilotSearchName").val('').attr("placeholder", data.responseText);
+                        $("#searchButton").empty().append('<i class="fa fa-search"></i>');
+                    },
+                    400: function(data) {
+                        $("#pilotSearchName").val('').attr("placeholder", data.responseText);
+                        $("#searchButton").empty().append('<i class="fa fa-search"></i>');
+                    },
+                    200: function(data) {
+                    //If we have a url
+                        if(data.url) {
+                            window.location.assign(window.location.protocol+"//"+window.location.hostname+data.url);
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+    {% endif %}
+
     <!-- Legal Notices  Modal -->
     <div role="dialog" tabindex="-1" class="modal fade" id="legal">
         <div class="modal-dialog" role="document">
