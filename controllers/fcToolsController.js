@@ -58,7 +58,7 @@ exports.searchForPilot = function(req, res){
     if (req.isAuthenticated() && req.user.role.numeric > 0) {
         esi.characters.search.strict(req.body.search).then(function (results) {
             //ESI cannot find pilot
-            if(!!results){
+            if(!results){
                 res.status(404).send("ESI Search Fails - No pilot found");
                 return;
             }

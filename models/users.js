@@ -205,7 +205,7 @@ module.exports = function (setup) {
 	module.getMain = function(userID, mainPilot){
 		db.findOne({"characterID": userID}).then(function(userObject){
 			//No user detected
-			if(!!userObject)
+			if(!userObject)
 			{
 				mainPilot(null);
 				return;
