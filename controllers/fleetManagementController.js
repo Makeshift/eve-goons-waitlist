@@ -1,15 +1,14 @@
-var path = require('path');
-var setup = require('../setup.js');
-var fleets = require('../models/fleets.js')(setup);
-var api  = require('./apiController');
-var refresh = require('passport-oauth2-refresh');
-var waitlist = require('../models/globalWaitlist.js')(setup);
+const setup = require('../setup.js');
+const fleets = require('../models/fleets.js')(setup);
+const api  = require('./apiController');
+const users = require('../models/users.js')(setup);
+const waitlist = require('../models/globalWaitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../models/wlog.js');
 
 //Render Fleet Management Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.get(req.params.fleetid, function (fleet) {
             if (fleet) {
                 waitlist.get(function(usersOnWaitlist) {
@@ -41,7 +40,7 @@ exports.index = function(req, res) {
 
 //Invite a pilot to a specific fleet
 exports.invitePilot = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.get(req.params.fleetid, function (fleet) {
             if(fleet.fc.characterID){
                 fleets.invite(fleet.fc.characterID, fleet.fc.refreshToken, fleet.id, req.params.characterID, function (status, response) {
@@ -92,7 +91,7 @@ exports.invitePilot = function(req, res) {
 
 //Remove a specific pilot from the waitlist
 exports.removePilot = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         waitlist.remove(req.params.tableID, function (status, response) {
             wlog.removed(req.params.characterID, req.user.characterID);
             res.status(status).send(response);
@@ -104,7 +103,7 @@ exports.removePilot = function(req, res) {
 
 //Update fleet comms.
 exports.updateComms = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.updateComms(req.params.fleetid, { name: req.body.name, url: req.body.url }, function () {
             res.redirect('/commander/' + req.params.fleetid);
         })
@@ -115,7 +114,7 @@ exports.updateComms = function(req, res) {
 
 //Update fleet type
 exports.updateType = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.updateType(req.params.fleetid, req.body.type, function () {
             res.redirect('/commander/' + req.params.fleetid);
         })
@@ -126,7 +125,7 @@ exports.updateType = function(req, res) {
 
 //Update the Fleet Status
 exports.updateStatus = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.updateStatus(req.params.fleetid, req.body.status, function () {
             res.redirect('/commander/' + req.params.fleetid);
         })
@@ -137,7 +136,7 @@ exports.updateStatus = function(req, res) {
 
 //Update the Fleet Commander
 exports.updateCommander = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.updateFC(req.params.fleetid, req.user, function() {
             res.redirect('/commander/'+req.params.fleetid);
         });
@@ -148,7 +147,7 @@ exports.updateCommander = function(req, res) {
 
 //Update the Backseat
 exports.updateBackseat = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.updateBackseat(req.params.fleetid, req.user, function() {
             res.redirect('/commander/'+req.params.fleetid);
         });
@@ -159,7 +158,7 @@ exports.updateBackseat = function(req, res) {
 
 //Close the fleet
 exports.closeFleet = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         fleets.delete(req.params.fleetid, function () {
             req.flash("content", {"class":"success", "title":"The fleet has been closed.", "message":"You can now re-register this fleet."});
             res.redirect('/commander/');
@@ -171,7 +170,7 @@ exports.closeFleet = function(req, res) {
 
 //Remove all pilots from the waitlist
 exports.clearWaitlist = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 0) {
+    if (users.isRoleNumeric(req.user, 1)) {
         waitlist.get(function(pilotsOnWaitlist) {
             log.debug(req.user.name + " is removing all pilots from the waitlist.");
             for (var i = 0; i < pilotsOnWaitlist.length; i++) {

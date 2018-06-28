@@ -5,10 +5,12 @@ const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
+const day = 86400;//Day in seconds
 
 module.exports = function (setup) {
 	var module = {};
 	//This nested if stuff is kinda unpleasant and I'd like to fix it
+	//TODO: Make middleware for session, isBanned? isWhitelisted?
 	module.updateUserSession = function (req, res, next) {
 		if (typeof req.session.passport === "undefined" || typeof req.session.passport.user === "undefined") {
 			next();
@@ -28,7 +30,6 @@ module.exports = function (setup) {
 						req.session.passport.user = userData;
 						req.session.save(function (err) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-							
 						})
 					})
 				})
@@ -86,7 +87,7 @@ module.exports = function (setup) {
 			var allianceID = data.alliance_id || 0;
 	
 			//Get Corporation Info
-			cache.get(data.corporation_id, 86400, function(corporation){
+			cache.get(data.corporation_id, day, function(corporation){
 				var corporation = {"corporationID": corporation.id, "name": corporation.name};
 				
 				//Return null if pilot isn't in an alliance
@@ -96,7 +97,7 @@ module.exports = function (setup) {
 				}
 				
 				//Get Alliance Info
-				cache.get(allianceID, 86400, function(alliance){
+				cache.get(allianceID, day, function(alliance){
 					var alliance = {"allianceID": alliance.id, "name": alliance.name};
 					
 					cb(alliance, corporation);
@@ -249,7 +250,17 @@ module.exports = function (setup) {
 		})	
 	}
 
+	/*
+	* Return an array of linked characters.
+	* @params: userID (int)
+	* @return: returnCharacters[ {characterID, name} ]
+	*/
+	module.isRoleNumeric = function(user, atLeast){
+		return !!user && !!user.role && user.role.numeric >= atLeast;
+	}
+
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
+	//TODO: Skill System: move out of this file and make it clean check issue: 120
 	module.checkSkills = function(user, skillsPackage, cb) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {

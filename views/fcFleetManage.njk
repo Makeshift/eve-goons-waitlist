@@ -433,7 +433,7 @@
 
     //Remove all pilots from the waitlist.
     function clearWaitlist(){
-      if (confirm("Are you sure you want to remove all users from the waitlist?")) {
+      if (confirm("Are you sure you want to remove all users from the waitlist?\nThis will affect every fleet!")) {
           $.ajax({
             type:"POST",
             url:"/internal-api/waitlist/remove-all",

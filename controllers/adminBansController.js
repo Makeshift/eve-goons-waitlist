@@ -1,11 +1,12 @@
 var setup = require('../setup.js');
 var bans = require('../models/bans.js')(setup);
 var esi = require('eve-swagger');
+const users = require('../models/users.js')(setup);
 const log = require('../logger.js')(module);
 
 //Render Ban Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 3) {
+    if (users.isRoleNumeric(req.user, 4)) {
         bans.getBans(function(activeBans) {
             
             for ( var i = 0; i < activeBans.length; i++) {
@@ -40,7 +41,7 @@ exports.index = function(req, res) {
 
 //Add a Ban
 exports.createBan = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric > 4) {
+    if (users.isRoleNumeric(req.user, 5)) {
         esi.characters.search.strict(req.body.pilotName).then(function (results) {
             var banObject = {
                 characterID: results[0],
@@ -74,7 +75,7 @@ exports.createBan = function(req, res) {
 
 //Revoke a ban
 exports.revokeBan = function(req, res) {
-    if(req.isAuthenticated() && req.user.role.numeric > 4) {
+    if(users.isRoleNumeric(req.user, 5)) {
         var banID = req.params.banID;
         var banAdmin = req.user.name;
 

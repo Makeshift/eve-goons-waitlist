@@ -5,7 +5,7 @@ const log = require('../logger.js')(module);
 
 //Render FC Management Page
 exports.index = function(req, res) {
-    if (req.isAuthenticated() && req.user.role.numeric >= 4) {
+    if (users.isRoleNumeric(req.user, 4)){
         var userProfile = {};
         if (typeof req.query.user != "undefined") {
             users.findAndReturnUser(Number(req.query.user), function(profile) {
@@ -56,7 +56,7 @@ exports.index = function(req, res) {
 
 //Updates a users permission level.
 exports.updateUser = function(req, res) {
-    if(req.isAuthenticated() && !req.user.role.numeric >= 4)
+    if(!users.isRoleNumeric(req.user, 4))
     {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to adjust the permissions of this user. Think this is an error? Contact a member of leadership."});
         res.status(403).redirect('/admin/commanders');
@@ -74,7 +74,7 @@ exports.updateUser = function(req, res) {
             res.status(409).redirect('/admin/commanders');
             return;
         }
-                
+        //TODO Trainees should  only be able to adjust trainees and line pilots
         users.updateUserPermission(results[0], req.body.permission, req.user, res)
         {
             req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
