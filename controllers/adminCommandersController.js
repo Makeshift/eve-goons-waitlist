@@ -69,7 +69,7 @@ exports.updateUser = function(req, res) {
 
     //Search for and update user record
     esi.characters.search.strict(req.body.pilotName).then(function (results) {
-        if(results[0] == null){
+        if(!!results[0]){
             req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
             res.status(409).redirect('/admin/commanders');
             return;

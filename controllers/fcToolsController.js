@@ -58,7 +58,7 @@ exports.searchForPilot = function(req, res){
     if (req.isAuthenticated() && req.user.role.numeric > 0) {
         esi.characters.search.strict(req.body.search).then(function (results) {
             //ESI cannot find pilot
-            if(results == undefined){
+            if(!!results){
                 res.status(404).send("ESI Search Fails - No pilot found");
                 return;
             }
@@ -91,7 +91,7 @@ exports.skillsChecker = function(req, res) {
         res.status(403).redirect("/");
         return;
     }
-    if(req.params.pilotname !== "tools"){
+    if(req.params.pilotname === "tools"){
         res.redirect('/commander/'+req.user.name.replace(/\s+/g, '-')+'/skills')
         return;
     }
