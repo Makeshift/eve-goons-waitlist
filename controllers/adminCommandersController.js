@@ -68,20 +68,34 @@ exports.updateUser = function(req, res) {
     }
 
     //Search for and update user record
-    esi.characters.search.strict(req.body.pilotName).then(function (results) {
-        if(!results[0]){
-            req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
-            res.status(409).redirect('/admin/commanders');
-            return;
-        }
-        //TODO Trainees should  only be able to adjust trainees and line pilots
-        users.updateUserPermission(results[0], req.body.permission, req.user, res)
-        {
-            req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
-        }
+    esi.characters.search.strict(req.body.pilotName).then(function (results) {       
+        users.getMain(Number(results[0]), function(targetUser){
+            if(!!!targetUser){
+                req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
+                res.status(409).redirect('/admin/commanders');
+                return;
+            }
+            if(targetUser.characterID == req.user.characterID){
+                req.flash("content", {"class":"error", "title":"Woops!", "message":"You cannot change your own permission!"});
+                res.status(400).redirect('/admin/commanders');
+                return;
+            }
+            if(req.user.role.numeric == 4 && targetUser.role.numeric > 1){
+                req.flash("content", {"class":"error", "title":"Woops!", "message":"You're not allowed to change that FCs permission!"});
+                res.status(400).redirect('/admin/commanders');
+                return;
+            }
+            
+            users.updateUserPermission(targetUser, req.body.permission, req.user,  function(cb)
+            {
+                req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
+                res.status(200).redirect('/admin/commanders');
+                return;
+            })
+        })
     }).catch(function (err) {
         log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
         req.flash("content", {"class":"error", "title":"Woops!", "message":"Something went wrong!"});
+        res.status(400).redirect('/admin/commanders');
     })
-    res.status(400).redirect('/admin/commanders');
 }

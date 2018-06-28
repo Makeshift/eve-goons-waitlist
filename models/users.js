@@ -142,21 +142,18 @@ module.exports = function (setup) {
 
 	/*
 	* Change the permission of a user
-	* @params characterID, permission (int), admin{}
+	* @params user{}, permission (int), admin{}
 	* @return null
 	*/
 	//Update a users permission and title.
-	module.updateUserPermission = function(characterID, permission, adminUser) {
+	module.updateUserPermission = function(user, permission, adminUser, cb) {
 		//Stop a user from adjusting their own access.
-		if(characterID !== adminUser.characterID)
+		if(user.characterID !== adminUser.characterID)
 		{
-			module.getMain(Number(characterID), function(targetUser){
-				if(targetUser !== null){
-					db.updateOne({ 'characterID': targetUser.characterID }, { $set: { "role.numeric": Number(permission), "role.title": setup.userPermissions[permission]} }, function (err, result) {
-						if (err) log.error("Error updating user permissions ", { err, 'characterID': targetUser.character });
-						if (!err) log.debug(adminUser.name + " changed the role of " + targetUser.name + " to " + setup.userPermissions[permission]);
-					})
-				}
+			db.updateOne({ 'characterID': user.characterID }, { $set: { "role.numeric": Number(permission), "role.title": setup.userPermissions[permission]} }, function (err) {
+				if (err) log.error("Error updating user permissions ", { err, 'characterID': user.character });
+				if (!err) log.debug(adminUser.name + " changed the role of " + user.name + " to " + setup.userPermissions[permission]);
+				cb();
 			})
 		}
 	}
@@ -252,8 +249,8 @@ module.exports = function (setup) {
 
 	/*
 	* Return an array of linked characters.
-	* @params: userID (int)
-	* @return: returnCharacters[ {characterID, name} ]
+	* @params: user{}, (int)
+	* @return: bool
 	*/
 	module.isRoleNumeric = function(user, atLeast){
 		return !!user && !!user.role && user.role.numeric >= atLeast;

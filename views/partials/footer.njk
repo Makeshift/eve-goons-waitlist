@@ -66,7 +66,7 @@
             <form id="searchForm">
                 <h4 class="modal-title text-uppercase noselect" style="color:white"><strong class="text-primary">Goon</strong><strong>Incursions</strong> - Pilot Search</h4>
                 <input id="pilotSearchName" type="text" placeholder="Search pilot name..." autocomplete="off">
-                <button id="searchButton" type="button" onclick="searchGo()"><i class="fa fa-search"></i></button>
+                <button id="searchButton" type="submit" onclick="searchGo()"><i class="fa fa-search"></i></button>
             </form>
         </div>
     </div>
@@ -98,11 +98,11 @@
                 data: dataString,
                 statusCode: {
                     404: function(data) {
-                        $("#pilotSearchName").val('').attr("placeholder", data.responseText);
+                        $("#pilotSearchName").val('').attr("placeholder", data.responseText).focus();
                         $("#searchButton").empty().append('<i class="fa fa-search"></i>');
                     },
                     400: function(data) {
-                        $("#pilotSearchName").val('').attr("placeholder", data.responseText);
+                        $("#pilotSearchName").val('').attr("placeholder", data.responseText).focus();
                         $("#searchButton").empty().append('<i class="fa fa-search"></i>');
                     },
                     200: function(data) {
