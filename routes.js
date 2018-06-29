@@ -69,7 +69,7 @@ const statsController = require('./controllers/statisticsController.js');
 	router.post('/internal-api/waitlist/remove-all', fleet_management_controller.clearWaitlist);
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);
-	
+	router.post('/internal-api/account/navbar', api_controller.navbar);
 	//External - APIs
 	router.get('/api/sstats/members', statsController.getMemberList);
 	router.get('/api/sstats/corporations', statsController.getCorporationList);

@@ -60,11 +60,13 @@ module.exports = function (setup) {
             $and : [ {"deletedAt": {}},
                 { $or : [ { id : corporationID }, { id : allianceID } ] }]
         }).then(function(doc){
-            if(user && user.role.numeric > 4 || !!doc){
+            if(!!doc || user && user.role.numeric > 4){
                 cb(true);
             } else {
                 cb(false);
             }
+        }).catch(function(error){
+            debug.warn("whitelist.isAllowed - ", {User: user.name, Error: error})
         })
     }
 

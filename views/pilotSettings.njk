@@ -1,7 +1,7 @@
 {% include "./partials/header.njk" -%}
 {% include "./partials/nav.njk" %}
 <!-- Page Content -->
-<div class="page-content">
+<div class="page-content {{ "active" if userProfile.settings.smSideNav == true }}">
 	<div class="page-header">
 		<div class="container-fluid">
 			<h2 class="h5 no-margin-bottom">Your Profile</h2>
@@ -13,19 +13,38 @@
 			<div class="col-md-4">
 				<div class="statistic-block block">
 					<div class="progress-details align-items-end justify-content-between">
-						<h5 style="text-align:center">Pilots</h5>
-							<button class="btn btn-success btn-sm d-block mb-3 mx-auto" data-toggle="modal" data-target="#addAlt"><i class="fas fa-user-plus"></i> Add an Alt</button>
-						<hr />
-						<table class="table table-sm">
-							<tbody>
-								{% for pilot in userProfile.account.pilots %}
-								<tr>
-									<td class="tr35"><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="pilot avatar" height="28px"></td>
-									<td><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }}">{{ pilot.name }}</a></td>
-								</tr>
-								{% endfor %}
-							</tbody>
-						</table>
+						<img class="d-block mx-auto mb-2" src="https://image.eveonline.com/Character/{{ userProfile.account.pilots[0].characterID }}_128.jpg" alt="{{ userProfile.account.pilots[0].name }}">
+						<h5 style="text-align:center">Hi {{ userProfile.account.pilots[0].name }}</h5>
+					<!-- Settings -->
+					<hr />
+					<form>
+						<div class="form-row align-items-center">
+							<div class="col-12">
+								<i class="fas fa-info-circle" data-toggle="tooltip" title="Your jabber name without @goonfleet.com"></i>
+								<label for="xmppName">Jabber Name</label>
+								<div class="input-group">
+									<input type="text" class="form-control" id="xmppName" placeholder="samuel_the_terrible" disabled/>
+									<div class="input-group-append">
+										<button class="btn btn-success" type="submit" disabled>Go!</button>
+									</div>
+								</div>
+								<p class="form-text text-muted">Optional: Allows our FCs to find you on Jabber.</p>
+							</div>
+						</div>
+					</form>
+					<!-- Alts -->
+					<hr />
+					<button class="btn btn-success btn-sm d-block mb-3 mx-auto" data-toggle="modal" data-target="#addAlt"><i class="fas fa-user-plus"></i> Add an Alt</button>
+					<table class="table table-sm">
+						<tbody>
+							{% for pilot in userProfile.account.pilots %}
+							<tr>
+								<td class="tr35"><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="pilot avatar" height="28px"></td>
+								<td><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }}">{{ pilot.name }}</a></td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
 					</div>	
 				</div>
 			</div>

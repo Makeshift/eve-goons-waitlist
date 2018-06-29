@@ -19,8 +19,28 @@ database.connect(() => {
     //     console.log("I'm doing something important right now");
     // });
     
-    scheduler.scheduled(3, 10, "Waitlist Cleanup", () => {
+    scheduler.scheduled(11, 00, "Waitlist Cleanup", () => {
         const collections = ['waitlist', 'fleets'];
+
+        for(let i = 0; i < collections.length; i++) {
+            let collection = db.collection(collections[i]);
+
+            collection.remove({}, (err, docCount) => {
+                if(!!err) {
+                    console.log("This ran with an error!");
+                    return;
+                    // log.debug("scheduler.WaitlistCleanup: ", err);
+                }
+
+                console.log("Everything was fine.");
+            });
+        }
+
+        wlog.clean();
+    });
+
+    scheduler.scheduled(11, 30, "Waitlist Cleanup", () => {
+        const collections = ['users'];
 
         for(let i = 0; i < collections.length; i++) {
             let collection = db.collection(collections[i]);
