@@ -49,18 +49,30 @@ database.connect(function () {
 			tokenURL: `https://${setup.oauth.baseSSOUrl}/oauth/token`,
 			clientID: setup.oauth.clientID,
 			clientSecret: setup.oauth.secretKey,
-			callbackURL: setup.oauth.callbackURL
+			callbackURL: setup.oauth.callbackURL,
+			passReqToCallback: true
 		},
-		function (accessToken, refreshToken, profile, done) {
-			//Our user has logged in, let's get a unique ID for them (Their character ID, because why not)
+		function (req, accessToken, refreshToken, profile, done) {
+			//Get Character Details
 			customSSO.verifyReturnCharacterDetails(refreshToken, function (success, response, characterDetails) {
 				if (success) {
 					users.findOrCreateUser(users, refreshToken, characterDetails, function (user, err) {
-						if (user === false) {
-							done(err);
+						if(req.isAuthenticated())
+						{	
+							//Link the alt to the users main account
+							users.linkPilots(req.user, characterDetails, function(result){
+								req.flash("content", {"class": result.type, "title":"Account Linked", "message": result.message});
+								done(null, req.user);
+							})
 						} else {
-							done(null, user);
+							//Normal login flow  - Log them in.
+							if (user === false) {
+								done(err);
+							} else {
+								done(null, user);
+							}
 						}
+						
 					})
 				} else {
 					log.info(`Character ID request failed for token ${refreshToken}`);
@@ -116,6 +128,12 @@ database.connect(function () {
 		req.id = req.params.id;
 		next();
 	});	
+
+	//Tmp script. Remove in next pull request.
+	const migration = require('./migration.js');
+	migration.updateUserDB(function(){
+
+	})
 
 	//Configure Express webserver
 	app.listen(setup.settings.port, function listening() {

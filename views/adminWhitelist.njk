@@ -1,0 +1,91 @@
+{% include "./partials/header.njk" -%}
+{% include "./partials/nav.njk" %}
+
+<!-- Page Content -->
+<div class="page-content">
+<div class="page-header">
+    <div class="container-fluid">
+    <h2 class="h5 no-margin-bottom d-inline">Whitelist Management</h2>
+    <button class="btn btn-dark d-inline ml-2" data-toggle="modal" data-target="#addWhitelist" accesskey="n"><i class="fas fa-users"></i> Whitelist Entity</button>
+    </div>
+</div>
+{% if userProfile.role.numeric < 5 %}
+<div role="alert" class="alert alert-primary global-banner-inactive noselect">
+    <strong>Restricted Access:</strong> Only leadership can edit this list.
+</div>
+{% endif %}
+<section class="no-padding-top no-padding-bottom">
+    <div class="container-fluid">
+    <div class="row">
+        <!-- Add/View Whitelist -->
+        <div class="col-md-12">
+        <div class="statistic-block block">
+            <div class="progress-details d-flex align-items-end justify-content-between">  
+            <table class="table table-striped table-hover table-sm">
+                <thead>
+                <tr>
+                    <th class="tr35"></th>
+                    <th class="tr35per">Name</th>
+                    <th class="tr15per">Type</th>
+                    <th class="tr35per">Added By</th>
+                    <th class="tr15per">Date</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for entity in activeWhitelist %}
+                <tr>
+                    <td>
+                        {% if "Alliance" in entity.type %}
+                        <img src="https://image.eveonline.com/Alliance/{{ entity.id }}_32.png" alt="{{ entity.name }}s Icon">
+                        {% else %}
+                        <img src="https://image.eveonline.com/Corporation/{{ entity.id }}_32.png" alt="{{ entity.name }}s Icon">
+                        {% endif %}
+                    </td>
+                    <td><a href="javascript:void(0);" onclick="showInfo({{ entity.id }})">{{ entity.name }}</a></td>
+                    <td>{{ entity.type }}</td>
+                    <td><a href="javascript:void(0);" onclick="showInfo({{ entity.whitelistAdmin.characterID }})">{{ entity.whitelistAdmin.name }}</a></td>
+                    <td>{{ entity.createdAt }}</td>
+                    <td>{% if userProfile.role.numeric > 4 %}<a class="btn btn-sm btn-danger" href="/admin/whitelist/{{ entity._id }}"><i class="fa fa-times"></i> Revoke</a>{% endif %}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>  
+        </div>
+        </div>
+    </div>
+    </div>
+</section>
+{% if userProfile.role.numeric > 4 %}
+<!-- New Whitelist Modal -->
+<div class="modal fade" id="addWhitelist" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Whitelist Entity</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button></div>
+            <div class="modal-body">
+                <form method="post" action="/admin/whitelist">
+                    <div class="form-group">
+                        <label for="name"> Name:</label>
+                        <input type="text" id="name" class="form-control" name="name"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type">Type:</label>
+                        <select class="form-control" name="type">
+                            <option value="Alliance" selected required>Alliance</option>
+                            <option value="Corporation">Corporation</option>
+                        </select>
+                    </div>
+                    <hr />
+                    <button class="btn btn-success" type="submit"><i class="fas fa-check-circle"></i> Grant Access</button>
+                    <button class="btn btn-light" type="button" data-dismiss="modal">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- New End Ban Modal -->
+{% endif %}
+{%- include "./partials/footer.njk" %}

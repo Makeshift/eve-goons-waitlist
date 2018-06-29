@@ -11,7 +11,7 @@
         <div role="alert" class="alert alert-primary global-banner-inactive noselect">
           <strong>Partial Functionality:</strong> Only SQUAD bans are implemented at this time! Any other bans will be ignored.
         </div>
-        {% if userProfile.roleNumeric < 5 %}
+        {% if userProfile.role.numeric < 5 %}
         <div role="alert" class="alert alert-primary global-banner-inactive noselect">
           <strong>Restricted Access:</strong> Only leadership can add and revoke bans.
         </div>
@@ -45,7 +45,7 @@
                           <td><a href="javascript:void(0);" onclick="showInfo({{ ban.banAdmin.characterID }})">{{ ban.banAdmin.name }}</a></td>
                           <td>{{ ban.createdAt }}</td>
                           <td>{{ ban.notes }}</td>
-                          <td>{% if userProfile.roleNumeric > 4 %}<a class="btn btn-sm btn-success" href="/admin/bans/{{ ban._id }}"><i class="fa fa-gavel"></i> Revoke</a>{% endif %}</td>
+                          <td>{% if userProfile.role.numeric > 4 %}<a class="btn btn-sm btn-success" href="/admin/bans/{{ ban._id }}"><i class="fa fa-gavel"></i> Revoke</a>{% endif %}</td>
                         </tr>
                         {% endfor %}
                       </tbody>
@@ -56,7 +56,7 @@
             </div>
           </div>
         </section>
-        {% if userProfile.roleNumeric > 4 %}
+        {% if userProfile.role.numeric > 4 %}
         <!-- New Ban Modal -->
         <div class="modal fade" id="addBan" role="dialog" tabindex="-1">
             <div class="modal-dialog" role="document">

@@ -81,10 +81,11 @@
                                 <p>{{ skills.totalSP.toLocaleString() }} SP</div>
                             </div>
                         </div>
-                        <select class="form-control mb-0" disabled>
+                        <select id="selectAlt" class="form-control mb-0">
                             <option value="" selected>Select Alt to view skills</option>
-                            <option value="">Alt's Name</option>
-                            <option value="">Alt's Name</option>
+                            {% for pilot in targetUser.account.pilots %}
+                            <option value="{{ pilot.name }}">{{ pilot.name }}</option>
+                            {% endfor %}
                         </select>
                         <hr>
                         <strong>Select Skill Set:</strong>
@@ -116,22 +117,14 @@
     </section>
 </div>
 <script>
-    function openMarket(targetID) {
-        console.log(targetID)
-        $.ajax({
-            type: "POST",
-            url: "/esi/ui/market/"+targetID
-        });
-    }
-
     function switchTab(tabID) {
         console.log(tabID)
         $('.nav-tabs .active, .tab-content .active').removeClass('active');
         $('#'+tabID).tab('show');
     }
 
-$(document).ready(function(){
-    
-});
+    $('#selectAlt').on('change', function (e) {
+        window.location.replace("/commander/"+this.value.replace(/\s+/g, '-')+"/skills");
+    });
 </script>
 {%- include "./partials/footer.njk" %}

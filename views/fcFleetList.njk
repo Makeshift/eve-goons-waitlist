@@ -30,7 +30,7 @@
 							<tbody>
 								{% for fleet in fleets %}
 								<tr>
-									<td><img src="https://image.eveonline.com/Character/{{ fleet.fc.characterID}}_32.jpg" alt="FCs Avatar"></td>
+									<td><img src="https://image.eveonline.com/Character/{{ fleet.fc.characterID if fleet.fc.characterID else '0' }}_32.jpg" alt="FCs Avatar"></td>
 									<td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
 									<td class="d-lg-block d-md-none d-sm-none"><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
 									<td>{{ fleet.type }}</td>
@@ -74,8 +74,11 @@
 					<!-- Select Mumble Channel -->
 					<div class="form-group">
 						<label for="comms">Select Comms:</label>
-						<select id="comms" name="comms" class="form-control dropdown" disabled>
-							<option value="Headquarters" selected>Choose</option>
+						<select id="comms" name="comms" class="form-control dropdown">
+							<option value="0">Incursions -> A</option>
+							<option value="1">Incursions -> B</option>
+							<option value="2">Incursions -> C</option>
+							<option value="3">Incursions -> D</option>
 						</select>
 					</div>
 					<hr />

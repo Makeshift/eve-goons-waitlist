@@ -161,7 +161,7 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item" href="#"><strike>View Pilot Profile</strike></a>
+                                <a class="dropdown-item strike" href="#">View Pilot Profile</a>
                                 <a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
                               </div>
                           </div>
@@ -219,7 +219,7 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item" href="#"><strike>View Pilot Profile</strike></a>
+                                <a class="dropdown-item strike" href="#">View Pilot Profile</a>
                                 <a class="dropdown-item" href="/commander/{{ user.alt.name | replace(' ','-') }}/skills">View Pilot Skills</a>
                               </div>
                           </div>
@@ -433,7 +433,7 @@
 
     //Remove all pilots from the waitlist.
     function clearWaitlist(){
-      if (confirm("Are you sure you want to remove all users from the waitlist?")) {
+      if (confirm("Are you sure you want to remove all users from the waitlist?\nThis will affect every fleet!")) {
           $.ajax({
             type:"POST",
             url:"/internal-api/waitlist/remove-all",
