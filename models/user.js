@@ -106,7 +106,24 @@ module.exports = function() {
 		db.updateOne({ 'characterID': userID }, { $set: { refreshToken: refreshToken } }, function (err, result) {
 			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': userID });
 		})
-    }
+	}
+	
+
+	/*
+	* Invert the sideBar setting
+	* @params user{}
+	* @retunr status
+	*/
+	module.sideNav = function(user, cb){
+		db.updateOne({characterID: user.characterID},{$set: {"settings.smSideNav": !user.settings.smSideNav}}, function (err, result) {
+			if(!err){
+				cb(200);
+			} else {
+				log.error("user.sideNav - ", {user: user.name, err});
+				cb(400);
+			}
+		})
+	}
     
     return module;
 }

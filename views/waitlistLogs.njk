@@ -1,7 +1,7 @@
 {% include "./partials/header.njk" -%}
 {% include "./partials/nav.njk" %}
 <!-- Page Content -->
-<div class="page-content">
+<div class="page-content {{ "active" if userProfile.settings.smSideNav == true }}">
 <div class="page-header">
     <div class="container-fluid">
     <h2 class="h5 no-margin-bottom">Waitlist Logs</h2>

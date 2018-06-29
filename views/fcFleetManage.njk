@@ -2,7 +2,7 @@
 {% include "./partials/nav.njk" %}
 
     <!-- Page Content -->
-    <div class="page-content">
+    <div class="page-content {{ "active" if userProfile.settings.smSideNav == true }}">
       <div class="page-header">
       </div>
       {% if fleet.status == "Not Listed" %}
@@ -161,7 +161,7 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item strike" href="#">View Pilot Profile</a>
+                                <a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/info">View Pilot Profile</a>
                                 <a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
                               </div>
                           </div>
@@ -219,7 +219,7 @@
                           <div class="dropdown">
                             <button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
                               <div class="dropdown-menu" role="menu">
-                                <a class="dropdown-item strike" href="#">View Pilot Profile</a>
+                                <a class="dropdown-item" href="/commander/{{ user.alt.name | replace(' ','-') }}/skills">View Pilot Profile</a>
                                 <a class="dropdown-item" href="/commander/{{ user.alt.name | replace(' ','-') }}/skills">View Pilot Skills</a>
                               </div>
                           </div>

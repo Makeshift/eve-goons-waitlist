@@ -1,11 +1,8 @@
 {% include "./partials/header.njk" -%}
 {% include "./partials/nav.njk" %}
 <!-- Page Content -->
-<div class="page-content">
+<div class="page-content {{ "active" if userProfile.settings.smSideNav == true }}">
 	<div class="page-header">
-		<div class="container-fluid">
-			<button class="btn btn-sm btn-dark" onclick="openSearch()">Search for Pilot</button>
-		</div>
 	</div>
 	<section class="no-padding-top no-padding-bottom">
 		<div class="container-fluid">
@@ -16,11 +13,24 @@
 						<img class="d-block mx-auto" src="https://image.eveonline.com/Character/{{ targetUser.characterID }}_128.jpg" alt="users avatar">
 						<span class="text-center">
 							<a href="javascript:void();" onclick="showInfo('{{ targetUser.characterID }}')">{{ targetUser.name }}</a>, 
+						</span>
+						<span class="text-center">
 							<a href="javascript:void();" onclick="showInfo('{{ targetUser.corporation.id }}')">{{ targetUser.corporation.name }}</a>
 						</span>
-						<span class="text-center">{{ targetUser.role.title }}</span>
-						<span class="text-center mt-3 mb-0" style="color:white">All Pilots</span>
-						<hr />
+						<table class="table table-sm mt-3">
+							<tbody>
+								<tr class="tr35">
+									<td>Role: </td>
+									<td>{{ targetUser.role.title }}</td>
+								</tr>
+								<tr class="tr35">
+									<td>Main: </td>
+									<td><a href="javascript:void();" onclick="showInfo({{ targetUser.account.pilots[0].characterID }}">{{ targetUser.account.pilots[0].name }}</a></td>
+								</tr>
+							</tbody>
+						</table>
+							<hr />
+						<span class="text-center mt-1 mb-2" style="color:white">All Pilots</span>
 						<table class="table table-sm">
 							<tbody>
 								{% for pilot in targetUser.account.pilots %}

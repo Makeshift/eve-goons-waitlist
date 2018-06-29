@@ -189,3 +189,19 @@ exports.sendAlarm = function (notifyPackage, cb) {
         cb(200);
     }
 }
+
+/*
+* Invert the nav bar state
+* @params req{}
+* @return res{status}
+*/
+exports.navbar = function(req, res){
+    if(!users.isRoleNumeric(req.user, 0)){
+        res.status(401).send("Authentication Required");
+        return;
+    }
+    
+    user.sideNav(req.user, function(cb){
+        res.status(cb).send();
+    })
+}

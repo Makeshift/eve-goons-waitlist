@@ -161,6 +161,16 @@
             $('[data-toggle="tooltip"]').tooltip()
         })
 
+        //navbar
+        function sideNav() {
+            $.ajax({
+                type: "POST",
+                url: "/internal-api/account/navbar",
+            }).fail(function(err){
+                console.log(`Error updating side bar: + ` + err);
+            });
+        }
+
         //Inform user that they don't get notifications.
         $(document).ready(function () {
             if (Notify.needsPermission && Notify.isSupported()) {
