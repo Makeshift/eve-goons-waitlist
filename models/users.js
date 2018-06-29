@@ -42,8 +42,8 @@ module.exports = function (setup) {
 						req.logout();
 						res.status(418).render("statics/banned.html");
 					} else {
-						let alliance = req.user.corporation.id || null;
-						whitelist.isAllowed(req.user, req.user.corporation.id, alliance, function(whitelisted){
+						let alliance = userData.alliance.allianceID || null;
+						whitelist.isAllowed(userData, userData.corporation.corporationID, alliance, function(whitelisted){
 							if(whitelisted){
 								next();
 							} else {
