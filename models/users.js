@@ -33,27 +33,26 @@ module.exports = function (setup) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
 						})
 					})
+					//check for ban
+					bans.checkIfBanned(req.user.characterID, function(ban) {
+						if (ban.banType == "Squad") {
+							log.warn("Logging out banned user: " + req.user.name);
+							req.logout();
+							res.status(418).render("statics/banned.html");
+						} else {
+							let alliance = userData.alliance.allianceID || null;
+							whitelist.isAllowed(userData, userData.corporation.corporationID, alliance, function(whitelisted){
+								if(whitelisted){
+									next();
+								} else {
+									log.warn("User is not whitelisted");
+									req.logout();
+									res.status(401).render("statics/notAllowed.html");
+								}
+							})
+						}
+					});
 				})
-
-				//check for ban
-				bans.checkIfBanned(req.user.characterID, function(ban) {
-					if (ban.banType == "Squad") {
-						log.warn("Logging out banned user: " + req.user.name);
-						req.logout();
-						res.status(418).render("statics/banned.html");
-					} else {
-						let alliance = userData.alliance.allianceID || null;
-						whitelist.isAllowed(userData, userData.corporation.corporationID, alliance, function(whitelisted){
-							if(whitelisted){
-								next();
-							} else {
-								log.warn("User is not whitelisted");
-								req.logout();
-								res.status(401).render("statics/notAllowed.html");
-							}
-						})
-					}
-				});
 			}
 		});
 	}
