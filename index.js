@@ -129,6 +129,12 @@ database.connect(function () {
 		next();
 	});	
 
+	//Tmp script. Remove in next pull request.
+	const migration = require('./migration.js');
+	migration.updateUserDB(function(){
+
+	})
+
 	//Configure Express webserver
 	app.listen(setup.settings.port, function listening() {
 		log.info('Express online and accepting connections');
