@@ -133,7 +133,8 @@ module.exports = function (setup) {
 				statistics: { sites: {} },
 				account: { main: true, linkedCharIDs: []},
 				refreshToken: refreshToken,
-				registrationDate: new Date()
+				registrationDate: new Date(),
+				userVersion: 2
 			}
 			db.insert(newUserTemplate, function (err, result) {
 				if (err) log.error("generateNewUser: Error for db.insert", { err, name: characterDetails.CharacterName });
