@@ -59,7 +59,7 @@ exports.createBan = function(req, res) {
                     res.status(409).redirect('/admin/bans')
                 } else {
                     req.flash("content", {"class":"success", "title":"Ban Issued", "message":req.body.pilotName+" has been banned."});
-                    res.status(302).redirect('/admin/bans');
+                    res.status(200).redirect('/admin/bans')
                 }
             });
         }).catch(function (err) {

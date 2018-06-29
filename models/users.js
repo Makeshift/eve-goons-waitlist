@@ -5,6 +5,7 @@ const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
+const whitelist = require('./whitelist.js')(setup);
 const day = 86400;//Day in seconds
 
 module.exports = function (setup) {
@@ -39,9 +40,18 @@ module.exports = function (setup) {
 					if (ban.banType == "Squad") {
 						log.warn("Logging out banned user: " + req.user.name);
 						req.logout();
-						res.status(418).render("banned.html");
+						res.status(418).render("statics/banned.html");
 					} else {
-						next();
+						let alliance = req.user.corporation.id || null;
+						whitelist.isAllowed(req.user, req.user.corporation.id, alliance, function(whitelisted){
+							if(whitelisted){
+								next();
+							} else {
+								log.warn("User is not whitelisted");
+								req.logout();
+								res.status(401).render("statics/notAllowed.html");
+							}
+						})
 					}
 				});
 			}
