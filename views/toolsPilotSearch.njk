@@ -6,37 +6,64 @@
 	</div>
 	<section class="no-padding-top no-padding-bottom">
 		<div class="container-fluid">
-			<!-- Fleet List -->
-			<div class="col-md-4">
+			<!-- Pilot Card -->
+			<div class="col-lg-4 col-md-6 col-sm-12">
 				<div class="statistic-block block">
 					<div class="progress-details align-items-end justify-content-between">
+						<!-- Avatar and Name -->
 						<img class="d-block mx-auto" src="https://image.eveonline.com/Character/{{ targetUser.characterID }}_128.jpg" alt="users avatar">
 						<span class="text-center">
-							<a href="javascript:void();" onclick="showInfo('{{ targetUser.characterID }}')">{{ targetUser.name }}</a>, 
+							<a href="javascript:void(0);" onclick="showInfo('{{ targetUser.characterID }}')">{{ targetUser.name }}</a>, 
 						</span>
 						<span class="text-center">
-							<a href="javascript:void();" onclick="showInfo('{{ targetUser.corporation.id }}')">{{ targetUser.corporation.name }}</a>
+							<a href="javascript:void(0);" onclick="showInfo('{{ targetUser.corporation.corporationID }}')">{{ targetUser.corporation.name }}</a>
 						</span>
+						<!-- End Avatar and Name -->
+						<!-- Other Info -->
 						<table class="table table-sm mt-3">
 							<tbody>
 								<tr class="tr35">
 									<td>Role: </td>
-									<td>{{ targetUser.role.title }}</td>
+									<td>
+										<span class="d-inline" id="role">{{ targetUser.role.title }}</span>
+										{% if userProfile.role.numeric > 4 %}
+										<button class="btn btn-info btn-sm mx-auto d-inline float-right" onclick="changeTitle({{ targetUser.account.pilots[0].characterID }})"><i class="fas fa-edit"></i></button>
+										{% endif %}
+									</td>
 								</tr>
 								<tr class="tr35">
 									<td>Main: </td>
-									<td><a href="javascript:void();" onclick="showInfo({{ targetUser.account.pilots[0].characterID }}">{{ targetUser.account.pilots[0].name }}</a></td>
+									<td><a href="javascript:void(0);" onclick="showInfo({{ targetUser.account.pilots[0].characterID }})">{{ targetUser.account.pilots[0].name }}</a></td>
 								</tr>
 							</tbody>
 						</table>
-							<hr />
+						<!-- End Other Info -->
+						<div class="card border-danger bg-dark my-2">
+							<div class="card-body">
+								{% if userProfile.role.numeric > 4 %}
+								<div class="row">
+									<div class="col-md-6">
+										<a class="btn btn-info btn-block" href="/admin/commanders?user={{ targetUser.characterID }}"><i class="fas fa-users"></i> Roles</a>
+									</div>
+									<div class="col-md-6">
+										<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
+									</div>
+								</div>
+								{% else %}
+								<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Pilot Skills</a>
+								{% endif %}
+							</div>
+						</div>
 						<span class="text-center mt-1 mb-2" style="color:white">All Pilots</span>
 						<table class="table table-sm">
 							<tbody>
 								{% for pilot in targetUser.account.pilots %}
 								<tr>
 									<td class="tr35"><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="pilot avatar" height="28px"></td>
-									<td><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }}">{{ pilot.name }}</a></td>
+									<td><a href="javascript:void(0);" onclick="showInfo({{ pilot.characterID }})">{{ pilot.name }}</a></td>
+									{% if userProfile.role.numeric > 4 %}
+									<td><button id="{{ pilot.characterID }}" class="btn btn-danger btn-sm" onclick="logoutUser('{{ pilot.characterID }}')"><i class="fas fa-sign-out-alt"></i></button></td>
+									{% endif %}
 								</tr>
 								{% endfor %}
 							</tbody>
@@ -47,4 +74,30 @@
 		</div>
 	</div>
 </section>
+<script>
+function logoutUser(targetID){
+	$.ajax({
+		type: "POST",
+		url: "/internal-api/" + targetID + "/logout",
+	}).done(function() {
+		$('#' + targetID).attr('disabled', 'disabled');
+	}).fail(function(err){
+		console.log("Unable to log the user out.");
+	});
+}
+
+function changeTitle(targetID){
+	var title=prompt("Enter {{ targetUser.account.pilots[0].name }}\'s new title. (Max 15 Characters)");
+	if (name!=null){
+		$.ajax({
+			type: "POST",
+			url: "/internal-api/" + targetID + "/role/" + title,
+		}).done(function() {
+			$(' #role ').text(title);
+		}).fail(function(err){
+			console.log("Unable to set their new title.");
+		});
+	}
+}
+</script>
 {%- include "./partials/footer.njk" %}

@@ -45,10 +45,6 @@ exports.settings = {
 	port: 80
 }
 
-exports.permissions = {
-	"alliances": ["Alliance 1", "Alliance 2"] //Whitelisted Alliances
-}
-
 //roleNumeric titles, use null to disable. Leave index0 as member
 exports.userPermissions =  ["Member", "Trainee", null, "Fleet Commander", "Senior FC", "Leadership"];
 
@@ -69,5 +65,4 @@ Setup your [docker environment](https://docs.docker.com/machine/get-started/)
 Create a 'data' directory in the root of the repository
 In your setup.js point mongoDbURL to `mongoDB://mongo:27017`  
 To run your image then execute: `docker-compose up`  
-To rebuild your image execute: `docker-compose build`  
-
+To rebuild your image execute: `docker-compose build`

@@ -43,6 +43,8 @@ const statsController = require('./controllers/statisticsController.js');
 	//Commander - Search for pilot
 	router.get('/commander/:pilotname/info', fc_tools_controller.pilotSearch);
 	router.post('/search', fc_tools_controller.searchForPilot);//ajax search
+	router.post('/internal-api/:pilot/logout', fc_tools_controller.logUserOut);
+	router.post('/internal-api/:pilot/role/:title', fc_tools_controller.setTitle);
 
 	//Admin - Bans Management
 	router.get('/admin/bans', admin_bans_controller.index);
@@ -70,6 +72,7 @@ const statsController = require('./controllers/statisticsController.js');
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);
 	router.post('/internal-api/account/navbar', api_controller.navbar);
+	
 	//External - APIs
 	router.get('/api/sstats/members', statsController.getMemberList);
 	router.get('/api/sstats/corporations', statsController.getCorporationList);
