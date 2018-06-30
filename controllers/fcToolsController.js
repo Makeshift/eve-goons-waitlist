@@ -1,6 +1,7 @@
 var fs = require('fs');
 var esi = require('eve-swagger');
 var setup = require('../setup.js');
+var user = require('../models/user.js')(setup);
 var users = require('../models/users.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../models/wlog.js');
@@ -164,4 +165,37 @@ exports.waitlistLog = function(req, res) {
         var sideBarSelected = 6;
         res.render('waitlistLogs.njk', {userProfile, sideBarSelected, logData});
     });
+}
+
+
+/*
+* Sets a logout flag.
+* @params req{}
+* @return res{status}
+*/
+exports.logUserOut = function(req, res){
+    if(!users.isRoleNumeric(req.user, 5)){
+        res.status(401).send("Authentication Required");
+        return;
+    }
+
+    user.logOut(req.params.pilot, req.user, function(cb){
+        res.status(cb).send();
+    })
+}
+
+/*
+* Sets the users new title.
+* @params req{}
+* @return res{status}
+*/
+exports.setTitle = function(req, res){
+    if(!users.isRoleNumeric(req.user, 5)){
+        res.status(401).send("Authentication Required");
+        return;
+    }
+
+    user.setTitle(req.params.pilot, req.params.title, function(cb){
+        res.status(cb).send();
+    })
 }

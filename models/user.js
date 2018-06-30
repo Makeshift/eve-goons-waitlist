@@ -124,6 +124,37 @@ module.exports = function() {
 			}
 		})
 	}
-    
+
+	/*
+	* Sets a flag that will log the user out on the next HTTP request
+	* @params user{}
+	* @retunr status
+	*/
+	module.logOut = function(targetID, user, cb){
+		db.updateOne({characterID: Number(targetID)},{$set: {"logout": user.name}}, function (err, result) {
+			if(!err){
+				cb(200);
+			} else {
+				log.error("user.logOut - ", {target: targetID, admin: user.name, err});
+				cb(400);
+			}
+		})
+	}
+	
+	/*
+	* Sets a new title for the user
+	* @params user{}
+	* @retunr status
+	*/
+	module.setTitle = function(targetID, title, cb){
+		db.updateOne({characterID: Number(targetID)},{$set: {"role.title": title}}, function (err, result) {
+			if(!err){
+				cb(200);
+			} else {
+				log.error("user.setTitle - ", {target: targetID, err});
+				cb(400);
+			}
+		})
+	}
     return module;
 }
