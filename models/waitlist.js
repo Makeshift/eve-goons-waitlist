@@ -111,18 +111,23 @@ module.exports = function (setup) {
 
     module.checkCharsOnWaitlist = function(pilotArray, cb){
         var pilots = [];
-        for(let p = 0; p < pilotArray.length; p++){
-            module.isUserPresent(pilotArray[p].characterID, function(onWaitlist){
-                pilots.push({
-                    "characterID": pilotArray[p].characterID,
-                    "name": pilotArray[p].name,
-                    "onWaitlist": onWaitlist
+        try{
+            for(let p = 0; p < pilotArray.length; p++){
+                module.isUserPresent(pilotArray[p].characterID, function(onWaitlist){
+                    pilots.push({
+                        "characterID": pilotArray[p].characterID,
+                        "name": pilotArray[p].name,
+                        "onWaitlist": onWaitlist
+                    })
+                    
+                    if(pilots.length == pilotArray.length) cb(pilots);
                 })
                 
-                if(pilots.length == pilotArray.length) cb(pilots);
-            })
-            
+            }
+        } catch(err){
+            cb(null)
         }
+
     }
 
     return module;

@@ -28,9 +28,7 @@ exports.index = function(req, res){
             }
             
             waitlistN.getQueue(req.user.waitlistMain.characterID, function(queueInfo) {
-                waitlistN.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {
-                    console.log(charsOnWl)
-                    
+                waitlistN.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
                     var userProfile = req.user;
                     var sideBarSelected = 1;
                     res.render('waitlist.njk', {userProfile, sideBarSelected, banner, fleets, fleetCount, charsOnWl, queueInfo});
