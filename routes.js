@@ -27,6 +27,7 @@ const waitlistController = require('./controllers/waitlistController.js');
 
 	//Pilot Settings
 	router.get('/my-settings', pilot_settings_controller.index);
+	router.post('/my-settings/jabber', pilot_settings_controller.jabber);
 
 	//Commander - Fleets (List and Register)
 	router.get('/commander', commander_controller.index);

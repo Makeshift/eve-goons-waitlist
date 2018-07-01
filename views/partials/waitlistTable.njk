@@ -24,6 +24,7 @@
 			<div class="dropdown-menu" role="menu">
 				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/profile">View Pilot Profile</a>
 				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
+				<a class="dropdown-item" href="xmpp:{{ user.contact.xmpp }}@goonfleet.com">Jabber PM</a>
 			</div>
 		</div>
 	</td>

@@ -10,28 +10,27 @@
 	<section class="no-padding-top no-padding-bottom">
 		<div class="container-fluid">
 			<!-- Fleet List -->
-			<div class="col-md-4">
+			<div class="col-md-4 col-sm-6">
 				<div class="statistic-block block">
 					<div class="progress-details align-items-end justify-content-between">
 						<img class="d-block mx-auto mb-2" src="https://image.eveonline.com/Character/{{ userProfile.account.pilots[0].characterID }}_128.jpg" alt="{{ userProfile.account.pilots[0].name }}">
 						<h5 style="text-align:center">Hi {{ userProfile.account.pilots[0].name }}</h5>
 					<!-- Settings -->
 					<hr />
-					<form>
-						<div class="form-row align-items-center">
-							<div class="col-12">
-								<i class="fas fa-info-circle" data-toggle="tooltip" title="Your jabber name without @goonfleet.com"></i>
+					<div class="form-row align-items-center">
+						<div class="col-12">
+							<form id="updateJabber"><span class="d-inline" data-toggle="tooltip" title="Your jabber name without the @goonfleet.com"><i class="fas fa-info-circle"></i></span>
 								<label for="xmppName">Jabber Name</label>
 								<div class="input-group">
-									<input type="text" class="form-control" id="xmppName" placeholder="samuel_the_terrible" disabled/>
+									<input type="text" class="form-control" id="xmppName" placeholder="auth_username" value="{{ userProfile.settings.xmpp }}"/>
 									<div class="input-group-append">
-										<button class="btn btn-success" type="submit" disabled>Go!</button>
+										<button class="btn btn-success" type="submit" onclick="updateJabber()" style="border-bottom-left-radius:0px;border-top-left-radius:0px;"><i class="fas fa-check-circle"></i></button>
 									</div>
 								</div>
-								<p class="form-text text-muted">Optional: Allows our FCs to find you on Jabber.</p>
-							</div>
+								<p id="jabberStatus" class="form-text  font-italic">Optional, but awesome.</p>
+							</form>
 						</div>
-					</form>
+					</div>
 					<!-- Alts -->
 					<hr />
 					<button class="btn btn-success btn-sm d-block mb-3 mx-auto" data-toggle="modal" data-target="#addAlt"><i class="fas fa-user-plus"></i> Add an Alt</button>
@@ -77,4 +76,26 @@
 		</div>
 	</div>
 </div>
+<script>
+	$("#updateJabber").submit(function(e){
+		e.preventDefault();
+	});
+	function updateJabber(){
+		var dataString = 'authName='+ $("#xmppName").val();
+		$.ajax({
+			type: "POST",
+			url: "/my-settings/jabber",
+			data: dataString,
+			statusCode: {
+				200: function(data) {
+					$("#jabberStatus").empty().append('<i class="fas fa-check"></i> Thanks!').css({ 'color': '#2b8a39', 'font-size': '90%' });
+
+				}
+			}
+		}).fail(function(err){
+			$("#jabberStatus").empty().append('<i class="fas fa-times"></i> Something went wrong!').css({ 'color': '#E7002E', 'font-size': '90%' });
+			console.log(err)
+		});
+	}
+</script>
 {%- include "./partials/footer.njk" %}

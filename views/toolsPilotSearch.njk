@@ -42,15 +42,23 @@
 							<div class="card-body">
 								{% if userProfile.role.numeric > 4 %}
 								<div class="row">
-									<div class="col-md-6">
-										<a class="btn btn-info btn-block" href="/admin/commanders?user={{ targetUser.characterID }}"><i class="fas fa-users"></i> Roles</a>
+									<div class="col-md-4 col-sm-4 px-1">
+										<a class="btn btn-info btn-block  mb-1" href="/admin/commanders?user={{ targetUser.characterID }}"><i class="fas fa-users"></i> Roles</a>
 									</div>
-									<div class="col-md-6">
-										<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
+									<div class="col-md-4 col-sm-4 px-1">
+										<a class="btn btn-info btn-block  mb-1" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
 									</div>
+									<div class="col-md-4 col-sm-4 px-1">
+										<a class="btn btn-info btn-block  mb-1 {{ '' if targetUser.settings.xmpp else 'disabled'}}" href="xmpp:{{ targetUser.settings.xmpp }}@goonfleet.com"><i class="fas fa-comments"></i> Jabber</a>
+									</div>									
 								</div>
 								{% else %}
-								<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Pilot Skills</a>
+								<div class="col-md-6 col-sm-6 px-1">
+									<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
+								</div>
+								<div class="col-md-6 col-sm-6 px-1">
+									<a class="btn btn-info btn-block  mb-1 {{ '' if targetUser.settings.xmpp else 'disabled'}}" href="xmpp:{{ targetUser.settings.xmpp }}@goonfleet.com"><i class="fas fa-comments"></i> Jabber</a>
+								</div>
 								{% endif %}
 							</div>
 						</div>
