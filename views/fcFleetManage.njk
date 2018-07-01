@@ -123,7 +123,8 @@
 				<ul class="nav nav-pills nav-justified">
 					<li class="nav-item">
 						<a role="tab" data-toggle="pill" href="#waitlist" class="nav-link active">
-							<div id="fleetWaitlistCount" class="badge badge-dark">{{ usersOnWaitlist.length }}</div>
+							<div id="fleetWaitlistCount" class="badge badge-dark strike">1</div> // 
+							<div id="fleetWaitlistCount" class="badge badge-dark strike">2</div>
 							Fleet Waitlist
 						</a>
 					</li>
@@ -153,7 +154,7 @@
 							</thead>
 							<tbody>
 								{% for user in usersOnWaitlist %}
-								{% if user.alt == false %}
+								{% if user.waitlistMain.characterID == user.characterID %}
 								{% include "./partials/waitlistTable.njk" %}
 								{% endif %}
 								{% endfor %}
@@ -178,7 +179,7 @@
 							</thead>
 							<tbody>
 								{% for user in usersOnWaitlist %}
-								{% if user.alt != false %}
+								{% if user.waitlistMain.characterID != user.characterID %}
 								{% include "./partials/waitlistTable.njk" %}
 								{% endif %}
 								{% endfor %}                      

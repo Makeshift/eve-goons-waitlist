@@ -70,7 +70,7 @@ exports.searchForPilot = function(req, res){
                     res.status(400).send("Pilot is not registered");
                     return;
                 }
-                res.status(200).send({"name": user.name, "url": "/commander/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/info"});
+                res.status(200).send({"name": user.name, "url": "/commander/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/profile"});
             })
             
         })

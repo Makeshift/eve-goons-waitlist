@@ -48,7 +48,7 @@ const waitlistController = require('./controllers/waitlistController.js');
 	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
 	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
 	//Commander - Search for pilot
-	router.get('/commander/:pilotname/info', fc_tools_controller.pilotSearch);
+	router.get('/commander/:pilotname/profile', fc_tools_controller.pilotSearch);
 	router.post('/search', fc_tools_controller.searchForPilot);//ajax search
 	router.post('/internal-api/:pilot/logout', fc_tools_controller.logUserOut);
 	router.post('/internal-api/:pilot/role/:title', fc_tools_controller.setTitle);

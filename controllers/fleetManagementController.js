@@ -14,13 +14,13 @@ exports.index = function(req, res) {
                 waitlist.get(function(usersOnWaitlist) {
                     //Display the wait time in a nice format.
                     for(var i = 0; i < usersOnWaitlist.length; i++) {
-                        var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signupTime)/1000/60);
+                        var signuptime = Math.floor((Date.now() - usersOnWaitlist[i].signup)/1000/60);
                         var signupHours = 0;
                         while (signuptime > 59) {
                             signuptime -= 60;
                             signupHours++;
                         }
-                        usersOnWaitlist[i].signupTime = signupHours +'H '+signuptime+'M';                
+                        usersOnWaitlist[i].signup = signupHours +'H '+signuptime+'M';                
                     }
                     var userProfile = req.user;
                     var comms = setup.fleet.comms;

@@ -1,10 +1,19 @@
 <tr id="row-{{ user._id }}" class="{{ user.invited }}">
 	<td>
-		<img src="https://image.eveonline.com/Character/{{ user.user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
+		<img src="https://image.eveonline.com/Character/{{ user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
 	</td>
 	<td>
-		<a href="javascript:void(0);" onclick="showInfo({{ user.user.characterID }})">{{ user.user.name }}</a>
-		<p id="{{ user.user.characterID }}-status"></p>
+		<span>
+			<a href="javascript:void(0);" onclick="showInfo({{ user.characterID }})">{{ user.name }}</a>
+		</span>
+		<span id="{{ user.characterID }}-status">
+			{% if user.waitlistMain.characterID == user.characterID %}
+			{{ "Newbee" if user.newbee }}
+			{% else %}
+			// Caitlin Viliana
+			{% endif %}
+		</span>
+		
 	</td>
 	<td>
 		<button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
@@ -13,8 +22,8 @@
 		<div class="dropdown">
 			<button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
 			<div class="dropdown-menu" role="menu">
-				<a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/info">View Pilot Profile</a>
-				<a class="dropdown-item" href="/commander/{{ user.user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
+				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/profile">View Pilot Profile</a>
+				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
 			</div>
 		</div>
 	</td>
@@ -26,9 +35,9 @@
 	</td>
 	<td>
 		<a href="#">
-			<!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.ship }}
+			<!--<img src="https://image.eveonline.com/Render/17740_32.png" title="Machariel" alt="Machariel">-->{{ user.fits }}
 		</a>
 	</td>
-	<td><a href="javascript:void(0);" onclick="setWaypoint({{ user.user.location.id }})">{{ user.user.location.name }}</a></td>
-	<td>{{ user.signupTime }}</td>
+	<td><a href="javascript:void(0);" onclick="setWaypoint({{ user.location.id }})">{{ user.location.name }}</a></td>
+	<td>{{ user.signup }}</td>
 </tr>
