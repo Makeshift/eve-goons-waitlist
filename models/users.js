@@ -28,6 +28,8 @@ module.exports = function (setup) {
 					module.getAlts(mainUserData.characterID, function(pilotArray){
 						userData.role = mainUserData.role;
 						userData.account.pilots = pilotArray;
+						userData.settings = mainUserData.settings;
+						userData.waitlistMain = mainUserData.waitlistMain;
 						req.session.passport.user = userData;
 						req.session.save(function (err) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });

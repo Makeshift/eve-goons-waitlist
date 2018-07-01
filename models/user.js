@@ -6,37 +6,50 @@ const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
 
 module.exports = function() {
-    /*
+	/*
+	* Return a location object {systemID, name} using ESI and cache
+    * @params: {user}
+    * @return: location{system_id, system_name}
+    */
+    module.getLocation = function (user, cb) {
+		module.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
+				cache.get(locationResult.solar_system_id, null, function(systemObject){
+					var location = {
+						systemID: systemObject.id,
+						name: systemObject.name,
+					}
+					cb(location);
+				})
+			}).catch(function(err) {
+				log.error("user.getLocation: Error GET /characters/{character_id}/location/", {pilot: user.name, err});
+				cb({id: 0, name: "unknown", lastcheck: Date.now()});
+			})
+		}) 
+	}
+	
+	/*
     * @params: {user}
     * @return: location{system_id, system_name}
     * @todo: Use the cache for the systems 
     */
-    module.getLocation = function (user, cb) {
-		log.warn("user.getLocation - 503 disabled");
-		log.info("Casues error becasue we don't keep the users refresh token in the waitlist or fleet object anymore.")
-		cb({systemID: 0, name: "unknown", lastcheck: Date.now()})
-		/*
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-            if (err) {
-                log.error("user.getLocation: Error for requestNewAccessToken", { err, user });
-                cb(400, err);
-            } else {
-                module.updateRefreshToken(user.characterID, newRefreshToken);
-                esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-                    cache.get(locationResult.solar_system_id, null, function(systemObject){
-                        var location = {
-                            systemID: systemObject.system_id,
-                            name: systemObject.name,
-                        }
-                        cb(location);
-                    })
-                }).catch(function(err) {
-                    log.error("user.getLocation: Error GET /characters/{character_id}/location/", {err, user});
-                    cb({id: 0, name: "unknown", lastcheck: Date.now()});
-                })
-            }
-        })	*/	
-    }
+	module.getRefreshToken = function(characterID, tokenCallback, err){
+		db.findOne({characterID: characterID}, function(err, doc){
+			//console.log(doc.refreshToken)
+			refresh.requestNewAccessToken('provider', doc.refreshToken, function(err, accessToken, newRefreshToken){
+				if(err){
+					log.error("user.getRefreshToken - requestNewAccessToken: ");
+					err(err);
+					return;
+				}
+
+				db.updateOne({ 'characterID': characterID }, { $set: { refreshToken: newRefreshToken } }, function (err) {
+					if (err) log.error("user.getRefreshToken: Error for updateOne", { err, 'characterID': characterID });
+					tokenCallback(accessToken);
+				})
+			})
+		})
+	}
 
     /*
     * @params: {user}, system_id, system_name
@@ -107,6 +120,7 @@ module.exports = function() {
     * @return: void
     */
     module.updateRefreshToken = function (userID, refreshToken) {
+		debug.warn("user.updateRefreshToken - 299 replaced by getRefreshToken");
 		db.updateOne({ 'characterID': userID }, { $set: { refreshToken: refreshToken } }, function (err, result) {
 			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': userID });
 		})
