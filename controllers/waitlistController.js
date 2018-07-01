@@ -25,8 +25,8 @@ exports.index = function(req, res){
             for (var i = 0; i < fleets.length; i++) {
                 if (fleets[i].status !== "Not Listed") fleetCount++;
             }
-            
-            waitlist.getQueue(req.user.waitlistMain.characterID || 0, function(queueInfo) {
+
+            waitlist.getQueue((req.user.waitlistMain == "undefined")? req.user.waitlistMain.characterID : 0, function(queueInfo) {
                 waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
                     var userProfile = req.user;
                     var sideBarSelected = 1;
