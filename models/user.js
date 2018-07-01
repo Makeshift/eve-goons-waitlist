@@ -12,7 +12,11 @@ module.exports = function() {
     * @todo: Use the cache for the systems 
     */
     module.getLocation = function (user, cb) {
-        refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
+		log.warn("user.getLocation - 503 disabled");
+		log.info("Casues error becasue we don't keep the users refresh token in the waitlist or fleet object anymore.")
+		cb({systemID: 0, name: "unknown", lastcheck: Date.now()})
+		/*
+		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
             if (err) {
                 log.error("user.getLocation: Error for requestNewAccessToken", { err, user });
                 cb(400, err);
@@ -21,7 +25,7 @@ module.exports = function() {
                 esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
                     cache.get(locationResult.solar_system_id, null, function(systemObject){
                         var location = {
-                            id: systemObject.system_id,
+                            systemID: systemObject.system_id,
                             name: systemObject.name,
                         }
                         cb(location);
@@ -31,7 +35,7 @@ module.exports = function() {
                     cb({id: 0, name: "unknown", lastcheck: Date.now()});
                 })
             }
-        })		
+        })	*/	
     }
 
     /*
@@ -156,5 +160,22 @@ module.exports = function() {
 			}
 		})
 	}
+
+	/*
+	* Sets the users waitlist main. Should auto clear by downtime
+	* @params characterID (int)
+	* @return null || err
+	*/
+	module.setWaitlistMain = function(characterID, waitlistMain, cb){
+		db.updateOne({characterID: Number(characterID)}, {$set: {waitlistMain: waitlistMain}}, function (err) {
+			if(!err){
+				cb(null);
+			} else {
+				log.error("user.setWaitlistMain - ", {"user ID": characterID, err});
+				cb(err);
+			}
+		})
+	}
+
     return module;
 }

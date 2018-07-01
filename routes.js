@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pages_controller = require('./controllers/pagesController.js');
+const pages_controller = require('./controllers/pagesController.js');//Being replaced by PagesController
 const commander_controller = require('./controllers/commanderController.js');
 const fleet_management_controller = require('./controllers/fleetManagementController.js');
 const admin_bans_controller = require('./controllers/adminBansController.js');
@@ -10,13 +10,18 @@ const api_controller = require('./controllers/apiController.js');
 const pilot_settings_controller = require('./controllers/pilotSettingsController.js');
 const fc_tools_controller = require('./controllers/fcToolsController.js');
 const statsController = require('./controllers/statisticsController.js');
+const waitlistController = require('./controllers/waitlistController.js');//Replacing PagesController
 
 	//Index pages & user waitlist functions
-	router.get('/', pages_controller.index);
-	router.post('/', pages_controller.joinWaitlist);
-	router.get('/remove', pages_controller.removeSelf);
+	router.get('/', waitlistController.index);
+	router.get('/remove', pages_controller.removeSelf);//Deprecated -- not yet replaced
 	router.get('/logout', pages_controller.logout);
 	router.get('/squad-statistics', statsController.index);
+
+	//Waitlist Routes
+	router.post('/join/:type', waitlistController.signup);
+	router.delete('/remove/:type/:characterID', waitlistController.remove)
+
 
 	//Pilot Settings
 	router.get('/my-settings', pilot_settings_controller.index);
