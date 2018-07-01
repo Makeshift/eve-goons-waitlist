@@ -13,6 +13,11 @@ module.exports = function() {
     */
     module.getLocation = function (user, cb) {
 		module.getRefreshToken(user.characterID, function(accessToken){
+			if(!!!accessToken){
+				log.warn("user.getLocation: Could not get an accessToken", {pilot: user.name})
+				cb({id: 0, name: "unknown", lastcheck: Date.now()});
+				return;
+			}
 			esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
 				cache.get(locationResult.solar_system_id, null, function(systemObject){
 					var location = {
@@ -33,21 +38,21 @@ module.exports = function() {
     * @return: location{system_id, system_name}
     * @todo: Use the cache for the systems 
     */
-	module.getRefreshToken = function(characterID, tokenCallback, err){
+	module.getRefreshToken = function(characterID, tokenCallback){
 		db.findOne({characterID: characterID}, function(err, doc){
-			//console.log(doc.refreshToken)
-			refresh.requestNewAccessToken('provider', doc.refreshToken, function(err, accessToken, newRefreshToken){
-				if(err){
-					log.error("user.getRefreshToken - requestNewAccessToken: ");
-					err(err);
+			refresh.requestNewAccessToken('provider', doc.refreshToken, function(error, accessToken, newRefreshToken){
+				if(error){
+					log.error("user.getRefreshToken - requestNewAccessToken: ", {pilot: characterID, error});
+					tokenCallback(null);
 					return;
 				}
 
-				db.updateOne({ 'characterID': characterID }, { $set: { refreshToken: newRefreshToken } }, function (err) {
+				db.updateOne({ 'characterID': characterID }, { $set: { refreshToken: newRefreshToken } }, function (err, result) {
 					if (err) log.error("user.getRefreshToken: Error for updateOne", { err, 'characterID': characterID });
 					tokenCallback(accessToken);
+					return;
 				})
-			})
+			});
 		})
 	}
 
@@ -58,15 +63,13 @@ module.exports = function() {
 	module.setDestination = function(user, systemID, cb) {
 		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
 			if (err) {
-				log.error("user.setDestination: Error for requestNewAccessToken", { err, user });
+				log.error("user.setDestination: Error for requestNewAccessToken", { pilot: user.name, err });
 				cb(err);
+				return;
 			} else {
 				log.debug("Setting "+user.name+"\'s destination to "+systemID);
 				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
 					cb("OK");
-				}).catch(err => {
-					log.error("user.setDestination: ", { err });
-					cb(err);
 				});
 			}
 		})
@@ -120,7 +123,7 @@ module.exports = function() {
     * @return: void
     */
     module.updateRefreshToken = function (userID, refreshToken) {
-		debug.warn("user.updateRefreshToken - 299 replaced by getRefreshToken");
+		log.warn("user.updateRefreshToken - 299 replaced by getRefreshToken");
 		db.updateOne({ 'characterID': userID }, { $set: { refreshToken: refreshToken } }, function (err, result) {
 			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': userID });
 		})

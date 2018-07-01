@@ -80,7 +80,12 @@ module.exports = function (setup) {
 
 	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
 	module.findOrCreateUser = function (users, refreshToken, characterDetails, cb) {
-		//Check if the user exists
+		//Update the users refresh token
+		if(refreshToken){
+			db.updateOne({characterID: characterDetails.CharacterID}, {$set: {refreshToken: refreshToken}}, function(err, result){
+				console.info("users.findOrCreateUser: Updating refreshToken for " + characterDetails.CharacterName);
+			})
+		}//Check if the user exists
 		module.findAndReturnUser(characterDetails.CharacterID, function (userProfile) {
 			//We found the user, return it back to the callback
 			if (userProfile) {
