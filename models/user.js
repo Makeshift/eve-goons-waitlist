@@ -136,7 +136,8 @@ module.exports = function() {
 	* @retunr status
 	*/
 	module.sideNav = function(user, cb){
-		db.updateOne({characterID: user.characterID},{$set: {"settings.smSideNav": !user.settings.smSideNav}}, function (err, result) {
+		//Update the main account so that the settings propagate down
+		db.updateOne({characterID: (user.account.main)?user.characterID : user.account.mainID},{$set: {"settings.smSideNav": !user.settings.smSideNav}}, function (err, result) {
 			if(!err){
 				cb(200);
 			} else {

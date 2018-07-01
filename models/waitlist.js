@@ -109,6 +109,11 @@ module.exports = function (setup) {
         })
     }
 
+    /*
+    * Returns an array of a users pilots
+    * @param [ {characterID, name} ]
+    * @return [ {characterID, name, onwaitlist(bool) }]
+    */
     module.checkCharsOnWaitlist = function(pilotArray, cb){
         var pilots = [];
         try{
