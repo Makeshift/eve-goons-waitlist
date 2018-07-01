@@ -116,12 +116,9 @@ module.exports = function (setup) {
 			}
 			waitlist.get(function (onWaitlist) {
 				for (var i = 0; i < onWaitlist.length; i++) {
-					var charID = onWaitlist[i].user.characterID;
-					var charName = onWaitlist[i].user.name;
-					if (onWaitlist[i].alt) {
-						charID = onWaitlist[i].alt.id;
-						charName = onWaitlist[i].alt.name;
-					}
+					var charID = onWaitlist[i].characterID;
+					var charName = onWaitlist[i].name;
+
 					if (members.includes(charID)) {
 						wlog.systemRemoved(charID);
 						waitlist.remove(onWaitlist[i]._id, function(){});
