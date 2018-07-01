@@ -10,7 +10,7 @@
 			{% if user.waitlistMain.characterID == user.characterID %}
 			{{ "Newbee" if user.newbee }}
 			{% else %}
-			// Caitlin Viliana
+			// <a href="javascript:void(0);" onclick="showInfo({{ user.waitlistMain.characterID }})">{{ user.waitlistMain.name }}</a>
 			{% endif %}
 		</span>
 		

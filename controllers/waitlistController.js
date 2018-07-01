@@ -4,8 +4,7 @@ const banner = require('../models/waitlistBanner.js')(setup);
 const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
-const waitlist = require('../models/globalWaitlist.js')(setup);
-const waitlistN = require('../models/waitlist.js')(setup);
+const waitlist = require('../models/waitlist.js')(setup);
 const log = require('../logger.js')(module);
 const wlog = require('../models/wlog');
 
@@ -27,8 +26,8 @@ exports.index = function(req, res){
                 if (fleets[i].status !== "Not Listed") fleetCount++;
             }
             
-            waitlistN.getQueue(req.user.waitlistMain.characterID, function(queueInfo) {
-                waitlistN.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
+            waitlist.getQueue(req.user.waitlistMain.characterID || 0, function(queueInfo) {
+                waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
                     var userProfile = req.user;
                     var sideBarSelected = 1;
                     res.render('waitlist.njk', {userProfile, sideBarSelected, banner, fleets, fleetCount, charsOnWl, queueInfo});
@@ -68,7 +67,7 @@ exports.signup = function(req, res){
             "pingTarget": req.user.characterID
         }
         
-        waitlistN.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
+        waitlist.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
             req.flash("content", {"class": result.class, "title": result.title, "message": result.message});
             res.redirect(`/`);
         });
@@ -81,7 +80,7 @@ exports.remove = function(req, res){
         return;
     }
 
-    waitlistN.remove(req.params.type, req.params.characterID, function(result){
+    waitlist.remove(req.params.type, req.params.characterID, function(result){
         res.status(200).send();
     })
 }
