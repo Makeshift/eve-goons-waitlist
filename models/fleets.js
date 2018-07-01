@@ -26,13 +26,7 @@ module.exports = function (setup) {
 	}
 
 	module.getMembers = function (characterID, refreshToken, fleetid, fullDoc, cb) {
-		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("fleets.getMembers: Error for requestNewAccessToken", { err, characterID });
-				// TODO: is it good to throw?
-				throw err;
-			}
-			user.updateRefreshToken(characterID, newRefreshToken);
+		user.getRefreshToken(characterID, function(accessToken){
 			esi.characters(characterID, accessToken).fleet(fleetid).members().then(function (members) {
 				cb(members, fleetid, fullDoc)
 			}).catch(function (err) {
@@ -41,24 +35,18 @@ module.exports = function (setup) {
 					cb(null, fleetid, fullDoc);
 				}
 			})
-		});
+		})
 	}
 
 
 	module.invite = function (fcid, refreshToken, fleetid, inviteeid, cb) {
-		refresh.requestNewAccessToken('provider', refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("fleets.invite: Error for requestNewAccessToken", { err, fleetid, inviteeid });
-				cb(400, err);
-			} else {
-				user.updateRefreshToken(fcid, newRefreshToken);
-				esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member"}).then(result => {
-					cb(200, "OK");
-				  }).catch(error => {
-					cb(400, error.message);
-				  });
-			  }
-		})
+		user.getRefreshToken(fcid, function(accessToken){
+			esi.characters(fcid, accessToken).fleet(fleetid).invite({ "character_id": inviteeid, "role": "squad_member"}).then(result => {
+				cb(200, "OK");
+			}).catch(error => {
+				cb(400, error.message);
+			});
+		})	
 	}
 
 	module.register = function (data, cb) {

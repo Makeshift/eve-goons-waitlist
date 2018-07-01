@@ -61,18 +61,11 @@ module.exports = function() {
     * @return: cb(status)
     */
 	module.setDestination = function(user, systemID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.setDestination: Error for requestNewAccessToken", { pilot: user.name, err });
-				cb(err);
-				return;
-			} else {
-				log.debug("Setting "+user.name+"\'s destination to "+systemID);
-				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
-					cb("OK");
-				});
-			}
-		})
+		module.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
+				cb("OK");
+			});
+		})	
     }
     
     /*
@@ -80,20 +73,13 @@ module.exports = function() {
     * @return: cb(status)
     */
 	module.showInfo = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.showInfo: Error for requestNewAccessToken", { err, user });
+		module.getRefreshToken(user.characterID, function(accessToken){	
+			esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
+				cb("OK");
+			}).catch(err => {
+				log.error("user.showInfo: ", { err });
 				cb(err)
-			} else {
-				log.debug("Opening "+targetID+"\'s information window for "+user.name)
-				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("user.showInfo: ", { err });
-					cb(err)
-				});
-				
-			}
+			});
 		})
 	}
 
@@ -102,33 +88,15 @@ module.exports = function() {
     * @return: cb(status)
     */
 	module.openMarketWindow = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.openMarketWindow: Error for requestNewAccessToken", { err, user });
+		module.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
+				cb("OK");
+			}).catch(err => {
+				log.error("user.openMarketWindow: ", { err });
 				cb(err)
-			} else {
-				log.debug("Opening the regional market for typeID: "+targetID+" for: "+user.name)
-				esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("user.openMarketWindow: ", { err });
-					cb(err)
-				});			
-			}
+			});	
 		})
-	}
-
-    /*
-    * @params: userID, refreshToken
-    * @return: void
-    */
-    module.updateRefreshToken = function (userID, refreshToken) {
-		log.warn("user.updateRefreshToken - 299 replaced by getRefreshToken");
-		db.updateOne({ 'characterID': userID }, { $set: { refreshToken: refreshToken } }, function (err, result) {
-			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': userID });
-		})
-	}
-	
+	}	
 
 	/*
 	* Invert the sideBar setting

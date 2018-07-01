@@ -35,7 +35,7 @@
 									<td class="d-lg-block d-md-none d-sm-none"><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a>
 									<td>{{ fleet.type }}</td>
 									<td class="d-lg-block d-md-none d-sm-none">{{ fleet.status }}</td>
-									<td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.location.id }})">{{ fleet.location.name }}</a></td>
+									<td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.location.systemID }})">{{ fleet.location.name }}</a></td>
 									<td>{{ fleet.members.length }}</td>
 									<td><a href="/commander/{{ fleet.id }}"><button class="btn btn-sm btn-info"><i class="fa fa-binoculars"></i></button></a></td>
 								</tr>

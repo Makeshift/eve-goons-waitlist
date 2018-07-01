@@ -5,6 +5,7 @@ const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
+const userO = require('./user.js')(setup);
 const whitelist = require('./whitelist.js')(setup);
 const day = 86400;//Day in seconds
 
@@ -295,64 +296,59 @@ module.exports = function (setup) {
 	//Calculates the skills table for a pilot and passes it back to the controler so it can render in the view.
 	//TODO: Skill System: move out of this file and make it clean check issue: 120
 	module.checkSkills = function(user, skillsPackage, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("users.checkSkills: Error for requestNewAccessToken", { err, user });
-				cb(err)
-			} else {
-				esi.characters(user.characterID, accessToken).skills().then(result => {
-					//Create ESI Skills Array
-					var esiSkills = [];
-					for(var i = 0; i < result.skills.length; i++) {
-						esiSkills[result.skills[i].skill_id] = result.skills[i];
+		userO.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).skills().then(result => {
+				//Create ESI Skills Array
+				var esiSkills = [];
+				for(var i = 0; i < result.skills.length; i++) {
+					esiSkills[result.skills[i].skill_id] = result.skills[i];
+				}
+				
+				//Calc General Skills
+				skillsPackage.generalSkills.txtclass = "text-success";
+				skillsPackage.generalSkills.txticon = `<i class="fa fa-check-circle"></i>`;
+				var cSkillSet = skillsPackage.generalSkills;				
+				for(var i = 0; i < cSkillSet.length; i++) {
+					cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
+					//did skill fail?
+					if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
+						cSkillSet[i].class = "skills-failed";
+						//Set Menu Fail Indicator
+						skillsPackage.generalSkills.txtclass = "text-danger";
+						skillsPackage.generalSkills.txticon = `<i class="fa fa-times-circle"></i>`;
+					} else {
+						cSkillSet[i].class = "skills-pass";
 					}
-					
-					//Calc General Skills
-					skillsPackage.generalSkills.txtclass = "text-success";
-					skillsPackage.generalSkills.txticon = `<i class="fa fa-check-circle"></i>`;
-					var cSkillSet = skillsPackage.generalSkills;				
+				}
+				skillsPackage.generalSkills = cSkillSet;
+
+
+				//skill categories
+				for(var c = 0; c < skillsPackage.categories.length; c++) {
+					skillsPackage.categories[c].txtclass = "text-success";
+					skillsPackage.categories[c].txticon = `<i class="fa fa-check-circle"></i>`;
+					var cSkillSet = skillsPackage.categories[c].Skills;			
 					for(var i = 0; i < cSkillSet.length; i++) {
 						cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
 						//did skill fail?
 						if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
 							cSkillSet[i].class = "skills-failed";
-							//Set Menu Fail Indicator
-							skillsPackage.generalSkills.txtclass = "text-danger";
-							skillsPackage.generalSkills.txticon = `<i class="fa fa-times-circle"></i>`;
+							skillsPackage.categories[c].txtclass = "text-danger";
+							skillsPackage.categories[c].txticon = `<i class="fa fa-times-circle"></i>`;
 						} else {
 							cSkillSet[i].class = "skills-pass";
 						}
+						
 					}
-					skillsPackage.generalSkills = cSkillSet;
-
-
-					//skill categories
-					for(var c = 0; c < skillsPackage.categories.length; c++) {
-						skillsPackage.categories[c].txtclass = "text-success";
-						skillsPackage.categories[c].txticon = `<i class="fa fa-check-circle"></i>`;
-						var cSkillSet = skillsPackage.categories[c].Skills;			
-						for(var i = 0; i < cSkillSet.length; i++) {
-							cSkillSet[i].actual = (esiSkills[cSkillSet[i].id])? esiSkills[cSkillSet[i].id].current_skill_level : 0;
-							//did skill fail?
-							if(cSkillSet[i].actual < cSkillSet[i].required && cSkillSet[i].failable == true) {
-								cSkillSet[i].class = "skills-failed";
-								skillsPackage.categories[c].txtclass = "text-danger";
-								skillsPackage.categories[c].txticon = `<i class="fa fa-times-circle"></i>`;
-							} else {
-								cSkillSet[i].class = "skills-pass";
-							}
-							
-						}
-						skillsPackage.categories[c].Skills = cSkillSet;
-					}			
-					//Return the skills package for the view
-					skillsPackage.totalSP = result.total_sp;
-					cb(skillsPackage);
-				}).catch(err => {
-					log.error("users.checkSkills: ", { err });
-					cb(err)
-				});			
-			}
+					skillsPackage.categories[c].Skills = cSkillSet;
+				}			
+				//Return the skills package for the view
+				skillsPackage.totalSP = result.total_sp;
+				cb(skillsPackage);
+			}).catch(err => {
+				log.error("users.checkSkills: ", { err });
+				cb(err)
+			});
 		})
 	}
 
