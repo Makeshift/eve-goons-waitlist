@@ -119,7 +119,7 @@
 															</td>
 															<td>
 																{% if pilot.onWaitlist %}
-																<button class="btn btn-sm btn-danger" onclick="remove('character', {{ pilot.characterID }})"><i class="fas fa-minus"></i></button>
+																<button class="btn btn-sm btn-danger" type="button" onclick="remove('character', {{ pilot.characterID }})"><i class="fas fa-minus"></i></button>
 																{% else %}
 																<button class="btn btn-sm btn-success" type="submit"><i class="fas fa-plus"></i></button>
 																{% endif %}
