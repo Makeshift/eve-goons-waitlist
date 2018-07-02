@@ -34,6 +34,8 @@ const waitlistController = require('./controllers/waitlistController.js');
 	router.post('/commander', commander_controller.registerFleet);
 
 	//Commander - FC Waitlist Management
+	router.post('/commander/:fleetid/update/info', fleet_management_controller.getInfo);
+	//Commander OLD
 	router.get('/commander/:fleetid/', fleet_management_controller.index);
 	router.post('/commander/:fleetid/invite/:characterID/:tableID', fleet_management_controller.invitePilot);
 	router.post('/commander/:fleetid/remove/:tableID/:characterID', fleet_management_controller.removePilot);

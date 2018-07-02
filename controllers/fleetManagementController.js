@@ -182,3 +182,37 @@ exports.clearWaitlist = function(req, res) {
         res.status(400).send("You do not have permission to complete this action. Are you an FC?");
     }
 }
+
+/*
+* Gets the fleet info
+* @params req{}
+* @res res{}
+*/
+exports.getInfo = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(401).send("Not Authenticated");
+        return;
+    }
+
+    fleets.get(req.params.fleetid, function (fleet) {
+        if(!fleet){
+            res.status(404).send("Fleet Not Found");
+            return;
+        }
+        res.status(200).send({
+            "fc": {
+                "characterID": fleet.fc.characterID,
+                "name": fleet.fc.name
+            },
+            "backseat": {
+                "characterID": fleet.backseat.characterID,
+                "name": fleet.backseat.name
+            },
+            "type": fleet.type,
+            "status": fleet.status,
+            "comms": fleet.comms,
+            "location": fleet.location
+        });
+    });
+
+}

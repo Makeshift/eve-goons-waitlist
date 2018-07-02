@@ -29,17 +29,17 @@
 					<tbody>
 						<tr>
 							<td>FC (Boss):</td>
-							<td><a href="javascript:void(0);" onclick="showInfo({{ fleet.fc.characterID }})">{{ fleet.fc.name }}</a></td>
+							<td><a id="fcBoss" href="javascript:void(0);"></a></td>
 							<td><button class="btn btn-sm btn-block" onclick="setFC()">I'm the FC</button></td>
 						</tr>
 						<tr>
 							<td>Backseating FC:</td>
-							<td><a href="javascript:void(0);" onclick="showInfo({{ fleet.backseat.characterID }})">{{ fleet.backseat.name }}</a></td>
+							<td><a id="fcBackseat" href="javascript:void(0);"></a></td>
 							<td><button class="btn btn-sm btn-block" onclick="setBackseat()">Update Backseat</button></td>
 						</tr>
 						<tr>
 							<td>Fleet Status:</td>
-							<td>{{ fleet.status }}</td>
+							<td><span id="status"></span></td>
 							<td>
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
@@ -55,7 +55,7 @@
 						</tr>
 						<tr>
 							<td>Fleet Type:</td>
-							<td>{{ fleet.type }}</td>
+							<td><span id="type"></span></td>
 							<td>
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
@@ -72,7 +72,7 @@
 						</tr>
 						<tr>
 							<td>Fleet Comms:</td>
-							<td><a href="{{ fleet.comms.url }}">{{ fleet.comms.name }}</a></td>
+							<td><a id="comms" href="{{ fleet.comms.url }}">{{ fleet.comms.name }}</a></td>
 							<td>
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
@@ -87,7 +87,7 @@
 						</tr>
 						<tr>
 							<td>Fleet System:</td>
-							<td><a href="javascript:void(0);" onclick="setWaypoint({{ fleet.location.systemID }})">{{ fleet.location.name }}</a></td>
+							<td><a id="fleetSystem" href="javascript:void(0);"></a></td>
 							<td><button class="btn btn-sm btn-danger btn-block" data-toggle="modal" data-target="#fleetActions" accesskey="A"><i class="fas fa-exclamation-triangle"></i> More Actions <i class="fas fa-exclamation-triangle"></i></button></td>
 						</tr>
 					</tbody>
@@ -100,7 +100,7 @@
 			<div class="statistic-block block">
 				<div>
 					<ul class="nav nav-pills nav-justified">
-						<li class="nav-item"><a role="tab" data-toggle="pill" id="fleet" href="javascript:void();" class="nav-link comp active">Fleet at a Glance</a></li>
+						<li class="nav-item"><a role="tab" data-toggle="pill" id="fleet" href="javascript:void();" class="nav-link comp active">Fleet</a></li>
 						<li class="nav-item"><a role="tab" data-toggle="pill" id="logi" href="javascript:void();" class="nav-link comp">Logistics</a></li>
 						<li class="nav-item"><a role="tab" data-toggle="pill" id="caps" href="javascript:void();" class="nav-link comp">Capitals</a></li>
 						<li class="nav-item"><a role="tab" data-toggle="pill" id="supers" href="javascript:void();" class="nav-link comp">Supers</a></li>
@@ -199,200 +199,226 @@
 </section>
 <!-- Waitlist Action Buttons -->
 <div class="modal fade" id="fleetActions">
-<div class="modal-dialog">
-	<div class="modal-content">
-		<!-- Modal Header -->
-		<div class="modal-header">
-			<h4 class="modal-title">Fleet Actions</h4>
-			<button type="button" class="close" data-dismiss="modal">&times;</button>
-		</div>
-		<!-- Modal body -->
-		<div class="modal-body">
-			<p class="d-block">These buttons can break things, use them with care!</p>
-			<form class="my-2" action="/commander/{{ fleet.id }}/delete">
-				<button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
-			</form>
-			<button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>       
-			<button class="btn btn-danger btn-sm btn-block disabled" type="button" data-toggle="tooltip" title="Hahaha, no!">I need an Adult!</button>
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Fleet Actions</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<p class="d-block">These buttons can break things, use them with care!</p>
+				<form class="my-2" action="/commander/{{ fleet.id }}/delete">
+					<button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
+				</form>
+				<button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>       
+				<button class="btn btn-danger btn-sm btn-block disabled" type="button" data-toggle="tooltip" title="Hahaha, no!">I need an Adult!</button>
+			</div>
 		</div>
 	</div>
 </div>
 <!-- Waitlist Scripts -->
 <script>
-	//On page load
-	$( document ).ready(function() {
-	  updateFleetGlance();
+    //On page load
+    $(document).ready(function() {
+        updateFleetGlance();
+		pollFleetInfo()
+    
+	    //Start Timer
+		setInterval(function() {
+			updateFleetGlance();
+			pollFleetInfo();
+		}, 15000); //Every 15 seconds
 	});
-	
-	//Start Timer
-	setInterval(function()
-	{ 
-	  updateFleetGlance();
-	}, 15000);//Every 15 seconds
-	
-	//Invite a pilot to the fleet
-	function invitePilot(characterID, dbRowID) {
-	    var dbRowID = dbRowID;
-	    var rowClass = "#row-"+dbRowID;
-	    var count = Number($("#fleetWaitlistCount").text());
-	    
-	    $(rowClass).removeClass().addClass("invite-pending");
-	    
-	    $.ajax({
-	        type: "POST",
-	        url: "/commander/{{ fleet.id }}/invite/"+characterID+"/"+dbRowID}).done(function() {
-	            $(rowClass).removeClass().addClass("invite-sent");
-	            $("#fleetWaitlistCount").text(count-1);
-	    }).fail(function(text) {
-	        $(rowClass).removeClass().addClass("invite-failed");
-	        $("#"+characterID+"-status").text(text.responseText);
-	    });
+
+    //Invite a pilot to the fleet
+    function invitePilot(characterID, dbRowID) {
+        var dbRowID = dbRowID;
+        var rowClass = "#row-" + dbRowID;
+        var count = Number($("#fleetWaitlistCount").text());
+
+        $(rowClass).removeClass().addClass("invite-pending");
+
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/invite/" + characterID + "/" + dbRowID
+        }).done(function() {
+            $(rowClass).removeClass().addClass("invite-sent");
+            $("#fleetWaitlistCount").text(count - 1);
+        }).fail(function(text) {
+            $(rowClass).removeClass().addClass("invite-failed");
+            $("#" + characterID + "-status").text(text.responseText);
+        });
+    }
+
+    //Remove a pilot from the waitlist
+    function removePilot(id, characterID) {
+        console.log(id);
+        var dbRowID = id;
+        var rowClass = "#row-" + id;
+        var count = Number($("#fleetWaitlistCount").text());
+
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/remove/" + dbRowID + "/" + characterID
+        });
+
+        $("#fleetWaitlistCount").text(count - 1);
+
+        $(rowClass).removeClass().addClass("invite-failed");
+        setTimeout(function() {
+            if ($(rowClass).length > 0) {
+                $(rowClass).remove();
+            }
+        }, 5000)
+    }
+
+    var compFilter = "fleet";
+    $(".comp").click(function() {
+        compFilter = $(this).attr('id');
+        updateFleetGlance();
+    });
+
+    function updateFleetGlance() {
+        $.ajax({
+            type: "POST",
+            url: "/internal-api/fleetcomp/{{fleet.id}}/" + compFilter,
+            datatype: "HTML",
+            success: function(data) {
+                $("#fleetAtAGlance").empty();
+                $("#fleetAtAGlance").append(data);
+            }
+        }).fail(function(err) {
+            console.log("Faied to update fleet at a glance: ", err);
+        });
+    }
+
+	//Update the fleet information panel
+	function pollFleetInfo(){
+		$.ajax({
+			type: "POST",
+			url: "/commander/{{fleet.id}}/update/info",
+			success: function(payload){
+				$("#fcBoss").text(payload.fc.name).attr("onclick", "showInfo(" + payload.fc.characterID + ")");
+				$("#fcBackseat").text(payload.backseat.name).attr("onclick", "showInfo(" + payload.backseat.characterID + ")")
+				$("#status").text(payload.status);
+				$("#type").text(payload.type);
+				$("#comms").text(payload.comms.name).attr("href", payload.comms.url);
+				$("#fleetSystem").text(payload.location.name).attr("onclick", "setWaypoint(" + payload.location.systemID + ")");
+			}
+		}).fail(function(err){
+			console.log("Failed to update the fleet info panel");
+		})
 	}
-	
-	//Remove a pilot from the waitlist
-	function removePilot(id, characterID) {
-	    console.log(id);
-	    var dbRowID = id;
-	    var rowClass = "#row-"+id;
-	    var count = Number($("#fleetWaitlistCount").text());
-	
-	    $.ajax({
-	        type: "POST",
-	        url: "/commander/{{ fleet.id }}/remove/"+dbRowID+"/"+characterID
-	    });
-	
-	    $("#fleetWaitlistCount").text(count-1);
-	
-	    $(rowClass).removeClass().addClass("invite-failed");
-	    setTimeout(function(){
-	        if ($(rowClass).length > 0) {
-	            $(rowClass).remove();
-	        }
-	    }, 5000)     
-	}
-	
-	var compFilter = "fleet";
-	$( ".comp" ).click(function() {
-	  compFilter = $(this).attr('id');
-	  updateFleetGlance();
-	});
-	
-	function updateFleetGlance() {
-	  $.ajax({
-	    type:"POST",
-	    url:"/internal-api/fleetcomp/{{fleet.id}}/"+compFilter,
-	    datatype:"HTML",
-	    success:function(data)
-	    {
-	       $( "#fleetAtAGlance" ).empty();
-	       $( "#fleetAtAGlance" ).append(data);
-	    }
-	  }).fail(function(err) {
-	    console.log("Faied to update fleet at a glance: ",err);
-	  });
-	}
-	
-	//Send a notification to a pilot.
-	function alarmUser(targetid, fleetid, dbRowID) {
-	  var rowClass = "#row-"+dbRowID;
-	
-	  $.ajax({
-	    type:"POST",
-	    url:"/internal-api/alarm-user/"+targetid+"/"+fleetid,
-	    datatype:"HTML",
-	    success:function(data)
-	    {
-	        $(rowClass).removeClass().addClass("invite-pending");
-	    }
-	  }).fail(function(err) {
-	      console.log("Faied to alarm user: ",err);
-	  });
-	  
-	  $(rowClass).delay(5000).queue(function(){
-	      $(this).removeClass().addClass("invite-default");
-	  });
-	}
-	
-	//Change the FC
-	function setFC(){
-	  $.ajax({
-	      type:"POST",
-	      url:"/commander/{{ fleet.id }}/update/commander"
-	  }).done(function () {
-	      location.reload();
-	  }).error(function (err){
-	      console.log("Error updating the backseat: ",err);
-	  })   
-	}
-	
-	//Change the backseat
-	function setBackseat(){
-	  $.ajax({
-	      type:"POST",
-	      url:"/commander/{{ fleet.id }}/update/backseat"
-	  }).done(function () {
-	      location.reload();
-	  }).error(function (err){
-	      console.log("Error updating the backseat: ",err);
-	  })
-	}
-	
-	//Change the comms channel for the fleet
-	function setCommsChannel(comsUrl, comsName){
-	  $.ajax({
-	    type:"POST",
-	    url:"/commander/{{ fleet.id }}/update/comms",
-	    data: {name: comsName, url: comsUrl}}).done(function(){
-	        location.reload();
-	    }).fail(function(err) {
-	        console.log("Error updating comms information: ", err);
-	    });
-	}
-	
-	//Set the fleet status
-	function setFleetStatus(fleetStatus){
-	  $.ajax({
-	    type:"POST",
-	    url:"/commander/{{ fleet.id }}/update/status",
-	    data: {status: fleetStatus}
-	  }).done(function(){
-	      location.reload();
-	  }).fail(function(err) {
-	      console.log("Error updating fleet status: ", err);
-	  });
-	}
-	
-	//Set the fleet type
-	function setFleetType(fleetType){
-	  $.ajax({
-	    type:"POST",
-	    url:"/commander/{{ fleet.id }}/update/type",
-	    data: {type: fleetType}
-	  }).done(function(){
-	      location.reload();
-	  }).fail(function(err) {
-	      console.log("Error updating fleet type: ", err);
-	  });
-	}
-	
-	//Remove all pilots from the waitlist.
-	function clearWaitlist(){
-	  if (confirm("Are you sure you want to remove all users from the waitlist?\nThis will affect every fleet!")) {
-	      $.ajax({
-	        type:"POST",
-	        url:"/internal-api/waitlist/remove-all",
-	        datatype:"HTML",
-	      success:function(data)
-	      {
-	          location.reload();
-	      }
-	    }).fail(function(err) {
-	        console.log("Faied to clean the waitlist: ",err);
-	        $( '#fleetActions' ).modal('toggle');
-	    });
-	  } else {
-	    $( '#fleetActions' ).modal('toggle');
-	  }
-	}
+
+    //Send a notification to a pilot.
+    function alarmUser(targetid, fleetid, dbRowID) {
+        var rowClass = "#row-" + dbRowID;
+
+        $.ajax({
+            type: "POST",
+            url: "/internal-api/alarm-user/" + targetid + "/" + fleetid,
+            datatype: "HTML",
+            success: function(data) {
+                $(rowClass).removeClass().addClass("invite-pending");
+            }
+        }).fail(function(err) {
+            console.log("Faied to alarm user: ", err);
+        });
+
+        $(rowClass).delay(5000).queue(function() {
+            $(this).removeClass().addClass("invite-default");
+        });
+    }
+
+    //Change the FC
+    function setFC() {
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/update/commander"
+        }).done(function() {
+            pollFleetInfo()
+        }).fail(function(err) {
+            console.log("Error updating the backseat: ", err);
+        })
+    }
+
+    //Change the backseat
+    function setBackseat() {
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/update/backseat"
+        }).done(function() {
+            pollFleetInfo();
+        }).fail(function(err) {
+            console.log("Error updating the backseat: ", err);
+        })
+    }
+
+    //Change the comms channel for the fleet
+    function setCommsChannel(comsUrl, comsName) {
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/update/comms",
+            data: {
+                name: comsName,
+                url: comsUrl
+            }
+        }).done(function() {
+            pollFleetInfo()
+        }).fail(function(err) {
+            console.log("Error updating comms information: ", err);
+        });
+    }
+
+    //Set the fleet status
+    function setFleetStatus(fleetStatus) {
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/update/status",
+            data: {
+                status: fleetStatus
+            }
+        }).done(function() {
+            pollFleetInfo()
+        }).fail(function(err) {
+            console.log("Error updating fleet status: ", err);
+        });
+    }
+
+    //Set the fleet type
+    function setFleetType(fleetType) {
+        $.ajax({
+            type: "POST",
+            url: "/commander/{{ fleet.id }}/update/type",
+            data: {
+                type: fleetType
+            }
+        }).done(function() {
+            pollFleetInfo()
+        }).fail(function(err) {
+            console.log("Error updating fleet type: ", err);
+        });
+    }
+
+    //Remove all pilots from the waitlist.
+    function clearWaitlist() {
+        if (confirm("Are you sure you want to remove all users from the waitlist?\nThis will affect every fleet!")) {
+            $.ajax({
+                type: "POST",
+                url: "/internal-api/waitlist/remove-all",
+                datatype: "HTML",
+                success: function(data) {
+                    location.reload();
+                }
+            }).fail(function(err) {
+                console.log("Faied to clean the waitlist: ", err);
+                //$('#fleetActions').modal('toggle');
+            });
+        } else {
+            //$('#fleetActions').modal('toggle');
+        }
+    }
 </script>
 {%- include "./partials/footer.njk" %}

@@ -70,11 +70,6 @@ module.exports = function (setup) {
 	}
 
 	module.delete = function (id, cb) {
-		if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
-			log.debug("Special dev fleet, not deleting", { id });
-			if (typeof cb === "function") cb();
-			return;
-		}
 		db.deleteOne({ 'id': id }, function (err, result) {
 			if (err) log.error("fleet.delete: Error for db.deleteOne", { err, id });
 			if (typeof cb === "function") cb();
