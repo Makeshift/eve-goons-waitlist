@@ -1,4 +1,4 @@
-<tr id="row-{{ user._id }}" class="{{ user.invited }}">
+<tr id="row-{{ user.characterID }}" class="{{ user.invited }}">
 	<td>
 		<img src="https://image.eveonline.com/Character/{{ user.characterID }}_64.jpg" style="height:75%" alt="avatar"> 
 	</td>
@@ -16,7 +16,7 @@
 		
 	</td>
 	<td>
-		<button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.user.characterID }}','{{ user._id }}');"><i class="fa fa-plus"></i></button>
+		<button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.characterID }}','{{fleet.id}}');"><i class="fa fa-plus"></i></button>
 	</td>
 	<td>
 		<div class="dropdown">
@@ -24,7 +24,9 @@
 			<div class="dropdown-menu" role="menu">
 				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/profile">View Pilot Profile</a>
 				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
+				{% if user.contact.xmpp %}
 				<a class="dropdown-item" href="xmpp:{{ user.contact.xmpp }}@goonfleet.com">Jabber PM</a>
+				{% endif %}
 			</div>
 		</div>
 	</td>
@@ -32,7 +34,7 @@
 		<button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.user.characterID }}','{{ fleet.id }}','{{ user._id }}')"><i class="fa fa-bell"></i></button>
 	</td>
 	<td>
-		<button class="btn btn-danger btn-sm" onclick="removePilot('{{ user._id }}','{{ user.user.characterID }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+		<button class="btn btn-danger btn-sm" onclick="removePilot('{{ user.characterID }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
 	</td>
 	<td>
 		<a href="#">

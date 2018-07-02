@@ -32,7 +32,23 @@ module.exports = function() {
 			})
 		}) 
 	}
-	
+
+	/*
+	* Checks to see if the user is online
+	* @params characterID
+	* @return bool
+	*/
+	module.isOnline = function(characterID, online){
+		module.getRefreshToken(characterID, function(accessToken){
+			esi.characters(characterID, accessToken).online().then(function(isOnline){
+				online(isOnline);
+			})
+		}).catch(function(err){
+			console.error("user.isOnline: error getting refresh token", {characterID: characterID, err});
+			online(null);
+		})
+	}
+
 	/*
     * @params: {user}
     * @return: location{system_id, system_name}
@@ -104,8 +120,9 @@ module.exports = function() {
 	* @retunr status
 	*/
 	module.sideNav = function(user, cb){
+		let sideNav = (user.settings != undefined)? user.settings.smSideNav : true;
 		//Update the main account so that the settings propagate down
-		db.updateOne({characterID: (user.account.main)?user.characterID : user.account.mainID},{$set: {"settings.smSideNav": !user.settings.smSideNav}}, function (err, result) {
+		db.updateOne({characterID: (user.account.main)?user.characterID : user.account.mainID},{$set: {"settings.smSideNav": !sideNav}}, function (err, result) {
 			if(!err){
 				cb(200);
 			} else {

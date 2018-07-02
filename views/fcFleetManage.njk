@@ -72,7 +72,7 @@
 						</tr>
 						<tr>
 							<td>Fleet Comms:</td>
-							<td><a id="comms" href="{{ fleet.comms.url }}">{{ fleet.comms.name }}</a></td>
+							<td><a id="comms" href=""></a></td>
 							<td>
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
@@ -209,9 +209,7 @@
 			<!-- Modal body -->
 			<div class="modal-body">
 				<p class="d-block">These buttons can break things, use them with care!</p>
-				<form class="my-2" action="/commander/{{ fleet.id }}/delete">
-					<button class="btn btn-danger btn-sm btn-block" type="submit">Close the Fleet!</button>
-				</form>
+				<button class="btn btn-danger btn-sm btn-block" onclick="closeFleet({{fleet.id}})">Close the Fleet!</button>
 				<button class="btn btn-danger btn-sm btn-block" onclick="clearWaitlist()" type="button">Clear the Waitlist!</button>       
 				<button class="btn btn-danger btn-sm btn-block disabled" type="button" data-toggle="tooltip" title="Hahaha, no!">I need an Adult!</button>
 			</div>
@@ -233,45 +231,38 @@
 	});
 
     //Invite a pilot to the fleet
-    function invitePilot(characterID, dbRowID) {
-        var dbRowID = dbRowID;
-        var rowClass = "#row-" + dbRowID;
+    function invitePilot(characterID, fleetID) {
         var count = Number($("#fleetWaitlistCount").text());
 
-        $(rowClass).removeClass().addClass("invite-pending");
+        $("#row-"+characterID).removeClass().addClass("invite-pending");
 
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/invite/" + characterID + "/" + dbRowID
+			url: "/commander/admin/invite/" + characterID + "/" + fleetID
         }).done(function() {
-            $(rowClass).removeClass().addClass("invite-sent");
-            $("#fleetWaitlistCount").text(count - 1);
+            $("#row-"+characterID).removeClass().addClass("invite-sent");
+            $("#fleetWaitlistCount").text(Number($("#fleetWaitlistCount").text()) - 1);
         }).fail(function(text) {
-            $(rowClass).removeClass().addClass("invite-failed");
+            $("#row-"+characterID).removeClass().addClass("invite-failed");
             $("#" + characterID + "-status").text(text.responseText);
         });
     }
 
     //Remove a pilot from the waitlist
-    function removePilot(id, characterID) {
-        console.log(id);
-        var dbRowID = id;
-        var rowClass = "#row-" + id;
-        var count = Number($("#fleetWaitlistCount").text());
-
+    function removePilot(characterID) {
         $.ajax({
             type: "POST",
-            url: "/commander/{{ fleet.id }}/remove/" + dbRowID + "/" + characterID
-        });
+			url: "/commander/admin/remove/" + characterID
+        }).done(function(){
+			//Colour and remove row. Then subtract the waitlist count by 1
+			$("#row-"+characterID).removeClass().addClass("invite-failed");
+			setTimeout(function() {
+				$("#fleetWaitlistCount").text(Number($("#fleetWaitlistCount").text()) - 1);
+				$("#row-"+characterID).remove();
+			}, 5000)
+		});
 
-        $("#fleetWaitlistCount").text(count - 1);
-
-        $(rowClass).removeClass().addClass("invite-failed");
-        setTimeout(function() {
-            if ($(rowClass).length > 0) {
-                $(rowClass).remove();
-            }
-        }, 5000)
+        
     }
 
     var compFilter = "fleet";
@@ -357,13 +348,13 @@
     }
 
     //Change the comms channel for the fleet
-    function setCommsChannel(comsUrl, comsName) {
+    function setCommsChannel(commsUrl, commsName) {
         $.ajax({
             type: "POST",
             url: "/commander/{{ fleet.id }}/update/comms",
             data: {
-                name: comsName,
-                url: comsUrl
+                name: commsName,
+                url: commsUrl
             }
         }).done(function() {
             pollFleetInfo()
@@ -420,5 +411,18 @@
             //$('#fleetActions').modal('toggle');
         }
     }
+
+	//Shuts down the fleet
+	function closeFleet(fleetID){
+		$.ajax({
+			type: "DELETE",
+			url: "/commander/" + fleetID,
+			success: function() {
+				window.location.assign(`/commander`);
+			}
+		}).fail(function(error){
+			console.log("Error closing the fleet");
+		})
+	}
 </script>
 {%- include "./partials/footer.njk" %}

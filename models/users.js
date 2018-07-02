@@ -158,6 +158,7 @@ module.exports = function (setup) {
 				notes: [],
 				statistics: { sites: {} },
 				account: { main: true, linkedCharIDs: []},
+				settings: {smSideNav: false},
 				refreshToken: refreshToken,
 				registrationDate: new Date(),
 				userVersion: 2

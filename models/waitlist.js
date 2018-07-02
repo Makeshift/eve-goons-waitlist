@@ -7,6 +7,22 @@ const log = require('../logger.js')(module);
 module.exports = function (setup) {
     var module = {};
     
+    module.get = function (cb) {
+		db.find({}).sort({ "signupTime": 1 }).toArray(function (err, docs) {
+			if (err) log.error("get: Error for db.find", { err });
+            
+            for(let i = 0; i < docs.length; i++){
+                var signuptime = Math.floor((Date.now() - docs[i].signup)/1000/60);
+                var signupHours = 0;
+                while (signuptime > 59) {
+                    signuptime -= 60;
+                    signupHours++;
+                }
+                docs[i].signup = signupHours +'H '+signuptime+'M';   
+            }
+            cb(docs);
+		})
+	}
 
     /*
     * Adds a pilot to the waitlist
@@ -47,26 +63,44 @@ module.exports = function (setup) {
     * @return status
     */
     module.remove = function(type, characterID, cb){
-        console.log(type)
         if(type == "all"){
             db.remove({"waitlistMain.characterID": Number(characterID)}, function (err) {
                 if (err) {
                     if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
-                } else { 
-                    cb();
-                }
+                    return;
+                } 
+                
+                cb(null);
             });
         } else { //Remove alt only
             db.remove({characterID: Number(characterID)}, function (err) {
                 if (err) {
                     if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
-                } else { 
-                    cb();
-                }
+                    return;
+                }  
+                    
+                cb(null);
             });
         }
+    }
+
+    /*
+    * Remove a user from the waitlist
+    * @params characterID (int)
+    * @return status
+    */
+    module.adminRemove = function(characterID, cb){
+        db.remove({characterID: Number(characterID)}, function (err){
+            if(err){
+                log.error("waitlist.adminRemove: Error removing pilot from the waitlist", {"pilot ID": characterID, err});
+                cb(400);
+                return;
+            }
+
+            cb(200);
+        })
     }
 
     /*
@@ -134,6 +168,27 @@ module.exports = function (setup) {
         }
 
     }
+
+/* Temp Code  =>  MOVE TO THE SCHEDULER */
+	module.timers = function () {
+		//TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
+		//TODO: Error checking doesn't work due to how ESI module handles errors
+		setTimeout(lookup, 10*1000)
+
+		function lookup() {
+				db.find().forEach(function (doc) {
+					//Is user online?
+					//Update Location
+					user.getLocation(doc, function(location) {
+						db.updateOne({ '_id': doc._id }, { $set: { "location": location } }, function (err, result) {
+							if (err) log.error("waitlist.getLocation: Error for db.updateOne", { err });
+						});
+					})
+				})
+			module.timers();
+		}
+
+	}
 
     return module;
 }

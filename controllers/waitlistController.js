@@ -1,12 +1,9 @@
 const setup = require('../setup.js');
-const esi = require('eve-swagger');
 const banner = require('../models/waitlistBanner.js')(setup);
-const fleets = require('../models/fleets.js')(setup);
+const fleets = require('../models/fleets')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
 const waitlist = require('../models/waitlist.js')(setup);
-const log = require('../logger.js')(module);
-const wlog = require('../models/wlog');
 
 /*
 * Render login page OR waitlist page
@@ -20,13 +17,13 @@ exports.index = function(req, res){
     }
 
     banner.getLast(function(banner){
-        fleets.getFCPageList(function (fleets) {           
+        fleets.getFleetList(function (fleets) {           
             var fleetCount = 0;
             for (var i = 0; i < fleets.length; i++) {
                 if (fleets[i].status !== "Not Listed") fleetCount++;
             }
 
-            waitlist.getQueue((req.user.waitlistMain != "undefined")? req.user.waitlistMain.characterID : 0, function(queueInfo) {
+            waitlist.getQueue((!!req.user.waitlistMain)? req.user.waitlistMain.characterID : 0, function(queueInfo) {
                 waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
                     var userProfile = req.user;
                     var sideBarSelected = 1;
@@ -37,12 +34,18 @@ exports.index = function(req, res){
     })
 }
 
+/*
+* Adds pilot to the waitlist
+* @params req{}
+* @return res{}
+*/
 exports.signup = function(req, res){
     if(!req.isAuthenticated()){
         res.render('statics/login.html');
         return;
     }
-
+    //TODO: Add check is pilot whitelisted
+    //TODO: Add check - is pilot online?
     users.findAndReturnUser(Number(req.body.pilot), function(pilot){
         if(req.params.type == "main"){
             var waitlistMain = {
@@ -74,7 +77,12 @@ exports.signup = function(req, res){
     })
 }
 
-exports.remove = function(req, res){
+/*
+* Removes pilot, triggered by the pilot
+* @params req{}
+* @return res{}
+*/
+exports.selfRemove = function(req, res){
     if(!req.isAuthenticated()){
         res.render('statics/login.html');
         return;
@@ -83,4 +91,50 @@ exports.remove = function(req, res){
     waitlist.remove(req.params.type, req.params.characterID, function(result){
         res.status(200).send();
     })
+}
+
+/*
+* Admin removal of a pilot
+* @params req{}
+* @return res{}
+*/
+exports.removePilot = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(403).send("Not Authorized");
+    }
+
+    waitlist.adminRemove(req.params.characterID, function(cb){
+        res.status(cb).send();
+    })
+}
+
+/*
+* Alarms a pilot
+* @params req{}
+* @return res{}
+*/
+exports.alarm = function(req, res){
+    log.warn("waitlistController.alarm: 501 - Method Not Implemented")
+    res.status(501).send();
+}
+
+
+/*
+* Removes all pilots on the waitlist
+* @params req{}
+* @return res{}
+*/
+exports.clearWaitlist = function(req, res) {
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(403).send("Not Authorised");
+        return;
+    }
+    
+
+    waitlist.get(function(pilotsOnWaitlist) {
+        for (var i = 0; i < pilotsOnWaitlist.length; i++) {
+            waitlist.remove(pilotsOnWaitlist[i]._id);
+        }
+        res.status(200).send();
+    })        
 }

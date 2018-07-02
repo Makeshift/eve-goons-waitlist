@@ -37,7 +37,7 @@ database.connect(function () {
 	const users = require('./models/users.js')(setup);
 	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
 	const fleets = require('./models/fleets.js')(setup);
-	const waitlist = require('./models/globalWaitlist.js')(setup);
+	const waitlist = require('./models/waitlist.js')(setup);
 
 	//Start timers
 	fleets.timers();
