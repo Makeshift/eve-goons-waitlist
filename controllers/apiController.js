@@ -38,7 +38,6 @@ exports.openMarket = function(req, res) {
 }
 //Show the fleet at a glance window.
 exports.fleetAtAGlance = function(req, res) {
-
     fleets.get(req.params.fleetid, function (fleet) {
         if (fleet) {
             var ships = [];
