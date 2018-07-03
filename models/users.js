@@ -8,39 +8,8 @@ const day = 86400;//Day in seconds
 
 module.exports = function (setup) {
 	var module = {};
-	//This nested if stuff is kinda unpleasant and I'd like to fix it
-	//TODO: Make middleware for session, isBanned? isWhitelisted?
-	module.updateUserSession = function (req, res, next) {
-		if (typeof req.session.passport === "undefined" || typeof req.session.passport.user === "undefined") {
-			next();
-			return;
-		}
-		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
-			if (!userData) {
-				req.logout();
-				res.render("statics/login.html");
-				next();
-			} else {
-				
-				module.getMain(userData.characterID, function(mainUserData){
-					module.getAlts(mainUserData.characterID, function(pilotArray){
-						userData.role = mainUserData.role;
-						userData.account.pilots = pilotArray;
-						userData.settings = mainUserData.settings;
-						userData.waitlistMain = mainUserData.waitlistMain;
-						req.session.passport.user = userData;
-						req.session.save(function (err) {
-							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
-							next();
-						})
-						
-					})//End Session Change
-				})
-			}
-		});
-	}
-
-	//Create and manage users - Currently doing this via JSON and saving the object every now and then. TODO: MongoDB with mongoose maybe?
+	
+	//Create and manage users
 	module.findOrCreateUser = function (users, refreshToken, characterDetails, cb) {
 		//Update the users refresh token
 		if(refreshToken){
