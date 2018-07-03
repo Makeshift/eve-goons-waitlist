@@ -219,10 +219,10 @@ module.checkForDuplicates = function () {
         waitlist.get(function (onWaitlist) {
             for (var i = 0; i < onWaitlist.length; i++) {
                 var charID = onWaitlist[i].characterID;
-                var charName = onWaitlist[i].name;
 
                 if (members.includes(charID)) {
-                    waitlist.remove(onWaitlist[i]._id, function(){});
+                   // waitlist.remove(charID, function(result){});
+                   waitlist.remove("character", charID, function(){});
                 }
             }
         })

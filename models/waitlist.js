@@ -70,7 +70,6 @@ module.exports = function (setup) {
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
                     return;
                 } 
-                
                 cb(null);
             });
         } else { //Remove alt only
@@ -80,7 +79,6 @@ module.exports = function (setup) {
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
                     return;
                 }  
-                    
                 cb(null);
             });
         }

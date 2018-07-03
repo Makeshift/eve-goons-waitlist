@@ -89,7 +89,7 @@ exports.selfRemove = function(req, res){
     }
 
     waitlist.remove(req.params.type, req.params.characterID, function(result){
-        res.status(200).send();
+        res.status(result).send();
     })
 }
 
@@ -133,7 +133,9 @@ exports.clearWaitlist = function(req, res) {
 
     waitlist.get(function(pilotsOnWaitlist) {
         for (var i = 0; i < pilotsOnWaitlist.length; i++) {
-            waitlist.remove(pilotsOnWaitlist[i]._id);
+            waitlist.remove(pilotsOnWaitlist[i]._id, function(result){
+                
+            });
         }
         res.status(200).send();
     })        
