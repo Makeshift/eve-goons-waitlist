@@ -1,12 +1,9 @@
 const setup = require('../setup.js');
-const bans = require('./bans.js')(setup)
 const cache = require('../cache.js')(setup);
-const refresh = require('passport-oauth2-refresh');
 const esi = require('eve-swagger');
 const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
 const userO = require('./user.js')(setup);
-const whitelist = require('./whitelist.js')(setup);
 const day = 86400;//Day in seconds
 
 module.exports = function (setup) {
@@ -21,7 +18,7 @@ module.exports = function (setup) {
 		module.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
 			if (!userData) {
 				req.logout();
-				res.redirect('/');
+				res.render("statics/login.html");
 				next();
 			} else {
 				
@@ -34,45 +31,9 @@ module.exports = function (setup) {
 						req.session.passport.user = userData;
 						req.session.save(function (err) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
+							next();
 						})
-						//Logout Flag
-						if(req.user.logout) {
-							db.updateOne({characterID: Number(req.user.characterID)},{$unset: {"logout": 1}}, function (err, result) {
-								if(!err){
-									log.info(req.user.name + " has been flagged for logout.");
-									req.logout();
-									res.status(401).redirect('/');
-									return;									
-								} else {
-									log.warn("users.session. Couldn't unset logout Flag - ", err);
-									log.info(req.user.name + " has been flagged for logout.");
-									req.logout();
-									res.status(401).redirect('/');
-									return;		
-								}
-							})//End logout flag check
-						} else {
-							//check for ban
-							bans.checkIfBanned(req.user.characterID, function(ban) {
-								if (ban.banType == "Squad") {
-									log.warn("Logging out banned user: " + req.user.name);
-									req.logout();
-									res.status(418).render("statics/banned.html");
-								} else {
-									//Check whitelist
-									let alliance = userData.alliance.allianceID || null;
-									whitelist.isAllowed(userData, userData.corporation.corporationID, alliance, function(whitelisted){
-										if(whitelisted){
-											next();
-										} else {
-											log.warn("User is not whitelisted");
-											req.logout();
-											res.status(401).render("statics/notAllowed.html");
-										}
-									})//End Whitelist
-								}
-							});//End Bans
-						}
+						
 					})//End Session Change
 				})
 			}
