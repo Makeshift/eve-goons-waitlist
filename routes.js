@@ -80,7 +80,6 @@ const fleetsController = require('./controllers/fleetController.js');
 
 	//App API endpoints
 	router.post('/internal-api/fleetcomp/:fleetid/:filter', api_controller.fleetAtAGlance);
-	router.post('/internal-api/alarm-user/:targetid/:fleetid', api_controller.alarmUser);
 	router.post('/internal-api/waitlist/remove-all', waitlistController.clearWaitlist);
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);

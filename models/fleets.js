@@ -196,11 +196,6 @@ module.exports = function (setup) {
 
 
 module.revokeFC = function(id, cb){
-    if (setup.permissions.devfleets && setup.permissions.devfleets.includes(id)) {
-        log.debug("Special dev fleet, not deleting", { id });
-        if (typeof cb === "function") cb();
-        return;
-    }
     db.updateOne({'id': id}, {$set: {fc: {}}}, function(err, result) {
         if (typeof cb === "function") cb();
     });

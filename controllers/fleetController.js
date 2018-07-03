@@ -1,10 +1,10 @@
 const setup = require('../setup.js');
+const broadcast = require('./broadcastController.js');
 const esi = require('eve-swagger');
 const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
 const waitlist = require('../models/waitlist.js')(setup);
-const log = require('../logger.js')(module);
 
 
 /*
@@ -60,7 +60,7 @@ exports.invite = function(req, res){
         
         user.getRefreshToken(fleet.fc.characterID, function(accessToken){
             esi.characters(fleet.fc.characterID, accessToken).fleet(req.params.fleetID).invite({ "character_id": req.params.characterID, "role": "squad_member"}).then(result => {
-                log.warn("fleetController.invite: 501 - Invite Alarm Not Implemented")
+                broadcast.alarm(req.params.characterID, req.params.fleetID, req.user, "invite");
                 res.status(200).send();
 			}).catch(error => {
                 var resStr = error.message.split("'")[3];

@@ -129,7 +129,7 @@ database.connect(function () {
 		DEBUG: false,
 	});
 	//Create longpoll routes
-	longpoll.create("/poll/:id", (req,res, next) => {
+	longpoll.create("/poll/:id", (req, res, next) => {
 		req.id = req.params.id;
 		next();
 	});	

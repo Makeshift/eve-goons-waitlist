@@ -18,7 +18,7 @@
 	<div class="container-fluid">
 	<!-- Upper Fleet Panel -->
 	<div class="row">
-		<div class="col-md-6 col-sm-12">
+		<div class="col-lg-6 col-md-12 col-sm-12">
 			<div class="statistic-block block">
 				<div class="title">
 					<div class="icon"></div>
@@ -96,7 +96,7 @@
 		</div>
 		<!-- End Upper Fleet Panel -->
 		<!-- Fleet Comp Overview -->
-		<div class="col-md-6 col-sm-12">
+		<div class="col-lg-6 col-md-12 col-sm-12">
 			<div class="statistic-block block">
 				<div>
 					<ul class="nav nav-pills nav-justified">
@@ -304,22 +304,21 @@
 	}
 
     //Send a notification to a pilot.
-    function alarmUser(targetid, fleetid, dbRowID) {
-        var rowClass = "#row-" + dbRowID;
-
+    function alarmUser(targetid, fleetid) {
         $.ajax({
             type: "POST",
-            url: "/internal-api/alarm-user/" + targetid + "/" + fleetid,
+            url: "/commander/admin/alarm/" + targetid + "/" + fleetid,
             datatype: "HTML",
             success: function(data) {
-                $(rowClass).removeClass().addClass("invite-pending");
+                setTimeout(function () {
+                    $("#row-"+targetid).removeClass().addClass("invite-pending");
+                 }, 0);
+                 setTimeout(function () {
+					$("#row-"+targetid).removeClass();
+                 }, 2500);	
             }
         }).fail(function(err) {
             console.log("Faied to alarm user: ", err);
-        });
-
-        $(rowClass).delay(5000).queue(function() {
-            $(this).removeClass().addClass("invite-default");
         });
     }
 

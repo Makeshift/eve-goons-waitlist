@@ -1,5 +1,6 @@
 const setup = require('../setup.js');
 const banner = require('../models/waitlistBanner.js')(setup);
+const broadcast = require('./broadcastController.js');
 const fleets = require('../models/fleets')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
@@ -114,8 +115,12 @@ exports.removePilot = function(req, res){
 * @return res{}
 */
 exports.alarm = function(req, res){
-    log.warn("waitlistController.alarm: 501 - Method Not Implemented")
-    res.status(501).send();
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(403).send("Not Authorised");
+        return;
+    }
+    broadcast.alarm(req.params.characterID, req.params.fleetID, req.user, "alarm");
+    res.status(200).send();
 }
 
 
