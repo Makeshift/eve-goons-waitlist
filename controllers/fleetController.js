@@ -5,6 +5,7 @@ const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
 const waitlist = require('../models/waitlist.js')(setup);
+const wlog = require('../models/wlog.js');
 
 
 /*
@@ -60,6 +61,7 @@ exports.invite = function(req, res){
         
         user.getRefreshToken(fleet.fc.characterID, function(accessToken){
             esi.characters(fleet.fc.characterID, accessToken).fleet(req.params.fleetID).invite({ "character_id": req.params.characterID, "role": "squad_member"}).then(result => {
+                wlog.invited(req.params.characterID, req.user.characterID);
                 broadcast.alarm(req.params.characterID, req.params.fleetID, req.user, "invite");
                 res.status(200).send();
 			}).catch(error => {

@@ -1,4 +1,4 @@
-const db = require('../dbHandler.js').db.collection('waitlistlog');
+const db = require('../dbHandler.js').db.collection('waitlist-log');
 const setup = require('../setup.js');
 const users = require('./users')(setup);
 var wlog = exports.wlog = {};
@@ -36,17 +36,19 @@ wlog.joinWl = function(user){
 * Log: User self removed.
 * @params: userObject
 */
-wlog.selfRemove = function(user){
-    var logObject = {
-        "pilot": {
-            "characterID": user.characterID,
-            "name": user.name
-        },
-        "action": "Self Removed",
-        "class": "info",
-        "time": new Date()
-    }
-    db.insert(logObject);
+wlog.selfRemove = function(userID){
+    users.findAndReturnUser(Number(userID), function(user){
+        var logObject = {
+            "pilot": {
+                "characterID": user.characterID,
+                "name": user.name
+            },
+            "action": "Self Removed",
+            "class": "info",
+            "time": new Date()
+        }
+        db.insert(logObject);
+    })
 }
 
 /*

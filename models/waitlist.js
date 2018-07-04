@@ -70,7 +70,7 @@ module.exports = function (setup) {
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
                     return;
                 } 
-                cb(null);
+                cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
             });
         } else { //Remove alt only
             db.remove({characterID: Number(characterID)}, function (err) {
@@ -79,7 +79,7 @@ module.exports = function (setup) {
                     cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
                     return;
                 }  
-                cb(null);
+                cb({"class": "success", "title": "Success", "message":"We removed your alt the waitlist!"});
             });
         }
     }

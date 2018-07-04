@@ -5,6 +5,7 @@ const fleets = require('../models/fleets')(setup);
 const user = require('../models/user.js')(setup);
 const users = require('../models/users.js')(setup);
 const waitlist = require('../models/waitlist.js')(setup);
+const wlog = require('../models/wlog.js');
 
 /*
 * Render login page OR waitlist page
@@ -72,6 +73,7 @@ exports.signup = function(req, res){
         }
         
         waitlist.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
+            wlog.joinWl(pilot);
             req.flash("content", {"class": result.class, "title": result.title, "message": result.message});
             res.redirect(`/`);
         });
@@ -90,7 +92,9 @@ exports.selfRemove = function(req, res){
     }
 
     waitlist.remove(req.params.type, req.params.characterID, function(result){
-        res.status(result).send();
+        wlog.selfRemove(req.params.characterID);
+        req.flash("content", result);
+        res.redirect("/");
     })
 }
 
@@ -105,6 +109,7 @@ exports.removePilot = function(req, res){
     }
 
     waitlist.adminRemove(req.params.characterID, function(cb){
+        wlog.removed(req.params.characterID, req.user.characterID);
         res.status(cb).send();
     })
 }
@@ -120,6 +125,7 @@ exports.alarm = function(req, res){
         return;
     }
     broadcast.alarm(req.params.characterID, req.params.fleetID, req.user, "alarm");
+    wlog.alarm(req.params.characterID, req.user.characterID);
     res.status(200).send();
 }
 
@@ -138,8 +144,8 @@ exports.clearWaitlist = function(req, res) {
 
     waitlist.get(function(pilotsOnWaitlist) {
         for (var i = 0; i < pilotsOnWaitlist.length; i++) {
-            waitlist.remove(pilotsOnWaitlist[i]._id, function(result){
-                
+            waitlist.remove("character", pilotsOnWaitlist[i].characterID, function(result){
+                wlog.removed(pilotsOnWaitlist[i].characterID, req.user.characterID);
             });
         }
         res.status(200).send();
