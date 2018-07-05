@@ -12,7 +12,7 @@
 		<div class="container-fluid">
 			<div class="row">
 				<!-- FC Table -->
-				<div class="col-md-8 col-sm-12">
+				<div class="{{ 'col-md-8 col-sm-12' if manageUser else 'col-sm-12' }}">
 					<div class="statistic-block block">
 						<div class="progress-details d-flex align-items-end justify-content-between">
 							<table class="table table-striped table-hover table-sm">
@@ -30,7 +30,7 @@
 									<tr>
 										<td><img src="https://image.eveonline.com/Character/{{commander.characterID}}_32.jpg" alt="{{commander.name}}s Avatar"></td>
 										<td><a href="javascript:void(0);" onclick="showInfo({{ commander.characterID }})">{{ commander.name }}</a></td>
-										<td><a href="javascript:void(0);" onclick="showInfo({{ commander.alliance.id }})">{{ commander.alliance.name }}</a></td>
+										<td><a href="javascript:void(0);" onclick="showInfo({{ commander.alliance.allianceID }})">{{ commander.alliance.name }}</a></td>
 										<td>{{commander.role.title }}</td>
 										<td><a class="btn btn-sm btn-default" href="/admin/commanders/?user={{commander.characterID}}" style="color:black"><i class="fa fa-info-circle"></i> Manage</a></td>
 									</tr>
@@ -42,6 +42,7 @@
 				</div>
 				<!-- End FC Table -->
 				<!-- FC Management Section -->
+				{% if manageUser %}
 				<div class="col-md-4 col-sm-12">
 					<div class="statistic-block block">
 						<ul class="list-unstyled">
@@ -73,13 +74,13 @@
 								<tr>
 									<td><img src="https://image.eveonline.com/Character/{{ pilot.characterID }}_32.jpg" alt="Pilot Avatar"></td>
 									<td class="strike"><a href="javascript:void();" onclick="showInfo({{ pilot.characterID }})">{{ pilot.name }}</a></td>
-									<td class="strike">Something Useful</td>
 								</tr>
 								{% endfor %}
 							</tbody>
 						</table>
 					</div>
 				</div>
+				{% endif %}
 			</div>
 		</div>
 	</section>
