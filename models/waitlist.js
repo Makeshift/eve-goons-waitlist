@@ -1,7 +1,7 @@
 const db = require('../dbHandler.js').db.collection('waitlist');
-const ObjectId = require('mongodb').ObjectID;
 const setup = require('../setup.js');
 const user = require('./user.js')(setup);
+const users = require('./users.js')(setup);
 const log = require('../logger.js')(module);
 
 module.exports = function (setup) {
@@ -36,24 +36,35 @@ module.exports = function (setup) {
                 return;
             }
 
-            let waitlist = {
-                "waitlistMain": waitlistMain,
-                "name": pilot.name,
-                "characterID": pilot.characterID,
-                "fits": fits,
-                "location": {
-                    "systemID": null,
-                    "name": null
-                },
-                contact: contact,
-                "newbee": newbee,
-                "signup": Date.now(),
-            }
-            
-            db.insert(waitlist, function (err) {
-                if (err) log.error("waitlist.add: Error for db.insert", { err, name: pilot.name });
-                if (!err) cb({"class": "success", "title": "Success", "message": pilot.name + " was added to the waitlist."});
-            });
+            users.getMain(waitlistMain.characterID, function(userObject){
+                var disciplinary = false;
+
+                for(let i = 0; i < userObject.notes.length; i++){
+                    if (userObject.notes[i].isDisciplinary){
+                        var disciplinary = true;
+                        break;
+                    }
+                }
+
+                var waitlist = {
+                    "waitlistMain": waitlistMain,
+                    "name": pilot.name,
+                    "characterID": pilot.characterID,
+                    "fits": fits,
+                    "location": {
+                        "systemID": null,
+                        "name": null
+                    },
+                    "contact": contact,
+                    "disciplinary": disciplinary,
+                    "signup": Date.now(),
+                }
+
+                db.insert(waitlist, function (err) {
+                    if (err) log.error("waitlist.add: Error for db.insert", { err, name: pilot.name });
+                    if (!err) cb({"class": "success", "title": "Success", "message": pilot.name + " was added to the waitlist."});
+                });
+            })
         })
     }
 
@@ -155,6 +166,11 @@ module.exports = function (setup) {
                         "characterID": pilotArray[p].characterID,
                         "name": pilotArray[p].name,
                         "onWaitlist": onWaitlist
+                    })
+
+                    pilots.sort(function(a,b) {
+                        if(a.name > b.name) return 1;
+                        return -1;
                     })
                     
                     if(pilots.length == pilotArray.length) cb(pilots);

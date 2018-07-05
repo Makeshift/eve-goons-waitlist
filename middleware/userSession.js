@@ -21,7 +21,10 @@ module.exports = function (setup) {
 				users.getMain(userData.characterID, function(mainUserData){
 					users.getAlts(mainUserData.characterID, function(pilotArray){
 						userData.role = mainUserData.role;
-						userData.account.pilots = pilotArray;
+						userData.account.pilots = pilotArray.sort(function(a,b) {
+							if(a.name > b.name) return 1;
+							return -1;
+						});
 						userData.settings = mainUserData.settings;
 						userData.waitlistMain = mainUserData.waitlistMain;
 						req.session.passport.user = userData;

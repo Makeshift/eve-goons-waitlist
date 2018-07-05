@@ -196,5 +196,26 @@ module.exports = function() {
 		})
 	}
 
+
+	module.addNote = function(characterID, message, disciplinary, admin, cb){
+		let newNote = {
+			"date": new Date(),
+			"author": {
+				"characterID": admin.characterID,
+				"name": admin.name
+			},
+			"message": message,
+			"isDisciplinary": disciplinary
+		}
+		db.updateOne({characterID: characterID}, {$push: {notes: newNote}}, function(err){
+			if(!err){
+				cb(200);
+				return;
+			}
+			log.error("user.addNote: ", {"Character ID": characterID, "Admin Name": admin.name, message});
+			cb(400);
+			return;
+		})
+	}
     return module;
 }

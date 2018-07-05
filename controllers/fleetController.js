@@ -9,7 +9,7 @@ const wlog = require('../models/wlog.js');
 
 
 /*
-* Invites a pilot to the fleet
+* FleetWaitlist page
 * @params req{}
 * @return res{}
 */
@@ -33,7 +33,6 @@ exports.index = function(req, res){
             var sideBarSelected = 5;
             res.render('fcFleetManage.njk', {userProfile, sideBarSelected, fleet, usersOnWaitlist, comms});
         })
-
     })
 }
 
