@@ -66,7 +66,7 @@ module.exports = function (setup) {
                 cb(false);
             }
         }).catch(function(error){
-            debug.warn("whitelist.isAllowed - ", {User: user.name, Error: error})
+            log.warn("whitelist.isAllowed - ", {User: user.name, Error: error})
         })
     }
 
