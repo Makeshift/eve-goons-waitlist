@@ -11,15 +11,15 @@ module.exports = function (setup) {
 			next();
 			return;
 		}
-        
-		let alliance = (req.user.alliance) ? req.user.allianceID : null;
-		whitelist.isAllowed(req.user, req.user.corporation.corporationID, alliance, function(whitelisted){
+
+		let alliance = (!!req.user.alliance) ? req.user.alliance.allianceID : null;
+		whitelist.isAllowed(req.user, req.user.corporation.corporationID, Number(alliance), function(whitelisted){
 			if(whitelisted){
 				next();
 				return;
 			} 
 
-			log.warn("User is not whitelisted");
+			log.warn(req.user.name + " is not whitelisted");
 			req.logout();
 			res.status(401).render("statics/notAllowed.html");
 		})
