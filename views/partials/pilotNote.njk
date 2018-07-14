@@ -1,0 +1,12 @@
+<div class="my-2 mb-2">
+    <div class="row pb-1">
+        <div class="col-md-1 hidden-sm-down">
+            <img class="d-inline" src="https://image.eveonline.com/Character/{{ note.author.characterID }}_64.jpg" alt="comment authors avatar">
+        </div>
+        <div class="col-md-11 col-sm-12">
+            <p class="d-inline-block {{ 'disciplinary' if note.isDisciplinary }}">{{ note.message }}</p>
+            <span class="font-italic">Posted by: <a href="javascript:void(0);" onclick="showInfo({{ note.author.characterID }})">{{ note.author.name }}</a> @ {{ note.date }}.</span>
+        </div>
+    </div>
+    <hr/>							
+</div>

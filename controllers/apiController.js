@@ -38,7 +38,6 @@ exports.openMarket = function(req, res) {
 }
 //Show the fleet at a glance window.
 exports.fleetAtAGlance = function(req, res) {
-
     fleets.get(req.params.fleetid, function (fleet) {
         if (fleet) {
             var ships = [];
@@ -134,60 +133,6 @@ module.createShipsHTML = function (ships, filter, res) {
     </table>`;
     
     res.status(200).send(html);
-}
-
-//Create a notification for the user.
-exports.alarmUser = function(req, res) {   
-    if(req.isAuthenticated && req.user.role.numeric > 0) {
-        fleets.get(req.params.fleetid, function(fleetObject) {
-            var notificationPackage = {
-                target: {
-                    id: req.params.targetid,
-                    name: null
-                },
-                sender: {
-                    id: req.user.characterID,
-                    name: req.user.name
-                },
-                comms: {
-                    name: fleetObject.comms.name,
-                    url: fleetObject.comms.url
-                },
-                message: req.user.name + ` is trying to get your attention. Please join them on comms: `+fleetObject.comms.name,
-                sound: '/includes/alarm.mp3'
-            }
-
-            api.sendAlarm(notificationPackage, function(result) {
-                if (result == 200){
-                    wlog.alarm(req.params.targetid, req.user.characterID);
-                    res.status(200).send();
-                } else {
-                    res.status(400).send();
-                }
-            })
-        })
-    } else {
-        res.status(400).send("Forbidden");
-    }   
-}
-
-//Send notification package to the user
-exports.sendAlarm = function (notifyPackage, cb) {   
-    users.findAndReturnUser(Number(notifyPackage.target.id), function(userProfile) {
-        notifyPackage.appName = `Goon Incursion Squad`;
-        notifyPackage.imgUrl = `/includes/img/gsf-bee.png`;
-        notifyPackage.target.name = userProfile.name;
-        notifyPackage.message = notifyPackage.message + `\n~~ Notification for: `+notifyPackage.target.name+` ~~`;
-
-        const longpoll = require("express-longpoll")(require('express'));
-        longpoll.publishToId("/poll/:id", notifyPackage.target.id, {
-            data: notifyPackage
-        });
-    })
-
-    if (typeof cb === "function") { 
-        cb(200);
-    }
 }
 
 /*

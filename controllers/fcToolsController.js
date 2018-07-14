@@ -32,17 +32,23 @@ exports.pilotSearch = function(req, res){
 
     esi.characters.search.strict(req.params.pilotname.replace(/-/g,' ')).then(function (results) { 
         users.findAndReturnUser(Number(results), function(targetUser){
-            if(targetUser) {
-                users.getAlts(targetUser.characterID, function(alts){
-                    var userProfile = req.user;
-                    targetUser.account.pilots = alts;
-                    var sideBarSelected = 6;
-                    res.render('toolsPilotSearch.njk', {userProfile, sideBarSelected, targetUser});
-                })
-            } else {
-                req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.params.pilotname + ". Have they used our system before?"});
-                res.redirect(`/commander`);                        
-            }
+            users.getMain(targetUser.characterID, function(mainAccount){
+                if(targetUser && mainAccount) {
+                    users.getAlts(targetUser.characterID, function(alts){
+                        for(let i = 0; i < mainAccount.notes.length; i++){
+                            mainAccount.notes[i].date = new Date(mainAccount.notes[i].date).toDateString();
+                        }
+                        
+                        var userProfile = req.user;
+                        targetUser.account.pilots = alts;
+                        var sideBarSelected = 6;
+                        res.render('toolsPilotSearch.njk', {userProfile, sideBarSelected, targetUser, mainAccount});
+                    })
+                } else {
+                    req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.params.pilotname + " or their main. Have they used our system before?"});
+                    res.redirect(`/commander`);                        
+                }
+            })
         })
     }).catch(function (err) {
         req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.params.pilotname + ". Did you spell your pilot name correctly?"});
@@ -70,7 +76,7 @@ exports.searchForPilot = function(req, res){
                     res.status(400).send("Pilot is not registered");
                     return;
                 }
-                res.status(200).send({"name": user.name, "url": "/commander/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/info"});
+                res.status(200).send({"name": user.name, "url": "/commander/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/profile"});
             })
             
         })
@@ -197,5 +203,25 @@ exports.setTitle = function(req, res){
 
     user.setTitle(req.params.pilot, req.params.title, function(cb){
         res.status(cb).send();
+    })
+}
+
+/*
+* Creates a comment for a pilot
+* @params req{}
+* @return res{}
+*/
+exports.addComment = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"Only our FC team has access to that page! Think this is an error? Contact a member of leadership."});
+        res.status(403).redirect("/");
+        return;
+    }
+
+    users.findAndReturnUser(Number(req.params.pilotID), function(targetUser){
+        user.addNote((targetUser.account.main)? targetUser.characterID : targetUser.account.mainID, req.body.comment, (req.body.disciplinary == "on")? true : false, req.user, function(result){
+            res.status(result).redirect("/commander/"+targetUser.name.replace('/s/g','-')+"/profile");
+        })
+       
     })
 }

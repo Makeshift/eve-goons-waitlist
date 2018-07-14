@@ -37,7 +37,7 @@ database.connect(function () {
 	const users = require('./models/users.js')(setup);
 	const customSSO = require('./customSSO.js')(refresh, setup, request, url);
 	const fleets = require('./models/fleets.js')(setup);
-	const waitlist = require('./models/globalWaitlist.js')(setup);
+	const waitlist = require('./models/waitlist.js')(setup);
 
 	//Start timers
 	fleets.timers();
@@ -106,8 +106,13 @@ database.connect(function () {
 	app.use(passport.initialize());
 	app.use(passport.session());
 	app.use(bodyParser.urlencoded({ extended: true }));
-	app.use('/includes', express.static('public/includes'));
-	app.use(users.updateUserSession); //Force the session to update from DB on every page load because sessions are not the source of truth here!
+			
+	/* Middleware Checks */
+	app.use('/includes', express.static('public/includes'));//Exempt
+	app.use(require('./middleware/userSession.js')(setup).refresh);
+	app.use(require('./middleware/ban.js')(setup).check);
+	app.use(require('./middleware/whitelist.js')(setup).check);
+	app.use(require('./middleware/logout.js')(setup).check);
 
 	nunjucks.configure('views', {
 		autoescape: true,
@@ -124,7 +129,7 @@ database.connect(function () {
 		DEBUG: false,
 	});
 	//Create longpoll routes
-	longpoll.create("/poll/:id", (req,res, next) => {
+	longpoll.create("/poll/:id", (req, res, next) => {
 		req.id = req.params.id;
 		next();
 	});	

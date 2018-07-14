@@ -53,6 +53,12 @@ exports.fleetCompFilters = {
 	caps: [23757,37604,23915,37605,23911,37607,24483,37606,42242,45645],//Archon, Apostle, Chimera, Minokawa, Thanatos, Ninazu, Nidhoggur, Lif, Dagon, Loggerhead
 	supers: [23919,11567,23917,3764,23913,671,22852,23773,42241,3514,42125,42126,45649]//Aeon, Avatar, Wyvern, Leviathan, Nyx, Erebus, Hel, Ragnarok, Molok, Revenant, Vendetta, Vanquisher, Komodo
 }
+
+exports.browserNotification = {
+	"sound": '/includes/alarm.mp3',
+	"appName": 'Imperium Incursions Waitlist',
+	"imgUrl": '/includes/img/gsf-bee.png'
+}
 ```
 Many of the variables can be populated from here: https://developers.eveonline.com/
 

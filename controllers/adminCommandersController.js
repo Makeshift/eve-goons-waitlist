@@ -6,14 +6,17 @@ const log = require('../logger.js')(module);
 //Render FC Management Page
 exports.index = function(req, res) {
     if (users.isRoleNumeric(req.user, 4)){
-        var userProfile = {};
+        var manageUser = null;
         if (typeof req.query.user != "undefined") {
             users.findAndReturnUser(Number(req.query.user), function(profile) {
-                manageUser = profile;
-                genPage();
+                
+                users.getAlts(profile.characterID, function(Alts){
+                    manageUser = profile;
+                    manageUser.account.pilots = Alts;
+                    genPage();
+                })
             })
         } else {
-            manageUser = req.user;
             genPage();
         }
         
@@ -39,13 +42,11 @@ exports.index = function(req, res) {
                     }
                 });
 
-                users.getAlts(manageUser.characterID, function(Alts){
-                    manageUser.account.pilots = Alts;
-                    var sideBarSelected = 7;
-                    var userProfile = req.user;
-                    var fcs = fcList;
-                    res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml});	
-                })
+                
+                var sideBarSelected = 7;
+                var userProfile = req.user;
+                var fcs = fcList;
+                res.render('adminFC.njk', {userProfile, sideBarSelected, fcs, manageUser, roleDropdownContentHtml});     
             });
         }
     } else {

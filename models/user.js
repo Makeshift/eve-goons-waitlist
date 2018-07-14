@@ -6,53 +6,82 @@ const db = require('../dbHandler.js').db.collection('users');
 const log = require('../logger.js')(module);
 
 module.exports = function() {
-    /*
+	/*
+	* Return a location object {systemID, name} using ESI and cache
+    * @params: {user}
+    * @return: location{system_id, system_name}
+    */
+    module.getLocation = function (user, cb) {
+		module.getRefreshToken(user.characterID, function(accessToken){
+			if(!!!accessToken){
+				log.warn("user.getLocation: Could not get an accessToken", {pilot: user.name})
+				cb({id: 0, name: "unknown", lastcheck: Date.now()});
+				return;
+			}
+			esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
+				cache.get(locationResult.solar_system_id, null, function(systemObject){
+					var location = {
+						systemID: systemObject.id,
+						name: systemObject.name,
+					}
+					cb(location);
+				})
+			}).catch(function(err) {
+				log.error("user.getLocation: Error GET /characters/{character_id}/location/", {pilot: user.name, err});
+				cb({id: 0, name: "unknown", lastcheck: Date.now()});
+			})
+		}) 
+	}
+
+	/*
+	* Checks to see if the user is online
+	* @params characterID
+	* @return bool
+	*/
+	module.isOnline = function(characterID, online){
+		module.getRefreshToken(characterID, function(accessToken){
+			esi.characters(characterID, accessToken).online().then(function(isOnline){
+				online(isOnline);
+			})
+		}).catch(function(err){
+			console.error("user.isOnline: error getting refresh token", {characterID: characterID, err});
+			online(null);
+		})
+	}
+
+	/*
     * @params: {user}
     * @return: location{system_id, system_name}
     * @todo: Use the cache for the systems 
     */
-    module.getLocation = function (user, cb) {
-        refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-            if (err) {
-                log.error("user.getLocation: Error for requestNewAccessToken", { err, user });
-                cb(400, err);
-            } else {
-                module.updateRefreshToken(user.characterID, newRefreshToken);
-                esi.characters(user.characterID, accessToken).location().then(function (locationResult) {
-                    cache.get(locationResult.solar_system_id, null, function(systemObject){
-                        var location = {
-                            id: systemObject.system_id,
-                            name: systemObject.name,
-                        }
-                        cb(location);
-                    })
-                }).catch(function(err) {
-                    log.error("user.getLocation: Error GET /characters/{character_id}/location/", {err, user});
-                    cb({id: 0, name: "unknown", lastcheck: Date.now()});
-                })
-            }
-        })		
-    }
+	module.getRefreshToken = function(characterID, tokenCallback){
+		db.findOne({characterID: characterID}, function(err, doc){
+			refresh.requestNewAccessToken('provider', doc.refreshToken, function(error, accessToken, newRefreshToken){
+				if(error){
+					log.error("user.getRefreshToken - requestNewAccessToken: ", {pilot: characterID, error});
+					tokenCallback(null);
+					return;
+				}
+
+				db.updateOne({ 'characterID': characterID }, { $set: { refreshToken: newRefreshToken } }, function (err, result) {
+					if (err) log.error("user.getRefreshToken: Error for updateOne", { err, 'characterID': characterID });
+					tokenCallback(accessToken);
+					return;
+				})
+			});
+		})
+	}
 
     /*
     * @params: {user}, system_id, system_name
     * @return: cb(status)
     */
 	module.setDestination = function(user, systemID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.setDestination: Error for requestNewAccessToken", { err, user });
-				cb(err);
-			} else {
-				log.debug("Setting "+user.name+"\'s destination to "+systemID);
-				esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("user.setDestination: ", { err });
-					cb(err);
-				});
-			}
-		})
+		module.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).autopilot.destination(systemID).then(result => {
+				cb("OK");
+			});
+		})	
     }
     
     /*
@@ -60,20 +89,13 @@ module.exports = function() {
     * @return: cb(status)
     */
 	module.showInfo = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.showInfo: Error for requestNewAccessToken", { err, user });
+		module.getRefreshToken(user.characterID, function(accessToken){	
+			esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
+				cb("OK");
+			}).catch(err => {
+				log.error("user.showInfo: ", { err });
 				cb(err)
-			} else {
-				log.debug("Opening "+targetID+"\'s information window for "+user.name)
-				esi.characters(user.characterID, accessToken).window.info(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("user.showInfo: ", { err });
-					cb(err)
-				});
-				
-			}
+			});
 		})
 	}
 
@@ -82,32 +104,15 @@ module.exports = function() {
     * @return: cb(status)
     */
 	module.openMarketWindow = function(user, targetID, cb) {
-		refresh.requestNewAccessToken('provider', user.refreshToken, function (err, accessToken, newRefreshToken) {
-			if (err) {
-				log.error("user.openMarketWindow: Error for requestNewAccessToken", { err, user });
+		module.getRefreshToken(user.characterID, function(accessToken){
+			esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
+				cb("OK");
+			}).catch(err => {
+				log.error("user.openMarketWindow: ", { err });
 				cb(err)
-			} else {
-				log.debug("Opening the regional market for typeID: "+targetID+" for: "+user.name)
-				esi.characters(user.characterID, accessToken).window.market(targetID).then(result => {
-					cb("OK");
-				}).catch(err => {
-					log.error("user.openMarketWindow: ", { err });
-					cb(err)
-				});			
-			}
+			});	
 		})
-	}
-
-    /*
-    * @params: userID, refreshToken
-    * @return: void
-    */
-    module.updateRefreshToken = function (userID, refreshToken) {
-		db.updateOne({ 'characterID': userID }, { $set: { refreshToken: refreshToken } }, function (err, result) {
-			if (err) log.error("updateRefreshToken: Error for updateOne", { err, 'characterID': userID });
-		})
-	}
-	
+	}	
 
 	/*
 	* Invert the sideBar setting
@@ -115,7 +120,9 @@ module.exports = function() {
 	* @retunr status
 	*/
 	module.sideNav = function(user, cb){
-		db.updateOne({characterID: user.characterID},{$set: {"settings.smSideNav": !user.settings.smSideNav}}, function (err, result) {
+		let sideNav = (user.settings != undefined)? user.settings.smSideNav : true;
+		//Update the main account so that the settings propagate down
+		db.updateOne({characterID: (user.account.main)?user.characterID : user.account.mainID},{$set: {"settings.smSideNav": !sideNav}}, function (err, result) {
 			if(!err){
 				cb(200);
 			} else {
@@ -154,6 +161,60 @@ module.exports = function() {
 				log.error("user.setTitle - ", {target: targetID, err});
 				cb(400);
 			}
+		})
+	}
+
+	/*
+	* Sets the users waitlist main. Should auto clear by downtime
+	* @params characterID (int)
+	* @return null || err
+	*/
+	module.setWaitlistMain = function(characterID, waitlistMain, cb){
+		db.updateOne({characterID: Number(characterID)}, {$set: {waitlistMain: waitlistMain}}, function (err) {
+			if(!err){
+				cb(null);
+			} else {
+				log.error("user.setWaitlistMain - ", {"user ID": characterID, err});
+				cb(err);
+			}
+		})
+	}
+
+	/*
+	* Updates the users jabbername. 
+	* @function will @goonfleet.com
+	* @params characterID (int), jabberName
+	* @return status
+	*/
+	module.updateJabber = function(characterID, jabberName, cb){
+		let charPos = jabberName.indexOf("@")
+		jabberName = jabberName.substr(0, (charPos != -1)? charPos: jabberName.length);
+		
+		db.updateOne({characterID: characterID}, {$set: {"settings.xmpp": jabberName}},function(err){
+			if(err) cb(400);
+			if(!err) cb(200);
+		})
+	}
+
+
+	module.addNote = function(characterID, message, disciplinary, admin, cb){
+		let newNote = {
+			"date": new Date(),
+			"author": {
+				"characterID": admin.characterID,
+				"name": admin.name
+			},
+			"message": message,
+			"isDisciplinary": disciplinary
+		}
+		db.updateOne({characterID: characterID}, {$push: {notes: newNote}}, function(err){
+			if(!err){
+				cb(200);
+				return;
+			}
+			log.error("user.addNote: ", {"Character ID": characterID, "Admin Name": admin.name, message});
+			cb(400);
+			return;
 		})
 	}
     return module;
