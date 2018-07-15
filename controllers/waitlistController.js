@@ -144,8 +144,9 @@ exports.clearWaitlist = function(req, res) {
 
     waitlist.get(function(pilotsOnWaitlist) {
         for (var i = 0; i < pilotsOnWaitlist.length; i++) {
+            let charID = pilotsOnWaitlist[i].characterID;
             waitlist.remove("character", pilotsOnWaitlist[i].characterID, function(result){
-                wlog.removed(pilotsOnWaitlist[i].characterID, req.user.characterID);
+                wlog.removed(charID, req.user.characterID);
             });
         }
         res.status(200).send();
