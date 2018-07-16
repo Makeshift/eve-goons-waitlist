@@ -114,7 +114,7 @@ database.connect(function () {
 	app.use(require('./middleware/whitelist.js')(setup).check);
 	app.use(require('./middleware/logout.js')(setup).check);
 
-	nunjucks.configure('views', {
+	nunjucks.configure('resources/views', {
 		autoescape: true,
 		express: app
 	});
