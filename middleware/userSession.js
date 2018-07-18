@@ -8,7 +8,7 @@ module.exports = function (setup) {
 	//TODO: Make middleware for session, isBanned? isWhitelisted?
 	module.refresh = function (req, res, next) {
 		if (typeof req.session.passport === "undefined" || typeof req.session.passport.user === "undefined") {
-			next();
+			res.render("statics/login.html");
 			return;
 		}
 		users.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
