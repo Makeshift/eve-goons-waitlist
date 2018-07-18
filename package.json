@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "build:js": "node resources/minify.config.js",
     "scheduler": "babel-node scheduler_index.js",
     "build:docker": "docker build -t waitlist .",
     "start:docker": "docker run -it -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
@@ -36,6 +37,8 @@
     "passport-oauth2-refresh": "^1.0.0",
     "req-flash": "0.0.3",
     "request": "^2.83.0",
+    "uglify-js": "^3.4.4",
+    "uglifycss": "0.0.29",
     "winston": "^3.0.0-rc1"
   },
   "repository": {

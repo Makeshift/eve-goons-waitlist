@@ -71,3 +71,4 @@ typings/
 # For any scratch files to run little tests
 scratch/
 *.json
+public/includes/waitlist-app.min.js
