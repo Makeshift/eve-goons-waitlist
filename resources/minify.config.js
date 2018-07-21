@@ -1,4 +1,3 @@
-
 const log = require('../logger.js')(module);
 
 getPreamble(function(preamble){

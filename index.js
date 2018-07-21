@@ -109,10 +109,10 @@ database.connect(function () {
 			
 	/* Middleware Checks */
 	app.use('/includes', express.static('public/includes'));//Exempt
-	app.use(require('./middleware/userSession.js')(setup).refresh);
-	app.use(require('./middleware/ban.js')(setup).check);
-	app.use(require('./middleware/whitelist.js')(setup).check);
-	app.use(require('./middleware/logout.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/userSession.js')(setup).refresh);
+	app.use(/\/((?!auth).)*/, require('./middleware/ban.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/whitelist.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/logout.js')(setup).check);
 
 	nunjucks.configure('resources/views', {
 		autoescape: true,
