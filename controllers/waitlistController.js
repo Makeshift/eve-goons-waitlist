@@ -47,7 +47,6 @@ exports.signup = function(req, res){
         return;
     }
     //TODO: Add check is pilot whitelisted
-    //TODO: Add check - is pilot online?
     users.findAndReturnUser(Number(req.body.pilot), function(pilot){
         if(req.params.type == "main"){
             var waitlistMain = {

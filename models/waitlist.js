@@ -191,11 +191,26 @@ module.exports = function (setup) {
 
 		function lookup() {
 				db.find().forEach(function (doc) {
-					//Is user online?
-					//Update Location
+                    user.isOnline(Number(doc.characterID), function(online){
+                        if(online){
+                            //unset offlineCounter
+                            db.updateOne({ '_id': doc._id }, { $unset: {"offline": 0} }, function(err){
+                                if (err) log.error("waitlist.isOnline: Error unsetting offline flag", { "Pilot": doc.name, "Error": err });
+                            })
+                        } else {
+                            db.updateOne({ '_id': doc._id }, { $set: {
+                                "offline": (doc.offline > -1) ? doc.offline + 1 : 0
+                            } }, function(err){
+                                if (err) log.error("waitlist.isOnline: Error unsetting offline flag", { "Pilot": doc.name, "Error": err });
+                            })
+                        }
+
+                    });
+                    
+
 					user.getLocation(doc, function(location) {
-						db.updateOne({ '_id': doc._id }, { $set: { "location": location } }, function (err, result) {
-							if (err) log.error("waitlist.getLocation: Error for db.updateOne", { err });
+						db.updateOne({ '_id': doc._id }, { $set: { "location": location } }, function (err) {
+                            if (err) log.error("waitlist.getLocation: Error updating location", { "Pilot": doc.name, "Error": err });
 						});
 					})
 				})

@@ -6,14 +6,17 @@
 		<span>
 			<a href="javascript:void(0);" onclick="showInfo({{ user.characterID }})">{{ user.name }}</a>
 			{% if user.disciplinary %}
-			<a href="/commander/{{ user.name | replace(' ','-') }}/profile"><i class="fas fa-comment-exclamation"></i></a>
+			<a href="/commander/{{ user.name | replace(' ','-') }}/profile">
+				<i class="fas fa-comment-exclamation ml-1" style="color:#8A8D93"></i>
+			</a>
 			{% endif %}
+			{{ '<i class="fas fa-user-slash ml-1 text-warning" title="User maybe offline"></i>' | safe  if user.offline > 30 }}
 		</span>
 		<span id="{{ user.characterID }}-status">
 			{% if user.waitlistMain.characterID == user.characterID %}
-			{{ "Newbee" if user.newbee }}
+			{{ "Newbee," if user.newbee }}
 			{% else %}
-			// <a href="javascript:void(0);" onclick="showInfo({{ user.waitlistMain.characterID }})">{{ user.waitlistMain.name }}</a>
+			// <a href="javascript:void(0);" onclick="showInfo({{ user.waitlistMain.characterID }})">{{ user.waitlistMain.name }}</a>,
 			{% endif %}
 		</span>
 		
