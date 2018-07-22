@@ -67,7 +67,7 @@ exports.signup = function(req, res){
         }
 
         var contact = {
-            "xmpp": (!!req.user.settingsreq) ? req.user.settings.xmpp : null,
+            "xmpp": (!!req.user.settings) ? req.user.settings.xmpp : null,
             "pingTarget": req.user.characterID
         }
         

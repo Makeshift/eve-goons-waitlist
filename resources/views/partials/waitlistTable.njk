@@ -10,7 +10,7 @@
 				<i class="fas fa-comment-exclamation ml-1" style="color:#8A8D93"></i>
 			</a>
 			{% endif %}
-			{{ '<i class="fas fa-user-slash ml-1 text-warning" title="User maybe offline"></i>' | safe  if user.offline > 30 }}
+			{{ '<i class="fas fa-user-slash ml-1 text-warning" data-toggle="tooltip" data-title="User maybe offline"></i>' | safe  if user.offline > 30 }}
 		</span>
 		<span id="{{ user.characterID }}-status">
 			{% if user.waitlistMain.characterID == user.characterID %}
@@ -22,7 +22,7 @@
 		
 	</td>
 	<td>
-		<button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" title="Invite Pilot" onclick="invitePilot('{{ user.characterID }}','{{fleet.id}}');"><i class="fa fa-plus"></i></button>
+		<button class="btn btn-sm btn-success {{ "" if fleet.fc.characterID else "disabled" }}" onclick="invitePilot('{{ user.characterID }}','{{fleet.id}}');"><i class="fa fa-plus"></i></button>
 	</td>
 	<td>
 		<div class="dropdown">
@@ -37,10 +37,10 @@
 		</div>
 	</td>
 	<td>
-		<button class="btn btn-sm" title="Browser Alarm" onclick="alarmUser('{{ user.characterID }}','{{ fleet.id }}')"><i class="fa fa-bell"></i></button>
+		<button class="btn btn-sm" onclick="alarmUser('{{ user.characterID }}','{{ fleet.id }}')"><i class="fa fa-bell"></i></button>
 	</td>
 	<td>
-		<button class="btn btn-danger btn-sm" onclick="removePilot('{{ user.characterID }}')" title="Remove from Waitlist"><i class="fa fa-minus"></i></button>
+		<button class="btn btn-danger btn-sm" onclick="removePilot('{{ user.characterID }}')"><i class="fa fa-minus"></i></button>
 	</td>
 	<td>
 		<a href="#">
