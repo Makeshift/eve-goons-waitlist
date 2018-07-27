@@ -31,8 +31,7 @@ module.exports = function (setup) {
 						req.session.save(function (err) {
 							if (err) log.error("updateUserSession: Error for session.save", { err, 'characterID': user.characterID });
 							next();
-						})
-						
+						})	
 					})//End Session Change
 				})
 			}

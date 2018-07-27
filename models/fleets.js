@@ -289,9 +289,7 @@ module.timers = function () {
                 cb(members, fleetID, fleetObject);
             }).catch(function (err) {
                 log.error("fleets.getMembers: Error for esi.characters ", { err, fcID, fleetID });
-				if (typeof cb === "function") {
-					cb(null, fleetID, fleetObject);
-				}
+				cb(null, fleetID, fleetObject);
             })
         })
     }

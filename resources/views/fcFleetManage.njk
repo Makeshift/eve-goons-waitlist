@@ -30,12 +30,12 @@
 						<tr>
 							<td>FC (Boss):</td>
 							<td><a id="fcBoss" href="javascript:void(0);"></a></td>
-							<td><button class="btn btn-sm btn-block" onclick="setFC()">I'm the FC</button></td>
+							<td><button class="btn btn-sm btn-block" onclick="setFC({{fleet.id}})">I'm the FC</button></td>
 						</tr>
 						<tr>
 							<td>Backseating FC:</td>
 							<td><a id="fcBackseat" href="javascript:void(0);"></a></td>
-							<td><button class="btn btn-sm btn-block" onclick="setBackseat()">Update Backseat</button></td>
+							<td><button class="btn btn-sm btn-block" onclick="setBackseat({{fleet.id}})">Update Backseat</button></td>
 						</tr>
 						<tr>
 							<td>Fleet Status:</td>
@@ -44,11 +44,11 @@
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Update Status <i class="fas fa-sort-down float-right"></i></button>
 									<div class="dropdown-menu" role="menu">
-										<a class="dropdown-item" onclick="setFleetStatus('Forming')">Forming</a>
-										<a class="dropdown-item" onclick="setFleetStatus('Running')">Running</a>
-										<a class="dropdown-item" onclick="setFleetStatus('Docking Soon')">Docking Soon</a>
-										<a class="dropdown-item" onclick="setFleetStatus('Short Break')">Short Break</a>
-										<a class="dropdown-item" onclick="setFleetStatus('Not Listed')">Not Listed</a>       
+										<a class="dropdown-item" onclick="setFleetStatus({{fleet.id}}, 'Forming')">Forming</a>
+										<a class="dropdown-item" onclick="setFleetStatus({{fleet.id}}, 'Running')">Running</a>
+										<a class="dropdown-item" onclick="setFleetStatus({{fleet.id}}, 'Docking Soon')">Docking Soon</a>
+										<a class="dropdown-item" onclick="setFleetStatus({{fleet.id}}, 'Short Break')">Short Break</a>
+										<a class="dropdown-item" onclick="setFleetStatus({{fleet.id}}, 'Not Listed')">Not Listed</a>       
 									</div>
 								</div>
 							</td>
@@ -60,12 +60,12 @@
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Type <i class="fas fa-sort-down float-right"></i></button>
 									<div class="dropdown-menu" role="menu">
-										<a class="dropdown-item" onclick="setFleetType('Scouts')">Scouts</a>
-										<a class="dropdown-item" onclick="setFleetType('Vanguards')">Vanguards</a>
-										<a class="dropdown-item" onclick="setFleetType('Assaults')">Assaults</a>
-										<a class="dropdown-item" onclick="setFleetType('Headquarters')">Headquarters</a>
-										<a class="dropdown-item" onclick="setFleetType('Kundalini')">Kundalini</a>
-										<a class="dropdown-item" onclick="setFleetType('ARSEFleet')">ARSEFleet</a>        
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'Scouts')">Scouts</a>
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'Vanguards')">Vanguards</a>
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'Assaults')">Assaults</a>
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'Headquarters')">Headquarters</a>
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'Kundalini')">Kundalini</a>
+										<a class="dropdown-item" onclick="setFleetType({{fleet.id}}, 'ARSEFleet')">ARSEFleet</a>        
 									</div>
 								</div>
 							</td>
@@ -77,10 +77,10 @@
 								<div class="dropdown">
 									<button class="btn btn-default btn-sm btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Change Channel <i class="fas fa-sort-down float-right"></i></button>
 									<div class="dropdown-menu" role="menu">
-										<a class="dropdown-item" onclick="setCommsChannel('{{comms[0].url}}','{{comms[0].name | safe}}')">{{comms[0].name | safe}}</a>
-										<a class="dropdown-item" onclick="setCommsChannel('{{comms[1].url}}','{{comms[1].name | safe}}')">{{comms[1].name | safe}}</a>
-										<a class="dropdown-item" onclick="setCommsChannel('{{comms[2].url}}','{{comms[2].name | safe}}')">{{comms[2].name | safe}}</a>                             
-										<a class="dropdown-item" onclick="setCommsChannel('{{comms[3].url}}','{{comms[3].name | safe}}')">{{comms[3].name | safe}}</a>
+										<a class="dropdown-item" onclick="setCommsChannel({{fleet.id}}, '{{comms[0].url}}','{{comms[0].name | safe}}')">{{comms[0].name | safe}}</a>
+										<a class="dropdown-item" onclick="setCommsChannel({{fleet.id}}, '{{comms[1].url}}','{{comms[1].name | safe}}')">{{comms[1].name | safe}}</a>
+										<a class="dropdown-item" onclick="setCommsChannel({{fleet.id}}, '{{comms[2].url}}','{{comms[2].name | safe}}')">{{comms[2].name | safe}}</a>                             
+										<a class="dropdown-item" onclick="setCommsChannel({{fleet.id}}, '{{comms[3].url}}','{{comms[3].name | safe}}')">{{comms[3].name | safe}}</a>
 									</div>
 								</div>
 							</td>
@@ -221,49 +221,15 @@
     //On page load
     $(document).ready(function() {
         updateFleetGlance();
-		pollFleetInfo()
+		pollFleetInfo({{fleet.id}})
     
 	    //Start Timer
 		setInterval(function() {
 			updateFleetGlance();
-			pollFleetInfo();
-		}, 15000); //Every 15 seconds
+			pollFleetInfo({{fleet.id}});
+		}, 5000); //Every 5 seconds
 	});
 
-    //Invite a pilot to the fleet
-    function invitePilot(characterID, fleetID) {
-        var count = Number($("#fleetWaitlistCount").text());
-
-        $("#row-"+characterID).removeClass().addClass("invite-pending");
-
-        $.ajax({
-            type: "POST",
-			url: "/commander/admin/invite/" + characterID + "/" + fleetID
-        }).done(function() {
-            $("#row-"+characterID).removeClass().addClass("invite-sent");
-            $("#fleetWaitlistCount").text(Number($("#fleetWaitlistCount").text()) - 1);
-        }).fail(function(text) {
-            $("#row-"+characterID).removeClass().addClass("invite-failed");
-            $("#" + characterID + "-status").text(text.responseText);
-        });
-    }
-
-    //Remove a pilot from the waitlist
-    function removePilot(characterID) {
-        $.ajax({
-            type: "POST",
-			url: "/commander/admin/remove/" + characterID
-        }).done(function(){
-			//Colour and remove row. Then subtract the waitlist count by 1
-			$("#row-"+characterID).removeClass().addClass("invite-failed");
-			setTimeout(function() {
-				$("#fleetWaitlistCount").text(Number($("#fleetWaitlistCount").text()) - 1);
-				$("#row-"+characterID).remove();
-			}, 5000)
-		});
-
-        
-    }
 
     var compFilter = "fleet";
     $(".comp").click(function() {
@@ -285,113 +251,6 @@
         });
     }
 
-	//Update the fleet information panel
-	function pollFleetInfo(){
-		$.ajax({
-			type: "POST",
-			url: "/commander/{{fleet.id}}/update/info",
-			success: function(payload){
-				$("#fcBoss").text(payload.fc.name).attr("onclick", "showInfo(" + payload.fc.characterID + ")");
-				$("#fcBackseat").text(payload.backseat.name).attr("onclick", "showInfo(" + payload.backseat.characterID + ")")
-				$("#status").text(payload.status);
-				$("#type").text(payload.type);
-				$("#comms").text(payload.comms.name).attr("href", payload.comms.url);
-				$("#fleetSystem").text(payload.location.name).attr("onclick", "setWaypoint(" + payload.location.systemID + ")");
-			}
-		}).fail(function(err){
-			console.log("Failed to update the fleet info panel");
-		})
-	}
-
-    //Send a notification to a pilot.
-    function alarmUser(targetid, fleetid) {
-        $.ajax({
-            type: "POST",
-            url: "/commander/admin/alarm/" + targetid + "/" + fleetid,
-            datatype: "HTML",
-            success: function(data) {
-                setTimeout(function () {
-                    $("#row-"+targetid).removeClass().addClass("invite-pending");
-                 }, 0);
-                 setTimeout(function () {
-					$("#row-"+targetid).removeClass();
-                 }, 2500);	
-            }
-        }).fail(function(err) {
-            console.log("Faied to alarm user: ", err);
-        });
-    }
-
-    //Change the FC
-    function setFC() {
-        $.ajax({
-            type: "POST",
-            url: "/commander/{{ fleet.id }}/update/commander"
-        }).done(function() {
-            pollFleetInfo()
-        }).fail(function(err) {
-            console.log("Error updating the backseat: ", err);
-        })
-    }
-
-    //Change the backseat
-    function setBackseat() {
-        $.ajax({
-            type: "POST",
-            url: "/commander/{{ fleet.id }}/update/backseat"
-        }).done(function() {
-            pollFleetInfo();
-        }).fail(function(err) {
-            console.log("Error updating the backseat: ", err);
-        })
-    }
-
-    //Change the comms channel for the fleet
-    function setCommsChannel(commsUrl, commsName) {
-        $.ajax({
-            type: "POST",
-            url: "/commander/{{ fleet.id }}/update/comms",
-            data: {
-                name: commsName,
-                url: commsUrl
-            }
-        }).done(function() {
-            pollFleetInfo()
-        }).fail(function(err) {
-            console.log("Error updating comms information: ", err);
-        });
-    }
-
-    //Set the fleet status
-    function setFleetStatus(fleetStatus) {
-        $.ajax({
-            type: "POST",
-            url: "/commander/{{ fleet.id }}/update/status",
-            data: {
-                status: fleetStatus
-            }
-        }).done(function() {
-            pollFleetInfo()
-        }).fail(function(err) {
-            console.log("Error updating fleet status: ", err);
-        });
-    }
-
-    //Set the fleet type
-    function setFleetType(fleetType) {
-        $.ajax({
-            type: "POST",
-            url: "/commander/{{ fleet.id }}/update/type",
-            data: {
-                type: fleetType
-            }
-        }).done(function() {
-            pollFleetInfo()
-        }).fail(function(err) {
-            console.log("Error updating fleet type: ", err);
-        });
-    }
-
     //Remove all pilots from the waitlist.
     function clearWaitlist() {
         if (confirm("Are you sure you want to remove all users from the waitlist?\nThis will affect every fleet!")) {
@@ -404,10 +263,10 @@
                 }
             }).fail(function(err) {
                 console.log("Faied to clean the waitlist: ", err);
-                //$('#fleetActions').modal('toggle');
+                $('#fleetActions').modal('toggle');
             });
         } else {
-            //$('#fleetActions').modal('toggle');
+            $('#fleetActions').modal('toggle');
         }
     }
 

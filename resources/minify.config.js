@@ -25,7 +25,7 @@ getPreamble(function(preamble){
         }
         
         //Write the file
-        require('fs').writeFile("public/includes/waitlist-app.min.js", preamble + result.code, function (error) {
+        require('fs').writeFile("public/includes/js/waitlist-app.min.js", preamble + result.code, function (error) {
             err(error)
         });
     }
