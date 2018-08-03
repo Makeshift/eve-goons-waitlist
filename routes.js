@@ -87,6 +87,7 @@ const fleetsController = require('./controllers/fleetController.js');
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);
 	router.post('/internal-api/account/navbar', api_controller.navbar);
+	router.post('/internal-api/fleets', fleetsController.getFleetJson);
 	
 	//External - APIs
 	router.get('/api/sstats/members', statsController.getMemberList);

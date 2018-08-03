@@ -94,8 +94,8 @@ exports.delete = function(req, res){
 }
 
 /*
-* Gets the fleet info
-* @params req{}
+* Gets the fleet info of a specific fleet
+* @params req{ fleetID (int)}
 * @res res{}
 */
 exports.getInfo = function(req, res){
@@ -125,6 +125,49 @@ exports.getInfo = function(req, res){
         });
     });
 
+}
+
+/*
+* Returns a json package of all fleets for AJAX UIs
+* @params req{}
+* @res res{}
+*/
+exports.getFleetJson = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(401).send("Not Authenticated");
+        return;
+    }
+
+    //Strip out sensitive superfluous information
+    fleets.getFleetList(function(fleetList){
+        let payload = [];
+        for(let i = 0; i < fleetList.length; i++){
+            if(fleetList[i].status !== "Not Listed"){
+                payload.push({
+                    "fc": {
+                        "characterID": (fleetList[i].fc.characterID) ? fleetList[i].fc.characterID : "",
+                        "name": (fleetList[i].fc.name) ? fleetList[i].fc.name : "" 
+                    },
+                    "backseat": {
+                        "characterID": (fleetList[i].backseat.characterID) ? fleetList[i].backseat.characterID : "",
+                        "name": (fleetList[i].backseat.name) ? fleetList[i].backseat.name : "" 
+                    },
+                    "type": fleetList[i].type,
+                    "status": fleetList[i].status,
+                    "size": fleetList[i].members.length,
+                    "location": {
+                        "systemID": fleetList[i].location.systemID,
+                        "name": fleetList[i].location.name
+                    },
+                    "comms": {
+                        "name": fleetList[i].comms.name,
+                        "url": fleetList[i].comms.url
+                    }
+                });
+            }
+        }
+        res.status(200).send(payload);
+    });
 }
 
 /*

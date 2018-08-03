@@ -1,3 +1,7 @@
+/* Hide Div */
+.hide {
+	display: none;
+}
 
 /* Strike out */
 .strike{

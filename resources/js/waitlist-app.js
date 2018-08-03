@@ -265,3 +265,67 @@ function alarmUser(targetid, fleetid) {
         console.log("Faied to alarm user: ", err);
     });
 }
+
+/* Public Waitlist AJAX */
+
+function getFleetList(){
+    $.ajax({
+        type: "POST",
+        url: "/internal-api/fleets"
+    }).done(function(data){
+        $("#fleetInfoCards").empty();//
+        if(data.length > 0){
+            $("#noFleetBanner").addClass("hide");
+            for(var i = 0; i < data.length; i++){
+                var html = '<div id="fleetInfoCards" class="col-lg-6 col-md-12">';       
+                    html += '<div class="statistic-block block">';
+                    //Title
+                    html += '<div class="title">';
+                        html += '<strong>Fleet Info</strong>';
+                    html += '</div>';
+
+                        //Table
+                        html += '<table class="table table-striped table-sm noselect">';
+                            html += '<tbody>';
+                                html += '<tr>';
+                                    html += '<td  class="tw60per">Fleet Commander:</td>';
+                                    html += '<td><a href="javascript:void(0);" onclick="showInfo(' + data[i].fc.characterID + ')">' + data[i].fc.name + '</a></td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Secondary Fleet Commander:</td>';
+                                    html += '<td><a href="javascript:void(0);" onclick="showInfo(' + data[i].backseat.characterID + ')">' + data[i].backseat.name + '</a></td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Fleet Type:</td>';
+                                    html += '<td>' + data[i].type + '</td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Fleet Status:</td>';
+                                    html += '<td>' + data[i].status + '</td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Fleet Size:</td>';
+                                    html += '<td>' + data[i].size + '</td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Fleet Location:</td>';
+                                    html += '<td><a href="javascript:void(0)" onclick="setWaypoint(' +  data[i].location.systemID + ')">' + data[i].location.name + '</a></td>';
+                                html += '</tr>';
+                                html += '<tr>';
+                                    html += '<td>Fleet Comms:</td>';
+                                    html += '<td><a href="' + data[i].comms.url + '">' + data[i].comms.name + '</a></td>';
+                                html += '</tr>';
+                            html += '</tbody>';
+                        html += '</table>';
+                    html += '</div>';
+                $("#fleetInfoCards").append(html)
+            }
+        } 
+        else
+        {
+            $("#noFleetBanner").removeClass("hide");
+        }
+    }).fail(function(err) {
+        console.log(err);
+    });
+}
