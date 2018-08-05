@@ -130,7 +130,7 @@
 					</li>
 					<li class="nav-item">
 						<a role="tab" data-toggle="pill" href="#fleetlist" class="nav-link">
-							<div class="badge badge-dark">{{ fleet.members.length }}</div>
+							<div id="numMembers" class="badge badge-dark">0</div>
 							Fleet Comp
 						</a>
 					</li>
@@ -189,7 +189,23 @@
 					<!-- End Alt Waitlist -->
 					<!-- Fleetlist -->
 					<div role="tabpanel" class="tab-pane fade" id="fleetlist">
-						Todo
+						<table class="table table-striped table-hover table-sm">
+							<thead>
+								<tr>
+									<th class="tw30 text-right">Name </th>
+									<th class="tw20per">// Main in Fleet</th>
+									<th class="tw30"><!-- ACtion Buttons --></th>
+									<th class="tw30"><!-- ACtion Button --></th>
+									<th class="tw30">Active</th>
+									<th class="tw30">Available Fits</th>
+									<th class="tw30">System</th>
+									<th class="tw80">Joined</th>
+								</tr>
+							</thead>
+							<tbody id="fleetPilotsTable">
+							</tbody>
+						</table>
+					</div>					
 					</div>
 				</div>
 			</div>
@@ -221,12 +237,14 @@
     //On page load
     $(document).ready(function() {
         updateFleetGlance();
-		pollFleetInfo({{fleet.id}})
+		pollFleetInfo({{fleet.id}});
+		pollPilotsInFleet({{fleet.id}});
     
 	    //Start Timer
 		setInterval(function() {
 			updateFleetGlance();
 			pollFleetInfo({{fleet.id}});
+			pollPilotsInFleet({{fleet.id}});
 		}, 5000); //Every 5 seconds
 	});
 

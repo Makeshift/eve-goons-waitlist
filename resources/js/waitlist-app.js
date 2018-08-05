@@ -132,6 +132,7 @@ function showNotification(payload) {
 * > Update fleet info (FC, Backseat, Comms, Type)
 * > Waitlist functions (Invites, Removals, Alarms)
 * > Waitlist Admin (Comp Window, Clear all, Close)
+* > Waitlist Tables (Pilots in Fleet)
 */
 function setFC(fleetID) {
     $.ajax({
@@ -266,16 +267,91 @@ function alarmUser(targetid, fleetid) {
     });
 }
 
-/* Public Waitlist AJAX */
+
+/* Waitlist Tables */
+function pollPilotsInFleet(fleetID){
+    $.ajax({
+        type: "GET",
+        url: "/internal-api/fleet/"+ fleetID +"/members"
+    }).done(function(data){
+        $("#fleetPilotsTable").empty();
+        for(var i = 0; i < data.length; i++){
+            var html = "<tr id='row-"+data[i].pilot.characterID+"'>";
+                    html +="<td>"
+                        html += "<img src='https://image.eveonline.com/Character/"+data[i].pilot.characterID+"_64.jpg' style='height:75%' alt='avatar'> "
+                    html += "</td>";
+                    html += "<td>";
+                        html += "<a href='javascript:void(0);' onclick='showInfo("+data[i].pilot.characterID+")'>"+data[i].pilot.name+"</a>";
+                        //TODO: Display alt if info is there.  
+                    html += "</td>";
+                    html += "<td>";
+                        html += "<div class='dropdown'>";
+                            html += "<button class='btn btn-info btn-sm dropdown-toggle' data-toggle='dropdown' aria-expanded='false' type='button'><i class='fas fa-caret-circle-down' style='margin-right:-50%'></i></button>";
+                            html += "<div class='dropdown-menu' role='menu'>";
+                                html += "<a class='dropdown-item' href='/commander/"+data[i].pilot.name.replace(' ','-')+"/profile'>View Pilot Profile</a>";
+                                html += "<a class='dropdown-item' href='/commander/"+data[i].pilot.name.replace(' ','-')+"/skills'>View Pilot Skills</a>";
+                                //TODO: XMPP if info is there
+                            html += "</div>";
+                        html += "</div>";
+                    html += "</td>";
+                    html += "<td>";
+                        html += "<button class='btn btn-danger btn-sm disabled' onclick='removePilot()'><i class='fa fa-minus'></i></button>";
+                    html += "</td>";
+                    html += "<td>";
+                        html += "<img src='https://image.eveonline.com/Render/"+data[i].activeShip+"_32.png' alt='Active Ship'>";
+                    html += "</td>";
+                    html += "<td>";
+                        //there ships here
+                    html += "</td>";
+                    html += "<td>";
+                        html += "<a href='javascript:void(0);' onclick='setWaypoint("+data[i].system.systemID+")'>"+data[i].system.name+"</a></td>";
+                    html += "</td>";
+                    html += "<td>"+data[i].joined+"</td>";
+                html += "</tr>";
+
+            $("#fleetPilotsTable").prepend(html);
+            $("#numMembers").text(data.length);
+        }
+    }).fail(function(err){
+        console.log(err);
+    })
+}
+
+/* Public Waitlist AJAX
+* 
+* > Update Queue (Displays waitlist main + number of people on wl)
+* > Get Fleets (Lists Fleets, Removals, Alarms)
+*/
+function updateQueue(){
+    $.ajax({
+        type: "GET",
+        url: "/internal-api/waitlist/get-pilot-position"
+    }).done(function(data){
+        console.log(data)
+        if(data.position !== null){
+            $("#queueInfo").removeClass("hide");
+            $("#queueInfoYourPos").text(data.position + " out of " + data.count);
+            $("#queueInfoYourMain").text("### TODO");
+        } else {
+            $("#queueInfo").addClass("hide");
+        }
+    }).fail(function (err){
+        console.log(err);
+    });
+}
+
 
 function getFleetList(){
     $.ajax({
         type: "POST",
         url: "/internal-api/fleets"
     }).done(function(data){
-        $("#fleetInfoCards").empty();//
+        $("#fleetInfoCards").empty();
+        $("#waitlistCards").addClass("hide");
         if(data.length > 0){
             $("#noFleetBanner").addClass("hide");
+            $("#waitlistCards").removeClass("hide");
+
             for(var i = 0; i < data.length; i++){
                 var html = '<div id="fleetInfoCards" class="col-lg-6 col-md-12">';       
                     html += '<div class="statistic-block block">';

@@ -1,5 +1,6 @@
 const setup = require('../setup.js');
 const broadcast = require('./broadcastController.js');
+const cache = require('../cache.js')(setup);
 const esi = require('eve-swagger');
 const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
@@ -128,12 +129,72 @@ exports.getInfo = function(req, res){
 }
 
 /*
+* Returns a json package of all members in a fleet for AJAX UIs
+* @params req{}
+* @res res{}
+*/
+exports.getMembersJson = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(401).send("Not Authenticated");
+        return;
+    }
+
+    fleets.get(req.params.fleetID, function(fleet){
+        if(!fleet){
+            res.status(404).send("Fleet not found");
+            return;
+        }
+
+        var membersObject = [];
+        for(var i = 0; i < fleet.members.length; i++){
+            
+            var signuptime = Math.floor((Date.now() - Date.parse(fleet.members[i].join_time))/1000/60);
+            var signupHours = 0;
+            while (signuptime > 59) {
+                signuptime -= 60;
+                signupHours++;
+            }
+        
+            membersObject.push({
+                "pilot":{
+                    "characterID": fleet.members[i].character_id,
+                    "name": "Damn"
+                },
+                "waitlistMain": {},
+                "activeShip": fleet.members[i].ship_type_id,
+                "availableFits": {},
+                "system": {
+                    "systemID": fleet.members[i].solar_system_id,
+                    "name": "ARggghh"
+                },
+                "joined": signupHours +'H '+signuptime+'M'
+            });
+        }
+
+        // for(let i = 0; i < membersObject.length; i++){
+        //     cache.get(membersObject[i].system.systemID, 86400, function(systemObject){
+        //         console.log(systemObject)
+        //         membersObject[i].system.name = systemObject.name;
+        //     });
+        // }
+        
+        /*
+        pilots.sort(function(a,b) {
+            if(a.name > b.name) return 1;
+            return -1;
+        })*/
+        res.status(200).send(membersObject);
+    });
+    
+}
+
+/*
 * Returns a json package of all fleets for AJAX UIs
 * @params req{}
 * @res res{}
 */
 exports.getFleetJson = function(req, res){
-    if(!users.isRoleNumeric(req.user, 1)){
+    if(!users.isRoleNumeric(req.user, 0)){
         res.status(401).send("Not Authenticated");
         return;
     }
@@ -156,8 +217,8 @@ exports.getFleetJson = function(req, res){
                     "status": fleetList[i].status,
                     "size": fleetList[i].members.length,
                     "location": {
-                        "systemID": fleetList[i].location.systemID,
-                        "name": fleetList[i].location.name
+                        "systemID": (fleetList[i].system) ? fleetList[i].location.systemID : 0,
+                        "name": (fleetList[i].system) ? fleetList[i].location.name : ""
                     },
                     "comms": {
                         "name": fleetList[i].comms.name,

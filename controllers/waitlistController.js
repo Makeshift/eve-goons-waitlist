@@ -19,20 +19,13 @@ exports.index = function(req, res){
     }
 
     banner.getLast(function(banner){
-        fleets.getFleetList(function (fleets) {           
-            var fleetCount = 0;
-            for (var i = 0; i < fleets.length; i++) {
-                if (fleets[i].status !== "Not Listed") fleetCount++;
-            }
-
-            waitlist.getQueue((!!req.user.waitlistMain)? req.user.waitlistMain.characterID : 0, function(queueInfo) {
-                waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
-                    var userProfile = req.user;
-                    var sideBarSelected = 1;
-                    res.render('waitlist.njk', {userProfile, sideBarSelected, banner, fleets, fleetCount, charsOnWl, queueInfo});
-                })
+        waitlist.getQueue((!!req.user.waitlistMain)? req.user.waitlistMain.characterID : 0, function(queueInfo) {
+            waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
+                var userProfile = req.user;
+                var sideBarSelected = 1;
+                res.render('waitlist.njk', {userProfile, sideBarSelected, banner, charsOnWl, queueInfo});
             })
-        })
+        })        
     })
 }
 
@@ -150,4 +143,20 @@ exports.clearWaitlist = function(req, res) {
         }
         res.status(200).send();
     })        
+}
+
+/*
+* Removes the pilot position on the waitlist
+* @params req{}
+* @return res{}
+*/
+exports.getPilotPosJson = function(req, res){
+    if(!users.isRoleNumeric(req.user, 0)){
+        res.status(401).send("Not Authorised");
+        return;
+    }
+
+    waitlist.getQueue(req.user.characterID, function(queueObject){
+        res.send(queueObject);
+    });
 }

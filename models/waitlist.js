@@ -134,7 +134,7 @@ module.exports = function (setup) {
     * @return { position, waitlistSize}
     */
     module.getQueue = function(characterID, cb){
-       db.find().sort({ signup: 1 }).toArray(function(err, docs){
+        db.find().sort({ signup: 1 }).toArray(function(err, docs){
             if(err){
                 log.error("waitlist.getQueue: ", err)
                 cb(null);
