@@ -145,7 +145,9 @@ exports.getMembersJson = function(req, res){
             return;
         }
 
-        var membersObject = [];
+        var promises = [];
+
+        // var membersObject = [];
         for(var i = 0; i < fleet.members.length; i++){
             
             var signuptime = Math.floor((Date.now() - Date.parse(fleet.members[i].join_time))/1000/60);
@@ -155,21 +157,33 @@ exports.getMembersJson = function(req, res){
                 signupHours++;
             }
         
-            membersObject.push({
-                "pilot":{
-                    "characterID": fleet.members[i].character_id,
-                    "name": "Damn"
-                },
-                "waitlistMain": {},
-                "activeShip": fleet.members[i].ship_type_id,
-                "availableFits": {},
-                "system": {
-                    "systemID": fleet.members[i].solar_system_id,
-                    "name": "ARggghh"
-                },
-                "joined": signupHours +'H '+signuptime+'M'
+            var index = i;
+
+            var promise = new Promise(function(resolve, reject) {
+                cache.get(Number(fleet.members[index].solar_system_id), 86400, function(systemObject){
+                    resolve({
+                        "pilot":{
+                            "characterID": fleet.members[index].character_id,
+                            "name": null || ""
+                        },
+                        "waitlistMain": {},
+                        "activeShip": fleet.members[index].ship_type_id,
+                        "availableFits": {},
+                        "system": {
+                            "systemID": fleet.members[index].solar_system_id,
+                            "name": systemObject.name
+                        },
+                        "joined": signupHours +'H '+signuptime+'M'
+                    });
+                });
             });
+
+            promises.push(promise);
         }
+
+        Promise.all(promises).then(function(members) {
+            res.status(200).send(members);
+        });
 
         // for(let i = 0; i < membersObject.length; i++){
         //     cache.get(membersObject[i].system.systemID, 86400, function(systemObject){
@@ -183,7 +197,6 @@ exports.getMembersJson = function(req, res){
             if(a.name > b.name) return 1;
             return -1;
         })*/
-        res.status(200).send(membersObject);
     });
     
 }
