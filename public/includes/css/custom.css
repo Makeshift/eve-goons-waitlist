@@ -299,24 +299,3 @@ nav#sidebar.shrinked > ul > li > a > .svg-inline--fa, nav#sidebar.shrinked > ul 
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
-
-/* width */
-::-webkit-scrollbar {
-	width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-	background-color: rgba(0,0,0, 0.4);
-	background-clip: content-box;
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-	background: rgb(180, 22, 51); 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: rgb(158, 17, 43); 
-}
