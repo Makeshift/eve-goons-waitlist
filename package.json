@@ -10,7 +10,8 @@
     "build:docker": "docker build -t waitlist .",
     "start:docker": "docker run -it -v ${PWD}:/opt/goon_waitlist -v /opt/goon_waitlist/node_modules -p 3000:3000 --rm waitlist",
     "start:dockercmp": "docker-compose up",
-    "test": "jest"
+    "test": "jest",
+    "webpack": "cross-env NODE_ENV=development webpack --config webpack.config.js"
   },
   "keywords": [
     "eve",
@@ -49,6 +50,10 @@
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-2": "^6.24.1",
-    "jest": "^23.1.0"
+    "cross-env": "^5.2.0",
+    "jest": "^23.1.0",
+    "webpack": "^4.16.5",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev": "^1.1.1"
   }
 }
