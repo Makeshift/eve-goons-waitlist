@@ -145,9 +145,9 @@ exports.getMembersJson = function(req, res){
             return;
         }
 
-        var promises = [];
-
-        // var membersObject = [];
+        var systemPromises = [];
+        var namePromises = [];
+        
         for(var i = 0; i < fleet.members.length; i++){
             
             var signuptime = Math.floor((Date.now() - Date.parse(fleet.members[i].join_time))/1000/60);
@@ -178,27 +178,40 @@ exports.getMembersJson = function(req, res){
                 });
             });
 
-            promises.push(promise);
+            systemPromises.push(promise);
+
+            var namePromise = new Promise(function(resolve, reject) {
+                cache.get(fleet.members[index].character_id, 86400, function(userObject) {
+                    resolve({
+                        id: userObject.id,
+                        name: userObject.name
+                    });
+                });
+            });
+
+            namePromises.push(namePromise);
         }
 
-        Promise.all(promises).then(function(members) {
-            res.status(200).send(members);
-        });
+        Promise.all(systemPromises).then(function(members) {
+            Promise.all(namePromises).then(function(names) {
 
-        // for(let i = 0; i < membersObject.length; i++){
-        //     cache.get(membersObject[i].system.systemID, 86400, function(systemObject){
-        //         console.log(systemObject)
-        //         membersObject[i].system.name = systemObject.name;
-        //     });
-        // }
-        
-        /*
-        pilots.sort(function(a,b) {
-            if(a.name > b.name) return 1;
-            return -1;
-        })*/
+                for(let i = 0; i < members.length; i++) {
+                    if(!names[i]) {
+                        continue
+                    }
+
+                    members[i].pilot.name = names[i].name || "";
+                }
+
+                members.sort(function(a,b) {
+                    if(a.pilot.name > b.pilot.name) return 1;
+                    return -1;
+                })
+
+                res.status(200).send(members);
+            });
+        });
     });
-    
 }
 
 /*
