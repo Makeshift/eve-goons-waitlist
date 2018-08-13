@@ -19,7 +19,7 @@ database.connect(() => {
     //     console.log("I'm doing something important right now");
     // });
     
-    scheduler.scheduled(11, 00, "Waitlist Cleanup", () => {
+    scheduler.scheduled(11, 0, "Waitlist Cleanup", () => {
         const collections = ['waitlist', 'fleets'];
 
         for(let i = 0; i < collections.length; i++) {
