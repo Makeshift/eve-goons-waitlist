@@ -198,21 +198,27 @@ module.exports = function (setup) {
 	module.getAlts = function(userID, returnCharacters){
 		let knownPilots = [];
 		module.getMain(userID, function(mainObject){
+            if(!mainObject) {
+                returnCharacters([]);
+                return;
+            } 
+
 			knownPilots.push({"characterID": mainObject.characterID, "name": mainObject.name});
-				db.find(
-					{
-						characterID: {
-							$in: mainObject.account.linkedCharIDs
-						}
+			
+			db.find(
+				{
+					characterID: {
+						$in: mainObject.account.linkedCharIDs
 					}
-				).toArray(function(err, altObjects) {
-					var xformed = altObjects.map( item => {
-						return { "characterID": item.characterID, "name": item.name };
-					});
-					knownPilots = knownPilots.concat(xformed);
-					returnCharacters(knownPilots);
+				}
+			).toArray(function(err, altObjects) {
+				var xformed = altObjects.map( item => {
+					return { "characterID": item.characterID, "name": item.name };
 				});
-		})	
+				knownPilots = knownPilots.concat(xformed);
+				returnCharacters(knownPilots);
+			});
+		})
 	}
 
 	/*

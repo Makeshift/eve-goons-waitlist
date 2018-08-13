@@ -123,7 +123,7 @@ module.exports = function (setup) {
 			if (!!!doc) {
 				cb(false)
 			} else {
-				cb(true);
+                cb(doc.signup);
 			}
 		})
 	}
