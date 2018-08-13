@@ -23,6 +23,6 @@ const absorbInitialConnectError = function absorbInitialConnectError(cb, databas
 	});
 };
 
-const dbService = {connect: absorbInitialConnectError};
+let dbService = {connect: absorbInitialConnectError};
 
 module.exports = dbService;
