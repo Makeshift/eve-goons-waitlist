@@ -8,16 +8,14 @@ module.exports = function (setup) {
 	//TODO: Make middleware for session, isBanned? isWhitelisted?
 	module.refresh = function (req, res, next) {
 		if (!req.session.passport || !req.session.passport.user) {
-            console.log("smaller fuck. but still. WTF MAN?");
 			res.render("statics/login.html");
 			return;
 		}
 		users.findAndReturnUser(req.session.passport.user.characterID, function (userData) {
 			if (!userData) {
-                console.log("WHAT THE ACTUAL FUCK!!!@#!#$!$@@$!@$!@$!");
 				req.logout();
 				res.render("statics/login.html");
-				next();
+				return;
 			} else {
 				
 				users.getMain(userData.characterID, function(mainUserData){
