@@ -327,14 +327,12 @@ function updateQueue(){
         type: "GET",
         url: "/internal-api/waitlist/get-pilot-position"
     }).done(function(data){
-        console.log(data)
-        if(data.position !== null){
+        //if(data.position !== null){
             $("#queueInfo").removeClass("hide");
             $("#queueInfoYourPos").text(data.position + " out of " + data.count);
-            $("#queueInfoYourMain").text("### TODO");
-        } else {
-            $("#queueInfo").addClass("hide");
-        }
+        //} else {
+            //$("#queueInfo").addClass("hide");
+        //}
     }).fail(function (err){
         console.log(err);
     });
@@ -404,4 +402,72 @@ function getFleetList(){
     }).fail(function(err) {
         console.log(err);
     });
+}
+
+
+function pilotState(charID){
+    $.ajax({
+        type: "POST",
+        url: "/internal-api/waitlist/pilots/" + charID
+    }).done(function(data){ 
+        //Update queue - waitlist main
+        if($("#queueInfoYourMain").text() !== data.main.name){
+            $("#queueInfoYourMain").text(data.main.name);
+        }
+
+        $("#altsWaitlistTable").empty();// -POST-/join/alt
+        for(var i = 0; i < data.other.length; i++){
+            var html = "<tr style='height:33px;'>";
+                    html += "<td>";
+                        html += "<a href='javascript:void(0);' onclick='showInfo("+data.other[i].characterID+")'>"+data.other[i].name+"</a>";
+                    html += "</td>";
+                    if(data.other[i].onWaitlist){
+                        html += "<td>";
+                            html += "On Waitlist";
+                        html += "</td>";
+                        html += "<td>";
+                            html += "<button class='btn btn-sm btn-danger' type='button' onclick='remove(\"character\", "+data.other[i].characterID+")'><i class='fas fa-minus'></i></button>";
+                        html += "</td>";
+                    } else {
+                        html += "<td>";
+                            html += "<input id='ship"+data.other[i].characterID+"' type='text' name='ship' class='form-control' placeholder='Ship Type (Nyx)' style='height: 30px;line-height: 1px;font font-size:;font-size: 10px;' autocomplete='off' required>";
+                        html += "</td>";
+                        html += "<td>";
+                            html += "<button class='btn btn-sm btn-success' type='button' onclick='join(\"alt\", "+data.other[i].characterID+")'><i class='fas fa-plus'></i></button>";
+                        html += "</td>";
+                    }
+                html += "</tr>";    
+            $("#altsWaitlistTable").append(html);
+        }
+    }).fail(function(err){
+        console.log(err);
+    });
+}
+
+//Join with Main or Alt
+function join(type, pilotID){
+    $.ajax({
+        type: "POST",
+        url: "/join/"+type,
+        data: {
+            pilot: pilotID,
+            ship: $("#ship"+pilotID).val()
+        }
+    }).done(function(){
+        pilotState(pilotID);
+    }).fail(function(error){
+        console.log(error);
+    })
+}
+
+function remove(type, pilotID){
+	$.ajax({
+		url: '/remove/' + type + '/' + pilotID,
+		type: 'delete',
+		success: function(){
+			pilotState(pilotID);
+		}
+	}).fail(function(err){
+        console.log(err);
+    })
 }

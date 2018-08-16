@@ -232,7 +232,8 @@ exports.pilotStatus = function(req, res){
             Promise.all(inFleetPromise).then(function(members) {               
                 //Sort in order of signup
                 pilotStates.other.sort(function(a,b) {
-                    if(a.timestamp > b.timestamp) return 1;
+                    if(!!a.timestamp) return 1;
+                    if(a.timestamp < b.timestamp) return 1;
                     return -1;
                 })
                 

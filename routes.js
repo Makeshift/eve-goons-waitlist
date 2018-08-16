@@ -84,7 +84,7 @@ const fleetsController = require('./controllers/fleetController.js');
 	//App API endpoints
 	router.post('/internal-api/fleetcomp/:fleetid/:filter', api_controller.fleetAtAGlance);
 	router.post('/internal-api/waitlist/remove-all', waitlistController.clearWaitlist);
-	router.get('/internal-api/waitlist/pilots/:characterID', waitlistController.pilotStatus);
+	router.post('/internal-api/waitlist/pilots/:characterID', waitlistController.pilotStatus);
 	router.post('/internal-api/banner', api_controller.addBanner);
 	router.post('/internal-api/banner/:_id', api_controller.removeBanner);
 	router.post('/internal-api/account/navbar', api_controller.navbar);
