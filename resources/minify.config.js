@@ -35,7 +35,7 @@ function getPreamble(cb){
     var text;
     let d = new Date();
     text = "/*\n";
-    text += "* Goon Incursion Waitlist\n";
+    text += "* Imperium Incursions Waitlist\n";
     text += "* @Author: Samuel Grant\n";
     text += "* @Repo: https://github.com/makeshift-eve-goons-waitlist\n"
     text += "* @Includes: Bird-AlertJS, FrontJS\n";
