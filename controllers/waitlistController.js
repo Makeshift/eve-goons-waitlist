@@ -54,7 +54,7 @@ exports.signup = function(req, res){
                 }
                 resolve();
             } else {
-                require('./tmp.js').pilotStatus(pilot.characterID, function(dataResponse){
+                module.getWaitlistState(pilot.characterID, function(dataResponse){
                     waitlistMain = {
                         "characterID": dataResponse.main.characterID,
                         "name": dataResponse.main.name
@@ -138,7 +138,6 @@ exports.clearWaitlist = function(req, res) {
         return;
     }
     
-
     waitlist.get(function(pilotsOnWaitlist) {
         for (var i = 0; i < pilotsOnWaitlist.length; i++) {
             let charID = pilotsOnWaitlist[i].characterID;
@@ -161,13 +160,27 @@ exports.pilotStatus = function(req, res){
         return;
     }
 
+    module.getWaitlistState(req.params.characterID, function(pilotStates){
+        module.getQueue(pilotStates.main.characterID, function(theNumbers){
+            pilotStates.queue = theNumbers;
+            res.send(pilotStates);
+        });
+    });
+}
+
+/*
+* Returns an object of a users known alts (On waitlist or fleet or else)
+* @params req{ pilotID (int) }
+* @return res{}
+*/
+module.getWaitlistState = function(characterID, cb){
     var pilotStates = {
         "main": {},
         "other": []
     }
 
     //Get main
-    users.getAlts(Number(req.params.characterID), function(knownPilots){
+    users.getAlts(Number(characterID), function(knownPilots){
         for(let i = 0; i < knownPilots.length; i++) 
         {
             pilotStates.other.push(knownPilots[i]);
@@ -238,14 +251,34 @@ exports.pilotStatus = function(req, res){
                     if(a.name > b.name) return 1;
                     return -1;
                 })
-
-
-                //get main pos && queue size
-                require('./tmp.js').tmp(pilotStates.main.characterID, function(theNumbers){
-                    pilotStates.queue = theNumbers;
-                    res.send(pilotStates);
-                });
+                
+                cb(pilotStates);
             })
         });
     })
+}
+
+
+module.getQueue = function(characterID, cb){
+    require('../dbHandler.js').db.collection('waitlist').find().sort({ signup: 1 }).toArray(function(err, docs){
+        if(err){
+            log.error("waitlist.getQueue: ", err)
+            cb(null);
+            return;
+        }
+    
+        var data = {"mainPos":null, "totalMains": null}
+        for(let i = 0; i < docs.length; i++){
+            //Number of Mains
+            if(docs[i].characterID === docs[i].waitlistMain.characterID) data.totalMains = i;
+
+            //Your position
+            if(!data.mainPos && characterID === docs[i].characterID){
+                data.mainPos = i;
+                continue;
+            }
+        }
+
+        cb(data);
+    });
 }
