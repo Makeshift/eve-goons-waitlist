@@ -2,7 +2,7 @@ const setup = require('../setup.js');
 const banner = require('../models/waitlistBanner.js')(setup);
 const broadcast = require('./broadcastController.js');
 const fleets = require('../models/fleets')(setup);
-const user = require('../models/user.js')(setup);
+const log = require('../logger.js')(module);
 const users = require('../models/users.js')(setup);
 const waitlist = require('../models/waitlist.js')(setup);
 const wlog = require('../models/wlog.js');
@@ -19,13 +19,11 @@ exports.index = function(req, res){
     }
 
     banner.getLast(function(banner){
-        waitlist.getQueue((!!req.user.waitlistMain)? req.user.waitlistMain.characterID : 0, function(queueInfo) {
-            waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
-                var userProfile = req.user;
-                var sideBarSelected = 1;
-                res.render('waitlist.njk', {userProfile, sideBarSelected, banner, charsOnWl, queueInfo});
-            })
-        })        
+        waitlist.checkCharsOnWaitlist(req.user.account.pilots, function(charsOnWl) {                   
+            var userProfile = req.user;
+            var sideBarSelected = 1;
+            res.render('waitlist.njk', {userProfile, sideBarSelected, banner, charsOnWl});
+        })
     })
 }
 
@@ -39,36 +37,43 @@ exports.signup = function(req, res){
         res.render('statics/login.html');
         return;
     }
+    var thePromise = [];
+
     //TODO: Add check is pilot whitelisted
     users.findAndReturnUser(Number(req.body.pilot), function(pilot){
-        if(req.params.type == "main"){
-            var waitlistMain = {
-                "characterID": pilot.characterID,
-                "name": pilot.name
-            }//Sets the waitlist main for the users session
-            let accountMainID = (req.user.account.main)? req.user.characterID : req.user.account.mainID;
-            user.setWaitlistMain(accountMainID, waitlistMain, function(err){
-                if(err){
-                    req.flash("content", {"class": "error", "title": "Woops!", "message": "We were unable to set your waitlist main."});
-                }
-            })
-        } else {
-            var waitlistMain = {
-                "characterID": req.user.waitlistMain.characterID,
-                "name": req.user.waitlistMain.name
-            }
-        }
-
         var contact = {
             "xmpp": (!!req.user.settings) ? req.user.settings.xmpp : null,
             "pingTarget": req.user.characterID
         }
         
-        waitlist.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
-            wlog.joinWl(pilot);
-            req.flash("content", {"class": result.class, "title": result.title, "message": result.message});
-            res.redirect(`/`);
+        var promise = new Promise(function(resolve, reject) {           
+            if(req.params.type === "main"){
+                waitlistMain = {
+                    "characterID": pilot.characterID,
+                    "name": pilot.name
+                }
+                resolve();
+            } else {
+                require('./tmp.js').pilotStatus(pilot.characterID, function(dataResponse){
+                    waitlistMain = {
+                        "characterID": dataResponse.main.characterID,
+                        "name": dataResponse.main.name
+                    }  
+                    resolve();
+                })
+            }
         });
+        thePromise.push(promise); 
+
+        Promise.all(thePromise).then(function(){
+            waitlist.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
+                wlog.joinWl(pilot);
+                req.flash("content", {"class": result.class, "title": result.title, "message": result.message});
+                res.redirect(`/`);
+            });
+        }).catch(function(err){
+            log.error(err);
+        })
     })
 }
 
@@ -146,22 +151,6 @@ exports.clearWaitlist = function(req, res) {
 }
 
 /*
-* Removes the pilot position on the waitlist
-* @params req{}
-* @return res{}
-*/
-exports.getPilotPosJson = function(req, res){
-    if(!users.isRoleNumeric(req.user, 0)){
-        res.status(401).send("Not Authorised");
-        return;
-    }
-
-    waitlist.getQueue(req.user.characterID, function(queueObject){
-        res.send(queueObject);
-    });
-}
-
-/*
 * Returns an object of a users known alts (On waitlist or fleet or else)
 * @params req{ pilotID (int) }
 * @return res{}
@@ -175,7 +164,6 @@ exports.pilotStatus = function(req, res){
     var pilotStates = {
         "main": {},
         "other": []
-
     }
 
     //Get main
@@ -237,7 +225,8 @@ exports.pilotStatus = function(req, res){
                     return -1;
                 })
                 
-                pilotStates.main = pilotStates.other.pop();
+                if(!!pilotStates.other[pilotStates.other.length - 1].timestamp)
+                    pilotStates.main = pilotStates.other.pop();
                 
                 //Remove timestamps before passing back the json value.
                 pilotStates.other.forEach(function(v){ 
@@ -249,8 +238,13 @@ exports.pilotStatus = function(req, res){
                     if(a.name > b.name) return 1;
                     return -1;
                 })
-                
-                res.send(pilotStates);
+
+
+                //get main pos && queue size
+                require('./tmp.js').tmp(pilotStates.main.characterID, function(theNumbers){
+                    pilotStates.queue = theNumbers;
+                    res.send(pilotStates);
+                });
             })
         });
     })

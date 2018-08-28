@@ -317,28 +317,9 @@ function pollPilotsInFleet(fleetID){
     })
 }
 
-/* Public Waitlist AJAX
-* 
-* > Update Queue (Displays waitlist main + number of people on wl)
-* > Get Fleets (Lists Fleets, Removals, Alarms)
+/*
+* Updates the fleet lists
 */
-function updateQueue(){
-    $.ajax({
-        type: "GET",
-        url: "/internal-api/waitlist/get-pilot-position"
-    }).done(function(data){
-        //if(data.position !== null){
-            $("#queueInfo").removeClass("hide");
-            $("#queueInfoYourPos").text(data.position + " out of " + data.count);
-        //} else {
-            //$("#queueInfo").addClass("hide");
-        //}
-    }).fail(function (err){
-        console.log(err);
-    });
-}
-
-
 function getFleetList(){
     $.ajax({
         type: "POST",
@@ -411,8 +392,22 @@ function pilotState(charID){
         url: "/internal-api/waitlist/pilots/" + charID
     }).done(function(data){ 
         //Update queue - waitlist main
-        if($("#queueInfoYourMain").text() !== data.main.name){
+        if(!!!data.main.name){
+            $("#queueInfoYourMain").text("");
+        } else if($("#queueInfoYourMain").text() != data.main.name){
             $("#queueInfoYourMain").text(data.main.name);
+        }
+
+        //Update fleet numbers
+        $("#queueInfoYourPos").text(data.queue.mainPos);
+        $("#queueInfoQueueSize").text(data.queue.totalMains);
+
+        if(!!data.main.name){
+            $("#joinMain").addClass("hide");
+            $("#joinAlts").removeClass("hide");           
+        } else {
+            $("#joinMain").removeClass("hide");
+            $("#joinAlts").addClass("hide"); 
         }
 
         $("#altsWaitlistTable").empty();// -POST-/join/alt
@@ -469,5 +464,7 @@ function remove(type, pilotID){
 		}
 	}).fail(function(err){
         console.log(err);
+        pilotState(pilotID);
+        updateQueue();
     })
 }

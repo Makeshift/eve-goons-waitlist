@@ -39,12 +39,12 @@ module.exports = function (setup) {
             users.getMain(waitlistMain.characterID, function(userObject){
                 var disciplinary = false;
 
-                for(let i = 0; i < userObject.notes.length; i++){
-                    if (userObject.notes[i].isDisciplinary){
-                        var disciplinary = true;
-                        break;
-                    }
-                }
+                // for(let i = 0; i < userObject.notes.length; i++){
+                //     if (userObject.notes[i].isDisciplinary){
+                //         var disciplinary = true;
+                //         break;
+                //     }
+                // }
 
                 var waitlist = {
                     "waitlistMain": waitlistMain,
@@ -75,14 +75,18 @@ module.exports = function (setup) {
     */
     module.remove = function(type, characterID, cb){
         if(type == "all"){
-            db.remove({"waitlistMain.characterID": Number(characterID)}, function (err) {
-                if (err) {
-                    if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
-                    cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
-                    return;
-                } 
+            users.getAlts(Number(characterID), function(pilotArray){
+                pilotArray.forEach(function(pilot){
+                    db.remove({"waitlistMain.characterID": Number(pilot.characterID)}, function (err) {
+                        if (err) {
+                            if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
+                            cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
+                            return;
+                        } 
+                    });
+                })
                 cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
-            });
+            })
         } else { //Remove alt only
             db.remove({characterID: Number(characterID)}, function (err) {
                 if (err) {
@@ -127,30 +131,6 @@ module.exports = function (setup) {
 			}
 		})
 	}
-
-    /*
-    * Returns users position on the waitlist
-    * @params characterID (int)
-    * @return { position, waitlistSize}
-    */
-    module.getQueue = function(characterID, cb){
-        db.find().sort({ signup: 1 }).toArray(function(err, docs){
-            if(err){
-                log.error("waitlist.getQueue: ", err)
-                cb(null);
-                return;
-            }
-        
-            var data = {"position": null, "count": 0}
-            for(let i = 0; i < docs.length; i++){
-                //Increase waitlist count by one
-                if(docs[i].characterID == docs[i].waitlistMain.characterID) data.count ++;
-                //Main pilots position
-                if(data.position == null && characterID == docs[i].waitlistMain.characterID) data.position = i + 1;
-            }
-            cb(data)
-        })
-    }
 
     /*
     * Returns an array of a users pilots
