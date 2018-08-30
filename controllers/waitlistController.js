@@ -161,7 +161,7 @@ exports.pilotStatus = function(req, res){
     }
 
     module.getWaitlistState(req.params.characterID, function(pilotStates){
-        module.getQueue(pilotStates.main.characterID, function(theNumbers){
+        module.getQueuePos(pilotStates.main.characterID, function(theNumbers){
             pilotStates.queue = theNumbers;
             res.send(pilotStates);
         });
@@ -174,34 +174,34 @@ exports.pilotStatus = function(req, res){
 * @return res{}
 */
 module.getWaitlistState = function(characterID, cb){
-    var pilotStates = {
-        "main": {},
-        "other": []
-    }
+    // var pilotStates = {
+    //     "main": {},
+    //     "other": []
+    // }
 
     //Get main
-    users.getAlts(Number(characterID), function(knownPilots){
-        for(let i = 0; i < knownPilots.length; i++) 
-        {
-            pilotStates.other.push(knownPilots[i]);
-        }
+    users.getAlts(Number(characterID), function(knownPilots) {
+        // for(let i = 0; i < knownPilots.length; i++) 
+        // {
+        //     pilotStates.other.push(knownPilots[i]);
+        // }
         
         //Flag pilots that are on the wl with their timestamp
         var onWaitlistPromise = [];
-        for(let i = 0; i < pilotStates.other.length; i++){
+        for(let i = 0; i < knownPilots.length; i++){
             var promise = new Promise(function(resolve, reject) {
-                waitlist.isUserPresent(pilotStates.other[i].characterID, function(timestamp){
+                waitlist.isUserPresent(knownPilots[i].characterID, function(timestamp) {
                     if(timestamp){
-                        resolve(pilotStates.other[i] = {
-                            "characterID": pilotStates.other[i].characterID,
-                            "name": pilotStates.other[i].name,
+                        resolve({
+                            "characterID": knownPilots[i].characterID,
+                            "name": knownPilots[i].name,
                             "onWaitlist": true,
                             "timestamp": timestamp
                         });
                     } else {
-                        resolve(pilotStates.other[i] = {
-                            "characterID": pilotStates.other[i].characterID,
-                            "name": pilotStates.other[i].name,
+                        resolve({
+                            "characterID": knownPilots[i].characterID,
+                            "name": knownPilots[i].name,
                             "onWaitlist": false
                         });
                     }
@@ -211,70 +211,99 @@ module.getWaitlistState = function(characterID, cb){
         }
         
         
-        Promise.all(onWaitlistPromise).then(function(members) {      
-            var inFleetPromise = [];
-            for(let i = 0; i < pilotStates.other.length; i++){
-                var promise = new Promise(function(resolve, reject){
-                    if(!pilotStates.other[i].onWaitlist){
-                        fleets.inFleet(pilotStates.other[i].characterID, function(inFleet){
+        Promise.all(onWaitlistPromise).then(function(pilots) {      
+            var promises = pilots.map(function(pilot, index) {
+                return new Promise(function(resolve, reject) {
+                    if(!pilot.onWaitlist) {
+                        fleets.inFleet(pilot.characterID, function(inFleet){
                             if(inFleet){
-                                resolve(pilotStates.other[i].timestamp = inFleet);
+                                pilot.timestamp = inFleet
+                                resolve(pilot);
                             } else {
-                                resolve();
+                                resolve(pilot);
                             }
-                        })
+                        });
                     } else {
-                        resolve();
+                        resolve(pilot);
                     }
                 });
+            });
 
-                inFleetPromise.push(promise);
-            }
-            Promise.all(inFleetPromise).then(function(members) {               
+            // var inFleetPromise = [];
+            // for(let i = 0; i < pilotStates.other.length; i++){
+            //     var promise = new Promise(function(resolve, reject){
+            //         if(!pilotStates.other[i].onWaitlist){
+            //             fleets.inFleet(pilotStates.other[i].characterID, function(inFleet){
+            //                 if(inFleet){
+            //                     resolve(pilotStates.other[i].timestamp = inFleet);
+            //                 } else {
+            //                     resolve();
+            //                 }
+            //             })
+            //         } else {
+            //             resolve();
+            //         }
+            //     });
+
+            //     inFleetPromise.push(promise);
+            // }
+
+
+            Promise.all(promises).then(function(members) {
+                var main = {};
+
+
                 //Sort in order of signup
-                pilotStates.other.sort(function(a,b) {
+                members.sort(function(a,b) {
                     if(!!a.timestamp) return 1;
                     if(a.timestamp < b.timestamp) return 1;
                     return -1;
                 })
                 
-                if(!!pilotStates.other[pilotStates.other.length - 1].timestamp)
-                    pilotStates.main = pilotStates.other.pop();
+                if(!!members[members.length - 1].timestamp) {
+                    main = members.pop();
+                }
                 
                 //Remove timestamps before passing back the json value.
-                pilotStates.other.forEach(function(v){ 
+                members.forEach(function(v){ 
                     delete v.timestamp 
                 });
 
                 //Sort by name
-                pilotStates.other.sort(function(a,b) {
+                members.sort(function(a,b) {
                     if(a.name > b.name) return 1;
                     return -1;
                 })
                 
-                cb(pilotStates);
-            })
+                cb({
+                    main: main,
+                    other: members
+                });
+            });
+
+
         });
     })
 }
 
-
-module.getQueue = function(characterID, cb){
+module.getQueuePos = function(characterID, cb){
     require('../dbHandler.js').db.collection('waitlist').find().sort({ signup: 1 }).toArray(function(err, docs){
         if(err){
-            log.error("waitlist.getQueue: ", err)
+            log.error("waitlist.getQueuePos: ", err)
             cb(null);
             return;
         }
     
-        var data = {"mainPos":null, "totalMains": null}
+        var data = {"mainPos":null, "totalMains": 0}
         for(let i = 0; i < docs.length; i++){
             //Number of Mains
-            if(docs[i].characterID === docs[i].waitlistMain.characterID) data.totalMains = i;
+            if(docs[i].characterID === docs[i].waitlistMain.characterID) {
+                data.totalMains++;
+            }
 
             //Your position
-            if(!data.mainPos && characterID === docs[i].characterID){
-                data.mainPos = i;
+            if(!data.mainPos && characterID === docs[i].characterID) {
+                data.mainPos = i + 1;
                 continue;
             }
         }

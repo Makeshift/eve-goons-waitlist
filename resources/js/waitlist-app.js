@@ -404,11 +404,18 @@ function pilotState(charID){
 
         if(!!data.main.name){
             $("#joinMain").addClass("hide");
-            $("#joinAlts").removeClass("hide");           
+            $("#joinAlts").removeClass("hide");
         } else {
             $("#joinMain").removeClass("hide");
             $("#joinAlts").addClass("hide"); 
         }
+
+        // Gather all current text
+        var selectedBoxes = $("[id^=ship-character-]");
+
+        var textBoxes = $.map(selectedBoxes, function(element) {
+            return { id: element.id, value: element.value };
+        });
 
         $("#altsWaitlistTable").empty();// -POST-/join/alt
         for(var i = 0; i < data.other.length; i++){
@@ -424,8 +431,17 @@ function pilotState(charID){
                             html += "<button class='btn btn-sm btn-danger' type='button' onclick='remove(\"character\", "+data.other[i].characterID+")'><i class='fas fa-minus'></i></button>";
                         html += "</td>";
                     } else {
+                        // check to see if we need to restore any text
+                        var id = "ship-character-"+data.other[i].characterID;
+                        var val = "";
+                        for(var x = 0; x < textBoxes.length; x++) {
+                            if(textBoxes[x].id == id) {
+                                val = textBoxes[x].value;
+                            }
+                        }
+
                         html += "<td>";
-                            html += "<input id='ship"+data.other[i].characterID+"' type='text' name='ship' class='form-control' placeholder='Ship Type (Nyx)' style='height: 30px;line-height: 1px;font font-size:;font-size: 10px;' autocomplete='off' required>";
+                            html += "<input id='" + id +"' type='text' name='ship' class='form-control' placeholder='Ship Type (Nyx)' style='height: 30px;line-height: 1px;font font-size:;font-size: 10px;' autocomplete='off' value='" + val + "' required>";
                         html += "</td>";
                         html += "<td>";
                             html += "<button class='btn btn-sm btn-success' type='button' onclick='join(\"alt\", "+data.other[i].characterID+")'><i class='fas fa-plus'></i></button>";
