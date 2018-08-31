@@ -63,17 +63,17 @@ const fleetsController = require('./controllers/fleetController.js');
 	router.post('/commander/:pilotID/comment', fc_tools_controller.addComment);//Add a comment
 
 	//Admin - Bans Management
-	router.get('/admin/bans', admin_bans_controller.index);
-	router.post('/admin/bans', admin_bans_controller.createBan);
-	router.get('/admin/bans/:banID', admin_bans_controller.revokeBan);
+	router.get('/a/bans', admin_bans_controller.index);
+	router.post('/a/bans', admin_bans_controller.createBan);
+	router.get('/a/bans/:banID', admin_bans_controller.revokeBan);
 	//Admin - FC Management
-	router.get('/admin/commanders', admin_fcs_controller.index);
-	router.post('/admin/commanders/update', admin_fcs_controller.updateUser);
+	router.get('/a/commanders', admin_fcs_controller.index);
+	router.post('/a/commanders/update', admin_fcs_controller.updateUser);
 
 	//Admin - Whitelist Management
-	router.get('/admin/whitelist', admin_whitelist_controller.index);
-	router.post('/admin/whitelist', admin_whitelist_controller.store);
-	router.get('/admin/whitelist/:whitelistID', admin_whitelist_controller.revoke);
+	router.get('/a/whitelist', admin_whitelist_controller.index);
+	router.post('/a/whitelist', admin_whitelist_controller.store);
+	router.get('/a/whitelist/:whitelistID', admin_whitelist_controller.revoke);
 	
 	
 	//Interacts with the users client via ESI.

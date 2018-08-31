@@ -48,20 +48,20 @@ exports.createBan = function(req, res) {
             bans.register(banObject, function (success, errTxt) {
                 if (!success) {
                     req.flash("content", {"class":"error", "title":"Woops!", "message": errTxt});
-                    res.status(409).redirect('/admin/bans')
+                    res.status(409).redirect('/a/bans')
                 } else {
                     req.flash("content", {"class":"success", "title":"Ban Issued", "message":req.body.pilotName+" has been banned."});
-                    res.status(200).redirect('/admin/bans')
+                    res.status(200).redirect('/a/bans')
                 }
             });
         }).catch(function (err) {
             log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
             req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Did you spell the pilots name correctly?"});
-            res.status(409).redirect('/admin/bans');
+            res.status(409).redirect('/a/bans');
         })
     } else {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to create bans. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/bans')
+        res.status(403).redirect('/a/bans')
     }
 }
 
@@ -73,10 +73,10 @@ exports.revokeBan = function(req, res) {
 
         bans.revokeBan(banID, banAdmin, function() {
             req.flash("content", {"class":"success", "title":"Ban revoked", "message":"The requested ban has been revoked."});
-            res.redirect('/admin/bans');
+            res.redirect('/a/bans');
         });
     } else {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to revoke bans. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/bans');
+        res.status(403).redirect('/a/bans');
     }
 }

@@ -60,7 +60,7 @@ exports.updateUser = function(req, res) {
     if(!users.isRoleNumeric(req.user, 4))
     {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to adjust the permissions of this user. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/commanders');
+        res.status(403).redirect('/a/commanders');
         return;
     }
     //Only allow senior FC to make people trainees
@@ -73,30 +73,30 @@ exports.updateUser = function(req, res) {
         users.getMain(Number(results[0]), function(targetUser){
             if(!!!targetUser){
                 req.flash("content", {"class":"error", "title":"Woops!", "message":"We couldn't find " + req.body.pilotName + ". Please make sure they have logged in at least once before."});
-                res.status(409).redirect('/admin/commanders');
+                res.status(409).redirect('/a/commanders');
                 return;
             }
             if(targetUser.characterID == req.user.characterID){
                 req.flash("content", {"class":"error", "title":"Woops!", "message":"You cannot change your own permission!"});
-                res.status(400).redirect('/admin/commanders');
+                res.status(400).redirect('/a/commanders');
                 return;
             }
             if(req.user.role.numeric == 4 && targetUser.role.numeric > 1){
                 req.flash("content", {"class":"error", "title":"Woops!", "message":"You're not allowed to change that FCs permission!"});
-                res.status(400).redirect('/admin/commanders');
+                res.status(400).redirect('/a/commanders');
                 return;
             }
             
             users.updateUserPermission(targetUser, req.body.permission, req.user,  function(cb)
             {
                 req.flash("content", {"class":"success", "title":"User permission updated.", "message":"Tell the user to refresh their browser twice for the changes to take effect."});
-                res.status(200).redirect('/admin/commanders');
+                res.status(200).redirect('/a/commanders');
                 return;
             })
         })
     }).catch(function (err) {
         log.error("routes.post: Error for esi.characters.search", { err, name: req.body.name });
         req.flash("content", {"class":"error", "title":"Woops!", "message":"Something went wrong!"});
-        res.status(400).redirect('/admin/commanders');
+        res.status(400).redirect('/a/commanders');
     })
 }
