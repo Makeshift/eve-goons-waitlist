@@ -6,7 +6,7 @@
 		<span>
 			<a href="javascript:void(0);" onclick="showInfo({{ user.characterID }})">{{ user.name }}</a>
 			{% if user.disciplinary %}
-			<a href="/commander/{{ user.name | replace(' ','-') }}/profile">
+			<a href="/c/{{ user.name | replace(' ','-') }}/profile">
 				<i class="fas fa-comment-exclamation ml-1" style="color:#8A8D93"></i>
 			</a>
 			{% endif %}
@@ -28,8 +28,8 @@
 		<div class="dropdown">
 			<button class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-caret-circle-down" style="margin-right:-50%"></i></button>
 			<div class="dropdown-menu" role="menu">
-				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/profile">View Pilot Profile</a>
-				<a class="dropdown-item" href="/commander/{{ user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
+				<a class="dropdown-item" href="/c/{{ user.name | replace(' ','-') }}/profile">View Pilot Profile</a>
+				<a class="dropdown-item" href="/c/{{ user.name | replace(' ','-') }}/skills">View Pilot Skills</a>
 				{% if user.contact.xmpp %}
 				<a class="dropdown-item" href="xmpp:{{ user.contact.xmpp }}@goonfleet.com">Jabber PM</a>
 				{% endif %}

@@ -30,37 +30,37 @@ const fleetsController = require('./controllers/fleetController.js');
 	router.post('/my-settings/jabber', pilot_settings_controller.jabber);
 
 	//Commander - Fleets
-	router.get('/commander', commander_controller.index);
-	router.post('/commander', commander_controller.registerFleet);
-	router.delete('/commander/:fleetID', fleetsController.delete);
+	router.get('/c', commander_controller.index);
+	router.post('/c', commander_controller.registerFleet);
+	router.delete('/c/:fleetID', fleetsController.delete);
 
 	//Commander - FC Waitlist Management
-	router.get('/commander/:fleetID/', fleetsController.index);
-	router.post('/commander/:fleetid/update/info', fleetsController.getInfo);	
-	router.post('/commander/admin/alarm/:characterID/:fleetID', waitlistController.alarm);//501
-	router.post('/commander/admin/invite/:characterID/:fleetID', fleetsController.invite);
-	router.post('/commander/admin/remove/:characterID', waitlistController.removePilot);
+	router.get('/c/:fleetID/', fleetsController.index);
+	router.post('/c/:fleetid/update/info', fleetsController.getInfo);	
+	router.post('/c/admin/alarm/:characterID/:fleetID', waitlistController.alarm);//501
+	router.post('/c/admin/invite/:characterID/:fleetID', fleetsController.invite);
+	router.post('/c/admin/remove/:characterID', waitlistController.removePilot);
 
 	//Commander - Fleet Updates
-	router.post('/commander/:fleetID/update/backseat', fleetsController.updateBackseat);
-	router.post('/commander/:fleetID/update/commander', fleetsController.updateCommander);
-	router.post('/commander/:fleetID/update/comms', fleetsController.updateComms);
-	router.post('/commander/:fleetID/update/type', fleetsController.updateType);
-	router.post('/commander/:fleetID/update/status', fleetsController.updateStatus);
+	router.post('/c/:fleetID/update/backseat', fleetsController.updateBackseat);
+	router.post('/c/:fleetID/update/commander', fleetsController.updateCommander);
+	router.post('/c/:fleetID/update/comms', fleetsController.updateComms);
+	router.post('/c/:fleetID/update/type', fleetsController.updateType);
+	router.post('/c/:fleetID/update/status', fleetsController.updateStatus);
 	
 
 	//Commander - FC Tools
-	router.get('/commander/tools/fits-scan', fc_tools_controller.fitTool);
-	router.get('/commander/tools/waitlist-logs', fc_tools_controller.waitlistLog);
-	router.get('/commander/:pilotname/skills', fc_tools_controller.skillsChecker);
+	router.get('/c/tools/fits-scan', fc_tools_controller.fitTool);
+	router.get('/c/tools/waitlist-logs', fc_tools_controller.waitlistLog);
+	router.get('/c/:pilotname/skills', fc_tools_controller.skillsChecker);
 	//Commander - Search for pilot
-	router.get('/commander/:pilotname/profile', fc_tools_controller.pilotSearch);//View
+	router.get('/c/:pilotname/profile', fc_tools_controller.pilotSearch);//View
 	router.post('/search', fc_tools_controller.searchForPilot);//ajax search
 
 	router.post('/internal-api/:pilot/logout', fc_tools_controller.logUserOut);
 	router.post('/internal-api/:pilot/role/:title', fc_tools_controller.setTitle);
 	
-	router.post('/commander/:pilotID/comment', fc_tools_controller.addComment);//Add a comment
+	router.post('/c/:pilotID/comment', fc_tools_controller.addComment);//Add a comment
 
 	//Admin - Bans Management
 	router.get('/a/bans', admin_bans_controller.index);

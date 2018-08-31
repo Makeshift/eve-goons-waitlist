@@ -76,7 +76,7 @@ exports.searchForPilot = function(req, res){
                     res.status(400).send("Pilot is not registered");
                     return;
                 }
-                res.status(200).send({"name": user.name, "url": "/commander/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/profile"});
+                res.status(200).send({"name": user.name, "url": "/c/" + user.name.replace('/s/g', '-').replace(/\s/g, '-') + "/profile"});
             })
             
         })
@@ -99,7 +99,7 @@ exports.skillsChecker = function(req, res) {
         return;
     }
     if(req.params.pilotname === "tools"){
-        res.redirect('/commander/'+req.user.name.replace(/\s+/g, '-')+'/skills')
+        res.redirect('/c/'+req.user.name.replace(/\s+/g, '-')+'/skills')
         return;
     }
     
@@ -220,7 +220,7 @@ exports.addComment = function(req, res){
 
     users.findAndReturnUser(Number(req.params.pilotID), function(targetUser){
         user.addNote((targetUser.account.main)? targetUser.characterID : targetUser.account.mainID, req.body.comment, (req.body.disciplinary == "on")? true : false, req.user, function(result){
-            res.status(result).redirect("/commander/"+targetUser.name.replace('/s/g','-')+"/profile");
+            res.status(result).redirect("/c/"+targetUser.name.replace('/s/g','-')+"/profile");
         })
        
     })
