@@ -17,7 +17,7 @@ getPreamble(function(preamble){
     function minifyJSGo(code, err){
         var result =  require('uglify-js').minify(code);
         
-        //Shit Broke
+        //Failed to minify
         if(result.error) {
             log.warn("Failed to minify ", result.error)
             err(result.error);

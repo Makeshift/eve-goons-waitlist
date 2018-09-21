@@ -4,7 +4,7 @@
   "description": "The ESI-enabled socket-based waitlist used by the Incursions squad in Goonfleet of Eve Online.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node resources/minify.config.js && node index.js",
     "build:js": "node resources/minify.config.js",
     "scheduler": "babel-node scheduler_index.js",
     "build:docker": "docker build -t waitlist .",
