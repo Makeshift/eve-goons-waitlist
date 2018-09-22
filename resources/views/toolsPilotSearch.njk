@@ -44,10 +44,10 @@
 									{% if userProfile.role.numeric > 4 %}
 									<div class="row">
 										<div class="col-md-4 col-sm-4 px-1">
-											<a class="btn btn-info btn-block  mb-1" href="/a/commanders?user={{ targetUser.characterID }}"><i class="fas fa-users"></i> Roles</a>
+											<a class="btn btn-info btn-block  mb-1" href="/admin/commanders?user={{ targetUser.characterID }}"><i class="fas fa-users"></i> Roles</a>
 										</div>
 										<div class="col-md-4 col-sm-4 px-1">
-											<a class="btn btn-info btn-block  mb-1" href="/c/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
+											<a class="btn btn-info btn-block  mb-1" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
 										</div>
 										<div class="col-md-4 col-sm-4 px-1">
 											<a class="btn btn-info btn-block  mb-1 {{ '' if targetUser.settings.xmpp else 'disabled'}}" href="xmpp:{{ targetUser.settings.xmpp }}@goonfleet.com"><i class="fas fa-comments"></i> Jabber</a>
@@ -55,7 +55,7 @@
 									</div>
 									{% else %}
 									<div class="col-md-6 col-sm-6 px-1">
-										<a class="btn btn-info btn-block" href="/c/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
+										<a class="btn btn-info btn-block" href="/commander/{{ targetUser.name | replace(' ','-')}}/skills"><i class="fas fa-list"></i> Skills</a>
 									</div>
 									<div class="col-md-6 col-sm-6 px-1">
 										<a class="btn btn-info btn-block  mb-1 {{ '' if targetUser.settings.xmpp else 'disabled'}}" href="xmpp:{{ targetUser.settings.xmpp }}@goonfleet.com"><i class="fas fa-comments"></i> Jabber</a>
@@ -85,7 +85,7 @@
 						<div class="progress-details align-items-end justify-content-between">
 							<!-- New Comment -->
 							<div class="my-2 noselect">
-								<form method="post" action="/c/{{ targetUser.characterID }}/comment">
+								<form method="post" action="/commander/{{ targetUser.characterID }}/comment">
 									<textarea id="noteContent" class="form-control" name="comment" maxlength="300" placeholder="Required, max of 300 characters" required></textarea>
 									<i class="fas fa-info-circle mx-2" data-toggle="tooltip" data-title="This flags a user on the waitlist as being a possible problem pilot."></i>
 										<label class="switch px-2 noselect">

@@ -137,7 +137,7 @@ function showNotification(payload) {
 function setFC(fleetID) {
     $.ajax({
         type: "POST",
-        url: '/c/'+  fleetID +'/update/commander'
+        url: '/commander/'+  fleetID +'/update/commander'
     }).done(function() {
         pollFleetInfo(fleetID)
     }).fail(function(err) {
@@ -148,7 +148,7 @@ function setFC(fleetID) {
 function setBackseat(fleetID) {
     $.ajax({
         type: "POST",
-        url: '/c/'+ fleetID +'/update/backseat'
+        url: '/commander/'+ fleetID +'/update/backseat'
     }).done(function() {
         pollFleetInfo(fleetID);
     }).fail(function(err) {
@@ -159,7 +159,7 @@ function setBackseat(fleetID) {
 function setCommsChannel(fleetID, commsUrl, commsName) {
     $.ajax({
         type: "POST",
-        url: '/c/'+ fleetID +'/update/comms',
+        url: '/commander/'+ fleetID +'/update/comms',
         data: {
             name: commsName,
             url: commsUrl
@@ -174,7 +174,7 @@ function setCommsChannel(fleetID, commsUrl, commsName) {
 function setFleetStatus(fleetID, fleetStatus) {
     $.ajax({
         type: "POST",
-        url: '/c/'+ fleetID +'/update/status',
+        url: '/commander/'+ fleetID +'/update/status',
         data: {
             status: fleetStatus
         }
@@ -188,7 +188,7 @@ function setFleetStatus(fleetID, fleetStatus) {
 function setFleetType(fleetID, fleetType) {
     $.ajax({
         type: "POST",
-        url: '/c/'+ fleetID +'/update/type',
+        url: '/commander/'+ fleetID +'/update/type',
         data: {
             type: fleetType
         }
@@ -202,7 +202,7 @@ function setFleetType(fleetID, fleetType) {
 function pollFleetInfo(fleetID){
     $.ajax({
         type: "POST",
-        url: '/c/'+ fleetID +'/update/info',
+        url: '/commander/'+ fleetID +'/update/info',
         success: function(payload){
             $("#fcBoss").text(payload.fc.name).attr("onclick", "showInfo(" + payload.fc.characterID + ")");
             $("#fcBackseat").text(payload.backseat.name).attr("onclick", "showInfo(" + payload.backseat.characterID + ")")
@@ -223,7 +223,7 @@ function invitePilot(characterID, fleetID) {
 
     $.ajax({
         type: "POST",
-        url: "/c/admin/invite/" + characterID + "/" + fleetID
+        url: "/commander/admin/invite/" + characterID + "/" + fleetID
     }).done(function() {
         $("#row-"+characterID).removeClass().addClass("invite-sent");
         $("#fleetWaitlistCount").text(Number($("#fleetWaitlistCount").text()) - 1);
@@ -236,7 +236,7 @@ function invitePilot(characterID, fleetID) {
 function removePilot(characterID) {
     $.ajax({
         type: "POST",
-        url: "/c/admin/remove/" + characterID
+        url: "/commander/admin/remove/" + characterID
     }).done(function(){
         //Colour and remove row. Then subtract the waitlist count by 1
         $("#row-"+characterID).removeClass().addClass("invite-failed");
@@ -252,7 +252,7 @@ function removePilot(characterID) {
 function alarmUser(targetid, fleetid) {
     $.ajax({
         type: "POST",
-        url: "/c/admin/alarm/" + targetid + "/" + fleetid,
+        url: "/commander/admin/alarm/" + targetid + "/" + fleetid,
         datatype: "HTML",
         success: function(data) {
             setTimeout(function () {
@@ -288,8 +288,8 @@ function pollPilotsInFleet(fleetID){
                         html += "<div class='dropdown'>";
                             html += "<button class='btn btn-info btn-sm dropdown-toggle' data-toggle='dropdown' aria-expanded='false' type='button'><i class='fas fa-caret-circle-down' style='margin-right:-50%'></i></button>";
                             html += "<div class='dropdown-menu' role='menu'>";
-                                html += "<a class='dropdown-item' href='/c/"+data[i].pilot.name.replace(' ','-')+"/profile'>View Pilot Profile</a>";
-                                html += "<a class='dropdown-item' href='/c/"+data[i].pilot.name.replace(' ','-')+"/skills'>View Pilot Skills</a>";
+                                html += "<a class='dropdown-item' href='/commander/"+data[i].pilot.name.replace(' ','-')+"/profile'>View Pilot Profile</a>";
+                                html += "<a class='dropdown-item' href='/commander/"+data[i].pilot.name.replace(' ','-')+"/skills'>View Pilot Skills</a>";
                                 //TODO: XMPP if info is there
                             html += "</div>";
                         html += "</div>";

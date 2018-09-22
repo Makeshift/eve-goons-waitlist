@@ -75,7 +75,7 @@ exports.registerFleet = function(req, res) {
             }
             
             req.flash("content", {"class":"info", "title":"Fleet Registered", "message":"Fleet ID: "+ fleetID});
-            res.status(200).redirect('/c/'+ fleetID);
+            res.status(200).redirect('/commander/'+ fleetID);
         })
     })
 }

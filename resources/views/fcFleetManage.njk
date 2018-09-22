@@ -292,7 +292,7 @@
 	function closeFleet(fleetID){
 		$.ajax({
 			type: "DELETE",
-			url: "/c/" + fleetID,
+			url: "/commander/" + fleetID,
 			success: function() {
 				window.location.assign(`/commander`);
 			}

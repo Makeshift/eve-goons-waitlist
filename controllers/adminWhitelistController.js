@@ -37,13 +37,13 @@ exports.index = function(req, res) {
 exports.store = function(req, res) {
     if (!users.isRoleNumeric(req.user, 5)) {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to edit the whitelist. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/a/whitelist')
+        res.status(403).redirect('/admin/whitelist')
     }
     
     getEntity(req.body.name, req.body.type, function(entity){
         if(!!!entity){
             req.flash("content", {"class":"error", "title":"Not Found:", "message":"We could not find the " + req.body.type.toLowerCase() + " " + req.body.name + "."});
-            res.status(403).redirect('/a/whitelist')
+            res.status(403).redirect('/admin/whitelist')
             return;
         }
 
@@ -63,10 +63,10 @@ exports.store = function(req, res) {
             if(!err)
             {
                 req.flash("content", {"class":"success", "title":"Access Granted:", "message": req.body.name + " has been added to the whitelist."});
-                res.status(200).redirect('/a/whitelist')  
+                res.status(200).redirect('/admin/whitelist')  
             } else {
                 req.flash("content", {"class":"error", "title":"Woops!", "message": err});
-                res.status(400).redirect('/a/whitelist');
+                res.status(400).redirect('/admin/whitelist');
             }
         })
 
@@ -118,16 +118,16 @@ function getEntity(name, type, entity){
 exports.revoke = function(req, res) {
     if(!users.isRoleNumeric(req.user, 5)) {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to revoke bans. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/a/whitelist');
+        res.status(403).redirect('/admin/whitelist');
     } 
 
     whitelist.revoke(req.params.whitelistID, function(result){
         if(!result){ 
             req.flash("content", {"class":"success", "title":"Success!", "message":"We have revoked their access."});
-            res.status(200).redirect('/a/whitelist');
+            res.status(200).redirect('/admin/whitelist');
         } else {
             req.flash("content", {"class":"error", "title":"Woops!", "message":"We cannot revoke their access."});
-            res.status(400).redirect('/a/whitelist');
+            res.status(400).redirect('/admin/whitelist');
         }
     })
 }
