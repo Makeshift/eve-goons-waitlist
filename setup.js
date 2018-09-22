@@ -9,8 +9,8 @@ exports.oauth = {
 
 exports.data = {
 	directory: "data", //Where data will be stored
-	sessionSecret: process.env.SECRET || "",
-	mongoDbURL: process.env.MONGO_URI || "mongoDB://localhost:27017",
+	sessionSecret: process.env.SESSION_SECRET || "",
+	mongoDbURL: process.env.MONGODB_URI || "mongoDB://localhost:27017",
 	mongoDbName: process.env.MONGO_DB || "EveGoonsWaitlist"
 }
 
