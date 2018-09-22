@@ -4,8 +4,6 @@ const log = require('./logger.js')(module);
 
 const MONGODB_URL = setup.data.mongoDbURL || process.env.MONGODB_URL ||'mongodb://localhost:27017';
 
-console.log(MONGODB_URL);
-
 const absorbInitialConnectError = function absorbInitialConnectError(cb, database) {
   mongo.connect(MONGODB_URL, function (err, client) {
 		if(err) {
