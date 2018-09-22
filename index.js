@@ -132,8 +132,8 @@ database.connect(function () {
 	longpoll.create("/poll/:id", (req, res, next) => {
 		req.id = req.params.id;
 		next();
-	});	
-
+    });	
+    
 	//Configure Express webserver
 	app.listen(setup.settings.port, function listening() {
 		log.info('Express online and accepting connections');
