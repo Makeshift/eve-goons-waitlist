@@ -124,11 +124,8 @@ module.exports = function (setup) {
     module.isUserPresent = function (characterID, cb) {
 		db.findOne({ "characterID": characterID }, function (err, doc) {
 			if (err) log.error("waitlist.isUserPresent: Error for db.findOne", { err, 'character ID': characterID });
-			if (!!!doc) {
-				cb(false)
-			} else {
-                cb(doc.signup);
-			}
+			
+            cb(!!doc.signup);
 		})
 	}
 
