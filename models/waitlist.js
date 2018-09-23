@@ -76,16 +76,43 @@ module.exports = function (setup) {
     module.remove = function(type, characterID, cb){
         if(type == "all"){
             users.getAlts(Number(characterID), function(pilotArray){
+
+                var removePromises = [];
+
                 pilotArray.forEach(function(pilot){
-                    db.remove({"waitlistMain.characterID": Number(pilot.characterID)}, function (err) {
-                        if (err) {
-                            if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
-                            cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
-                            return;
-                        } 
+                    var promise = new Promise(function(resolve, reject) {
+                        
+                        db.remove({"waitlistMain.characterID": Number(pilot.characterID)}, function (err) {
+                            if (err) {
+                                if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
+                                reject({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
+                                return;
+                            }
+                            resolve(undefined);
+                        });
                     });
-                })
-                cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
+
+                    removePromises.push(promise);
+                });
+
+
+                Promise.all(removePromises).then(function(errors) {
+                    let errored = undefined;
+
+                    for(let i = 0; i < errors.length; i++) {
+                        // If we have an error
+                        if(!!errors[i]) {
+                            errored = errors[i];
+                            break;
+                        }
+                    }
+
+                    if(errored) {
+                        cb(errored);
+                    } else {
+                        cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
+                    }
+                });
             })
         } else { //Remove alt only
             db.remove({characterID: Number(characterID)}, function (err) {
