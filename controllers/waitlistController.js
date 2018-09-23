@@ -37,7 +37,6 @@ exports.signup = function(req, res){
         res.render('statics/login.html');
         return;
     }
-    var thePromise = [];
 
     //TODO: Add check is pilot whitelisted
     users.findAndReturnUser(Number(req.body.pilot), function(pilot){
@@ -48,24 +47,21 @@ exports.signup = function(req, res){
         
         var promise = new Promise(function(resolve, reject) {           
             if(req.params.type === "main"){
-                waitlistMain = {
+                resolve({
                     "characterID": pilot.characterID,
                     "name": pilot.name
-                }
-                resolve();
+                });
             } else {
                 module.getWaitlistState(pilot.characterID, function(dataResponse){
-                    waitlistMain = {
+                    resolve({
                         "characterID": dataResponse.main.characterID,
                         "name": dataResponse.main.name
-                    }  
-                    resolve();
+                    });
                 })
             }
         });
-        thePromise.push(promise); 
 
-        Promise.all(thePromise).then(function(){
+        promise.then(function(waitlistMain) {
             waitlist.add(waitlistMain, pilot, req.body.ship, contact, req.user.newbee, function(result){
                 wlog.joinWl(pilot);
                 req.flash("content", {"class": result.class, "title": result.title, "message": result.message});

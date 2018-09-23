@@ -39,12 +39,12 @@ module.exports = function (setup) {
             users.getMain(waitlistMain.characterID, function(userObject){
                 var disciplinary = false;
 
-                // for(let i = 0; i < userObject.notes.length; i++){
-                //     if (userObject.notes[i].isDisciplinary){
-                //         var disciplinary = true;
-                //         break;
-                //     }
-                // }
+                for(let i = 0; i < userObject.notes.length; i++){
+                    if (userObject.notes[i].isDisciplinary){
+                        var disciplinary = true;
+                        break;
+                    }
+                }
 
                 var waitlist = {
                     "waitlistMain": waitlistMain,
@@ -123,9 +123,17 @@ module.exports = function (setup) {
     */
     module.isUserPresent = function (characterID, cb) {
 		db.findOne({ "characterID": characterID }, function (err, doc) {
-			if (err) log.error("waitlist.isUserPresent: Error for db.findOne", { err, 'character ID': characterID });
-			
-            cb(!!doc.signup);
+			if (err) {
+                log.error("waitlist.isUserPresent: Error for db.findOne", { err, 'character ID': characterID });
+                cb(false);
+                return;
+            }
+            
+            if(!!doc) {
+                cb(true);
+            } else {
+                cb(false);
+            }
 		})
 	}
 
