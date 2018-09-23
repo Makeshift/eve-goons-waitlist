@@ -75,14 +75,45 @@ module.exports = function (setup) {
     */
     module.remove = function(type, characterID, cb){
         if(type == "all"){
-            db.remove({"waitlistMain.characterID": Number(characterID)}, function (err) {
-                if (err) {
-                    if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
-                    cb({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
-                    return;
-                } 
-                cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
-            });
+            users.getAlts(Number(characterID), function(pilotArray){
+
+                var removePromises = [];
+
+                pilotArray.forEach(function(pilot){
+                    var promise = new Promise(function(resolve, reject) {
+                        
+                        db.remove({"waitlistMain.characterID": Number(pilot.characterID)}, function (err) {
+                            if (err) {
+                                if (err) log.error("waitlist.remove: Error for db.remove", { err, 'character ID': characterID });
+                                reject({"class": "error", "title": "Woops!", "message":"We could not remove you from the waitlist!"});
+                                return;
+                            }
+                            resolve(undefined);
+                        });
+                    });
+
+                    removePromises.push(promise);
+                });
+
+
+                Promise.all(removePromises).then(function(errors) {
+                    let errored = undefined;
+
+                    for(let i = 0; i < errors.length; i++) {
+                        // If we have an error
+                        if(!!errors[i]) {
+                            errored = errors[i];
+                            break;
+                        }
+                    }
+
+                    if(errored) {
+                        cb(errored);
+                    } else {
+                        cb({"class": "success", "title": "Success", "message":"We removed you from the waitlist!"});
+                    }
+                });
+            })
         } else { //Remove alt only
             db.remove({characterID: Number(characterID)}, function (err) {
                 if (err) {
@@ -119,38 +150,19 @@ module.exports = function (setup) {
     */
     module.isUserPresent = function (characterID, cb) {
 		db.findOne({ "characterID": characterID }, function (err, doc) {
-			if (err) log.error("waitlist.isUserPresent: Error for db.findOne", { err, 'character ID': characterID });
-			if (!!!doc) {
-				cb(false)
-			} else {
-				cb(true);
-			}
-		})
-	}
-
-    /*
-    * Returns users position on the waitlist
-    * @params characterID (int)
-    * @return { position, waitlistSize}
-    */
-    module.getQueue = function(characterID, cb){
-       db.find().sort({ signup: 1 }).toArray(function(err, docs){
-            if(err){
-                log.error("waitlist.getQueue: ", err)
-                cb(null);
+			if (err) {
+                log.error("waitlist.isUserPresent: Error for db.findOne", { err, 'character ID': characterID });
+                cb(false);
                 return;
             }
-        
-            var data = {"position": null, "count": 0}
-            for(let i = 0; i < docs.length; i++){
-                //Increase waitlist count by one
-                if(docs[i].characterID == docs[i].waitlistMain.characterID) data.count ++;
-                //Main pilots position
-                if(data.position == null && characterID == docs[i].waitlistMain.characterID) data.position = i + 1;
+            
+            if(!!doc) {
+                cb(true);
+            } else {
+                cb(false);
             }
-            cb(data)
-        })
-    }
+		})
+	}
 
     /*
     * Returns an array of a users pilots
@@ -191,11 +203,26 @@ module.exports = function (setup) {
 
 		function lookup() {
 				db.find().forEach(function (doc) {
-					//Is user online?
-					//Update Location
+                    user.isOnline(Number(doc.characterID), function(online){
+                        if(online){
+                            //unset offlineCounter
+                            db.updateOne({ '_id': doc._id }, { $unset: {"offline": 0} }, function(err){
+                                if (err) log.error("waitlist.isOnline: Error unsetting offline flag", { "Pilot": doc.name, "Error": err });
+                            })
+                        } else {
+                            db.updateOne({ '_id': doc._id }, { $set: {
+                                "offline": (doc.offline > -1) ? doc.offline + 1 : 0
+                            } }, function(err){
+                                if (err) log.error("waitlist.isOnline: Error unsetting offline flag", { "Pilot": doc.name, "Error": err });
+                            })
+                        }
+
+                    });
+                    
+
 					user.getLocation(doc, function(location) {
-						db.updateOne({ '_id': doc._id }, { $set: { "location": location } }, function (err, result) {
-							if (err) log.error("waitlist.getLocation: Error for db.updateOne", { err });
+						db.updateOne({ '_id': doc._id }, { $set: { "location": location } }, function (err) {
+                            if (err) log.error("waitlist.getLocation: Error updating location", { "Pilot": doc.name, "Error": err });
 						});
 					})
 				})

@@ -61,7 +61,7 @@ exports.createBan = function(req, res) {
         })
     } else {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to create bans. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/bans')
+        res.status(403).redirect('/admin/bans');
     }
 }
 

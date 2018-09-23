@@ -1,5 +1,6 @@
 const setup = require('../setup.js');
 const broadcast = require('./broadcastController.js');
+const cache = require('../cache.js')(setup);
 const esi = require('eve-swagger');
 const fleets = require('../models/fleets.js')(setup);
 const user = require('../models/user.js')(setup);
@@ -94,8 +95,8 @@ exports.delete = function(req, res){
 }
 
 /*
-* Gets the fleet info
-* @params req{}
+* Gets the fleet info of a specific fleet
+* @params req{ fleetID (int)}
 * @res res{}
 */
 exports.getInfo = function(req, res){
@@ -125,6 +126,135 @@ exports.getInfo = function(req, res){
         });
     });
 
+}
+
+/*
+* Returns a json package of all members in a fleet for AJAX UIs
+* @params req{}
+* @res res{}
+*/
+exports.getMembersJson = function(req, res){
+    if(!users.isRoleNumeric(req.user, 1)){
+        res.status(401).send("Not Authenticated");
+        return;
+    }
+
+    fleets.get(req.params.fleetID, function(fleet){
+        if(!fleet){
+            res.status(404).send("Fleet not found");
+            return;
+        }
+
+        var systemPromises = [];
+        var namePromises = [];
+        
+        for(var i = 0; i < fleet.members.length; i++){
+            
+            var signuptime = Math.floor((Date.now() - Date.parse(fleet.members[i].join_time))/1000/60);
+            var signupHours = 0;
+            while (signuptime > 59) {
+                signuptime -= 60;
+                signupHours++;
+            }
+        
+            var index = i;
+
+            var promise = new Promise(function(resolve, reject) {
+                cache.get(Number(fleet.members[index].solar_system_id), 86400, function(systemObject){
+                    resolve({
+                        "pilot":{
+                            "characterID": fleet.members[index].character_id,
+                            "name": null || ""
+                        },
+                        "waitlistMain": {},
+                        "activeShip": fleet.members[index].ship_type_id,
+                        "availableFits": {},
+                        "system": {
+                            "systemID": fleet.members[index].solar_system_id,
+                            "name": systemObject.name
+                        },
+                        "joined": signupHours +'H '+signuptime+'M'
+                    });
+                });
+            });
+
+            systemPromises.push(promise);
+
+            var namePromise = new Promise(function(resolve, reject) {
+                cache.get(fleet.members[index].character_id, 86400, function(userObject) {
+                    resolve({
+                        id: userObject.id,
+                        name: userObject.name
+                    });
+                });
+            });
+
+            namePromises.push(namePromise);
+        }
+
+        Promise.all(systemPromises).then(function(members) {
+            Promise.all(namePromises).then(function(names) {
+
+                for(let i = 0; i < members.length; i++) {
+                    if(!names[i]) {
+                        continue
+                    }
+
+                    members[i].pilot.name = names[i].name || "";
+                }
+
+                members.sort(function(a,b) {
+                    if(a.pilot.name > b.pilot.name) return 1;
+                    return -1;
+                })
+
+                res.status(200).send(members);
+            });
+        });
+    });
+}
+
+/*
+* Returns a json package of all fleets for AJAX UIs
+* @params req{}
+* @res res{}
+*/
+exports.getFleetJson = function(req, res){
+    if(!users.isRoleNumeric(req.user, 0)){
+        res.status(401).send("Not Authenticated");
+        return;
+    }
+
+    //Strip out sensitive superfluous information
+    fleets.getFleetList(function(fleetList){
+        let payload = [];
+        for(let i = 0; i < fleetList.length; i++){
+            if(fleetList[i].status !== "Not Listed"){
+                payload.push({
+                    "fc": {
+                        "characterID": (fleetList[i].fc.characterID) ? fleetList[i].fc.characterID : "",
+                        "name": (fleetList[i].fc.name) ? fleetList[i].fc.name : "" 
+                    },
+                    "backseat": {
+                        "characterID": (fleetList[i].backseat.characterID) ? fleetList[i].backseat.characterID : "",
+                        "name": (fleetList[i].backseat.name) ? fleetList[i].backseat.name : "" 
+                    },
+                    "type": fleetList[i].type,
+                    "status": fleetList[i].status,
+                    "size": fleetList[i].members.length,
+                    "location": {
+                        "systemID": (fleetList[i].system) ? fleetList[i].location.systemID : 0,
+                        "name": (fleetList[i].system) ? fleetList[i].location.name : ""
+                    },
+                    "comms": {
+                        "name": fleetList[i].comms.name,
+                        "url": fleetList[i].comms.url
+                    }
+                });
+            }
+        }
+        res.status(200).send(payload);
+    });
 }
 
 /*

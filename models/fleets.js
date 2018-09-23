@@ -191,6 +191,31 @@ module.exports = function (setup) {
     }
 
 
+    /*
+    * Checks if a given pilot is in a fleet
+    * @params characterID (int)
+    * @return false || joinedTime
+    */
+    module.inFleet = function(characterID, cb){
+        db.findOne({"members.character_id": characterID}, function (err, doc) {
+            if(err){
+                log.error("ERROR");
+                cb(false);
+            }
+            if(!!doc){
+                var members = doc.members;
+                
+                for(let i = 0; i < members.length; i++){
+                    if(members[i].character_id == characterID){
+                        cb(Date.parse(members[i].join_time));
+                        return;
+                    }
+                }
+            }
+            cb(false);
+        })
+    }
+
 
 /* TEMP FLEET WORKER => MOVE TO SCHEDULER */
 
@@ -223,8 +248,6 @@ module.checkForDuplicates = function () {
         })
     })
 }
-
-
 
 module.timers = function () {
     //TODO: Replace this with a proper fleet lookup method that uses the expiry and checks for errors
@@ -289,9 +312,7 @@ module.timers = function () {
                 cb(members, fleetID, fleetObject);
             }).catch(function (err) {
                 log.error("fleets.getMembers: Error for esi.characters ", { err, fcID, fleetID });
-				if (typeof cb === "function") {
-					cb(null, fleetID, fleetObject);
-				}
+				cb(null, fleetID, fleetObject);
             })
         })
     }

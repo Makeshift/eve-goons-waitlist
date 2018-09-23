@@ -1,0 +1,122 @@
+{% block footer %}
+    {% if userProfile.role.numeric > 0 %}
+    <!-- Legal Notices  Modal -->
+    <div role="dialog" tabindex="-1" class="modal fade" id="waitlistBanner">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><strong>Waitlist Banner Management</strong></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bannerMessage">
+                        <div class="form-group">
+                            <label for="bannermessage">Message</label>
+                            <textarea id="bannermessage" class="form-control" maxlength="200" placeholder="max 200 characters" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="bannertype">Banner Type</label>
+                            <select id="bannertype" class="form-control">
+                                <option value="banner-info">Information</option>
+                                <option value="banner-warning">Warning</option>
+                            </select>
+                        </div>
+                        <button id="go" class="btn btn-success btn-sm pull-right" type="submit">Set Banner</button>
+                    </form>
+                    <hr />
+                    <p class="text-center mb-0" style="font-size:x-small">Only one banner can be displayed at a time, all banners are logged.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $(function() {
+        $("#go").click(function() {
+            var dataString = 'text='+ $("#bannermessage").val() + '&type=' + $("#bannertype").val();
+                $.ajax({
+                type: "POST",
+                url: "/internal-api/banner",
+                data: dataString,
+                success: function() {
+                    location.reload();
+                }
+            });
+        })
+    })   
+    </script>
+    {% endif %}    
+
+    {% if userProfile.role.numeric > 0 %}
+    <div id="pilotSearchOverlay" class="overlay">
+        <span class="closebtn" onclick="closeSearch()" title="Cancel Search">x</span>
+        <div class="overlay-content">
+            <form id="searchForm">
+                <h4 class="modal-title text-uppercase noselect" style="color:white"><strong class="text-primary">Imperium</strong><strong>Incursions</strong> - Pilot Search</h4>
+                <input id="pilotSearchName" type="text" name="search" placeholder="Search pilot name..." autocomplete="on">
+                <button id="searchButton" type="submit" onclick="searchGo()"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Legal Notices  Modal -->
+    <div role="dialog" tabindex="-1" class="modal fade" id="legal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><strong class="text-primary">Imperium</strong><strong>Incursions</strong></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                </div>
+                <div class="modal-body">
+                    <p>EVE Online and the EVE logo are the registered trademarks of CCP hf. All rights are reserved worldwide. All other trademarks are the property of their respective owners. EVE Online, the EVE logo, EVE and all associated logos and designs are the intellectual property of CCP hf. All artwork, screenshots, characters, vehicles, storylines, world facts or other recognizable features of the intellectual property relating to these trademarks are likewise the intellectual property of CCP hf. CCP hf. has granted permission to the Imperium Incursions Squad. CCP is in no way responsible for the content on or functioning of this website, nor can it be liable for any damage arising from the use of this website.</p>
+                    <ul class="list-unstyled text-center">
+                        <li><small>Design by <a href="#">Caitlin  Viliana</a>, theme by: <a href="https://bootstrapious.com">Bootstrapious</a></small></li>
+                        <li><small>Website developed and maintained by: <a href="#">Makeshift Storque</a></small></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Javascript files-->
+    <script src="/includes/vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/includes/vendor/jquery.cookie/jquery.cookie.js"> </script>
+    <script>
+        //Page Load
+        var nAlert = new BirdAlert({zIndex: 2100});
+        $(document).ready(function() {
+            if("{{flash.content}}" !== ""){
+                nAlert.notify({
+                    msg: '{{flash.content.message}}', 
+                    title: '{{flash.content.title}}', 
+                    className: '{{flash.content.class}}'
+                });
+            }
+            poll();
+        });
+        
+		var payloadData = null;
+		//Longpoll for Notifications
+		var poll = function () {
+			$.ajax({
+			url: "/poll/{{userProfile.characterID}}",
+			success: function(data){
+				if (!Notify.needsPermission) {
+					showNotification(data);
+				} else {
+					payloadData = data;
+					Notify.requestPermission(enableNotificationsGranted, enableNotificationsDenied);
+				}
+				//repoll
+				poll();
+			},
+			error: function() {
+				poll();
+			},
+			timeout: 30000 // 30 seconds
+			});
+		};
+    	</script>
+  	</body>
+</html>
+{% endblock %}

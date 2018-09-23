@@ -37,8 +37,7 @@ exports.index = function(req, res) {
 exports.store = function(req, res) {
     if (!users.isRoleNumeric(req.user, 5)) {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to edit the whitelist. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/bans')
-    
+        res.status(403).redirect('/admin/whitelist')
     }
     
     getEntity(req.body.name, req.body.type, function(entity){
@@ -119,7 +118,7 @@ function getEntity(name, type, entity){
 exports.revoke = function(req, res) {
     if(!users.isRoleNumeric(req.user, 5)) {
         req.flash("content", {"class":"error", "title":"Not Authorised!", "message":"You are not allowed to revoke bans. Think this is an error? Contact a member of leadership."});
-        res.status(403).redirect('/admin/bans');
+        res.status(403).redirect('/admin/whitelist');
     } 
 
     whitelist.revoke(req.params.whitelistID, function(result){
@@ -128,7 +127,7 @@ exports.revoke = function(req, res) {
             res.status(200).redirect('/admin/whitelist');
         } else {
             req.flash("content", {"class":"error", "title":"Woops!", "message":"We cannot revoke their access."});
-            res.status(400).redirect('/admin/bans');
+            res.status(400).redirect('/admin/whitelist');
         }
     })
 }

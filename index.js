@@ -1,4 +1,4 @@
-
+require('dotenv').config()
 // mandatory setup.js
 const fs = require('fs');
 const path = require('path');
@@ -109,12 +109,12 @@ database.connect(function () {
 			
 	/* Middleware Checks */
 	app.use('/includes', express.static('public/includes'));//Exempt
-	app.use(require('./middleware/userSession.js')(setup).refresh);
-	app.use(require('./middleware/ban.js')(setup).check);
-	app.use(require('./middleware/whitelist.js')(setup).check);
-	app.use(require('./middleware/logout.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/userSession.js')(setup).refresh);
+	app.use(/\/((?!auth).)*/, require('./middleware/ban.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/whitelist.js')(setup).check);
+	app.use(/\/((?!auth).)*/, require('./middleware/logout.js')(setup).check);
 
-	nunjucks.configure('views', {
+	nunjucks.configure('resources/views', {
 		autoescape: true,
 		express: app
 	});
@@ -132,8 +132,8 @@ database.connect(function () {
 	longpoll.create("/poll/:id", (req, res, next) => {
 		req.id = req.params.id;
 		next();
-	});	
-
+    });	
+    
 	//Configure Express webserver
 	app.listen(setup.settings.port, function listening() {
 		log.info('Express online and accepting connections');

@@ -38,14 +38,18 @@ module.exports = function() {
 	* @params characterID
 	* @return bool
 	*/
-	module.isOnline = function(characterID, online){
+	module.isOnline = function(characterID, cb){
 		module.getRefreshToken(characterID, function(accessToken){
-			esi.characters(characterID, accessToken).online().then(function(isOnline){
-				online(isOnline);
+			esi.characters(characterID, accessToken).online().then(function(online){
+				if(online == true) {
+					cb(true);
+				} else {
+					cb(false);
+				}
+			}).catch(function(err){
+				console.error("user.isOnline: error getting refresh token", {characterID: characterID, err});
+				cb(null);
 			})
-		}).catch(function(err){
-			console.error("user.isOnline: error getting refresh token", {characterID: characterID, err});
-			online(null);
 		})
 	}
 
